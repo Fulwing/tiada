@@ -8,13 +8,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
+      colors: {
+        'theme-blue': '#3D52A0',
+        'light-blue': '#7091E6',
+      }
     },
   },
   plugins: [],
-};
+  // Ensure your content path includes all necessary directories
+}
+
 export default config;

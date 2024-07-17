@@ -1,3 +1,4 @@
+// components/Page.tsx
 "use client";
 
 import React, { useState } from 'react';
@@ -22,61 +23,62 @@ export default function Page() {
         body: JSON.stringify({ name, age, story }),
       });
       const data = await response.json();
-      console.log(data);
       if (!response.ok) {
-        throw new Error(data.status || 'Failed to generate persona');
+        throw new Error(data.message || 'Failed to generate persona');
       }
       setPersona(data.persona);
-    } catch (err : unknown) {
-        if (err instanceof Error) {
-            setError(err.message);
-        } else {
-            setError('An unexpected error occurred');
-        }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-lg font-bold">Generate AI Persona</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="mt-4">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          className="input input-bordered w-full mb-2"
-        />
-        <input
-          type="text"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          placeholder="Age"
-          className="input input-bordered w-full mb-2"
-        />
-        <textarea
-          value={story}
-          onChange={(e) => setStory(e.target.value)}
-          placeholder="Brief Story"
-          className="textarea textarea-bordered w-full mb-2"
-        />
-        <button
-          onClick={handleGeneratePersona}
-          className="btn btn-primary"
-          disabled={loading}
-        >
-          {loading ? 'Generating...' : 'Generate Persona'}
-        </button>
-      </div>
-      {persona && (
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold">Generated Persona</h2>
-          <p>{persona}</p>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600">
+      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-xl">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Generate AI Persona</h1>
+        {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+        <div>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+            className="input input-bordered w-full mb-4"
+          />
+          <input
+            type="text"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            placeholder="Age"
+            className="input input-bordered w-full mb-4"
+          />
+          <textarea
+            value={story}
+            onChange={(e) => setStory(e.target.value)}
+            placeholder="Brief Story"
+            className="textarea textarea-bordered w-full mb-4 h-24"
+          />
+          <button
+            onClick={handleGeneratePersona}
+            className="btn w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300"
+            disabled={loading}
+          >
+            {loading ? 'Generating...' : 'Generate Persona'}
+          </button>
         </div>
-      )}
+        {persona && (
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold text-gray-800">Generated Persona</h2>
+            <p className="text-gray-600">{persona}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
