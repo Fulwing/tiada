@@ -27,14 +27,14 @@ const ToolItem: FC<ToolItemProps> = ({ name, onClickEvent}) => {
 
 const GoalItem: FC<ToolItemProps> = ({ name, onClickEvent}) => {
     return (
-      <div className=" flex-col  py-5 flex justify-between items-left w-full">
+      <div className=" flex-col  pyq+-5 flex justify-between items-left w-full">
         <h3 className=" font-bold text-white text-xl  flex-grow ml-2 ">
           Goals
         </h3>
         <div className="flex items-center pl-10 pt-4">
           <input
             type="number" 
-            className="bg-[#9E9E9E40] text-white p-2 w-40 rounded"
+            className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
             placeholder="Maximum Steps"
           />
           <p className="ml-2 text-white text-l flex-grow">/ 7 steps</p>
@@ -43,7 +43,7 @@ const GoalItem: FC<ToolItemProps> = ({ name, onClickEvent}) => {
         <div className="flex items-center pl-10 pt-4">
           <input
             type="number"
-            className="bg-[#9E9E9E40] text-white p-2 w-40 rounded"
+            className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
             placeholder="Maximum Depth"
           />
           <p className="ml-2 text-white text-l flex-grow">/ 3 depth</p>
@@ -56,7 +56,7 @@ const GoalItem: FC<ToolItemProps> = ({ name, onClickEvent}) => {
 
 function ToolBar() {
     return (
-        <div className="flex flex-col items-center w-[340px] h-[985px]  border border-[#505050] bg-[#333]">
+        <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333]">
             <div className=" flex items-center justify-between w-full mb-4 mt-3 px-5">
                 <div className="relative w-[18px] h-[21px]">
                     <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
@@ -79,16 +79,26 @@ function ToolBar() {
                 <GoalItem name="Goals" onClickEvent= {() => {console.log("clicked")}}/>
             </div>
    
-            <button className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2" style={{ cursor: 'pointer' }}>Next</button>
+            <button className="
+            bg-[#6A6DCD] 
+            text-white 
+            py-2 px-4 
+            rounded 
+            w-80 
+            mt-auto 
+            mb-2 
+            m-5" style={{ cursor: 'pointer' }}>
+                Next
+                </button>
         </div>
     );
 }
 
 function Page() {
     return (
-        <div className="flex min-h-screen bg-[#272728]">
+        <div className="flex bg-[#272728] ">
             <ToolBar />
-            <InteractiveFlow />
+            <InteractiveFlow />            
         </div>
     );
 }
