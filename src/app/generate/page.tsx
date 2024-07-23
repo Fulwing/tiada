@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 
 export default function Page() {
-  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
   const [age, setAge] = useState('');
   const [story, setStory] = useState('');
   const [persona, setPersona] = useState<string | null>(null);
@@ -22,13 +22,13 @@ export default function Page() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, age, story }),
+        body: JSON.stringify({number, age, story }),
       });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message || 'Failed to generate persona');
       }
-      setPersona(data.persona);
+      setPersona(data.persona.name);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -48,9 +48,9 @@ export default function Page() {
         <div>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            placeholder="Number"
             className="input input-bordered w-full mb-4"
           />
           <input

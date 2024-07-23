@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ChangeEvent } from 'react';
+import React, {useState, useCallback, ChangeEvent, FC } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -11,7 +11,9 @@ import {
   Connection
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import ImageUploadNode from './ImageUploadNode';
+import StepNode from './StepNode';
+import { ToolBar } from '@/app/steps/page';
+
 
 interface FlowElement extends Node {
   data: { label: string };
@@ -29,12 +31,13 @@ const initialNodes: FlowElement[] = [
   { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node' } },
 ];
 
-const nodeTypes = { uploadImage: ImageUploadNode };
+const nodeTypes = { stepNode: StepNode };
+
 
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2', animated: true }];
 
-function FlowComponent() {
+export const FlowComponent: FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nodeName, setNodeName] = useState('');
@@ -44,7 +47,7 @@ function FlowComponent() {
 
   const addNode = useCallback(() => {
     const newNode: FlowElement = {
-      type: 'uploadImage',
+      type: 'stepNode',
       id: `node_${nodes.length + 1}`,
       position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
       data: { label: `${nodeName}: ${nodeDesc}` }
@@ -55,9 +58,13 @@ function FlowComponent() {
   }, [nodes.length, nodeName, nodeDesc, setNodes]);
 
   return (
+    <div className='flex  bg-[#272728] w-full' >
+    <ToolBar onInterfaceClick={addNode} onActionsClick={() => {}} onTouchPointsClick={() => {}}/>
     <div className="pb-20 pt-2 pl-5 w-full">
       <div className="flex gap-2 mb-2">
-        <input
+
+        {/* No longer needed [Add node through interface (+)] */}
+        {/* <input
           type="text"
           placeholder="Node Name"
           value={nodeName}
@@ -73,7 +80,7 @@ function FlowComponent() {
         />
         <button className="btn btn-primary" onClick={addNode}>
           Add Node
-        </button>
+        </button> */}
       </div>
       <ReactFlow
         nodes={nodes}
@@ -89,6 +96,7 @@ function FlowComponent() {
         <Controls />
         <Background />
       </ReactFlow>
+    </div>
     </div>
   );
 }
