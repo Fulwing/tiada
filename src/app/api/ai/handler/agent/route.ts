@@ -15,7 +15,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'Node not found' }, { status: 404 });
         }
 
-        const prompt = `Validate if the predicted action "${predictedAction}" is correct based on the marked touchpoints in the following UI screenshot. Answer start with Yes or No and a explain.`;
+        const prompt = `Validate if the predicted action "${predictedAction}" is correct based on the marked touchpoints in the following UI screenshot. Answer starts with Yes or No and a explain.`;
 
         const response = await openai.chat.completions.create({
             model: 'gpt-4o',
