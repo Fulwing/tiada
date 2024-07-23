@@ -1,30 +1,11 @@
 // src/app/api/results/route.ts
+
+// Import necessary modules from Next.js server and project types
 import { NextResponse } from 'next/server';
+import { TestResult, Step } from '../../../types/index';
 
-// Define the structure for each step in a test result
-interface StepDetail {
-  stepNumber: number;
-  status: 'success' | 'miss';
-  description?: string;
-}
-
-// Define the structure for a complete test result
-interface TestResult {
-  id: number;
-  taskCompletion: string;
-  steps: number;
-  name: string;
-  gender: string;
-  age: number;
-  occupation: string;
-  stepDetails: StepDetail[];
-  persona?: string;
-}
-
-// Handle GET requests to /api/results
+// Handle GET requests to the /api/results endpoint
 export async function GET() {
-    // Mock data for testing purposes
-    // TODO: Replace this with actual data fetching from backend when it's ready
     const mockResults: TestResult[] = [
         {
             id: 1,
@@ -34,55 +15,81 @@ export async function GET() {
             gender: 'Male',
             age: 28,
             occupation: 'PM',
-            stepDetails: [
-                { stepNumber: 1, status: 'success' },
-                { stepNumber: 2, status: 'success' },
-                { stepNumber: 3, status: 'success' },
-                { stepNumber: 4, status: 'success' },
-                { stepNumber: 5, status: 'success' },
-                { stepNumber: 6, status: 'success' },
-                { stepNumber: 7, status: 'success' },
+            completionTime: 320,
+            stages: [
+                { 
+                    stepNumber: 1, 
+                    status: 'success', 
+                    description: 'Logged in successfully', 
+                    image: '/rectangle-6.png',
+                    userAction: "I will enter my username and password in the login form and click the 'Login' button.",
+                    userExplanation: "I expect to be redirected to the main dashboard after successful login, where I can access all project management features."
+                },
+                // Additional steps follow the same structure
+                { 
+                    stepNumber: 2, 
+                    status: 'success', 
+                    description: 'Navigated to project dashboard', 
+                    image: '/rectangle-6.png',
+                    userAction: "I will click on the 'Projects' tab in the main navigation menu.",
+                    userExplanation: "This should take me to a page showing an overview of all current projects, including their status and key metrics."
+                },
+                { 
+                    stepNumber: 3, 
+                    status: 'success', 
+                    description: 'Created new task', 
+                    image: '/rectangle-6.png',
+                    userAction: "I will click the 'New Task' button, likely located in the top right corner of the project dashboard.",
+                    userExplanation: "This should open a form where I can input details for a new task, such as title, description, and priority."
+                },
+                { 
+                    stepNumber: 4, 
+                    status: 'success', 
+                    description: 'Assigned task to team member', 
+                    image: '/rectangle-6.png',
+                    userAction: "In the new task form, I will use the 'Assign To' dropdown to select a team member.",
+                    userExplanation: "This dropdown should list all team members available for task assignment. After selecting, the task will be linked to that team member's workload."
+                },
+                { 
+                    stepNumber: 5, 
+                    status: 'success', 
+                    description: 'Set due date', 
+                    image: '/rectangle-6.png',
+                    userAction: "I will use the date picker in the task form to set a due date for the task.",
+                    userExplanation: "The date picker should allow me to easily select a future date. This will help in tracking deadlines and managing the project timeline."
+                },
+                { 
+                    stepNumber: 6, 
+                    status: 'success', 
+                    description: 'Added task description', 
+                    image: '/rectangle-6.png',
+                    userAction: "I will type a detailed description of the task in the provided text area.",
+                    userExplanation: "This description should clearly outline what needs to be done, providing enough information for the assigned team member to understand and complete the task."
+                },
+                { 
+                    stepNumber: 7, 
+                    status: 'success', 
+                    description: 'Saved and exited', 
+                    image: '/rectangle-6.png',
+                    userAction: "I will click the 'Save' or 'Create Task' button at the bottom of the form.",
+                    userExplanation: "This should save all the entered information and create the new task in the system. I expect to see a confirmation message and be redirected back to the project dashboard or task list."
+                },
             ],
-            persona: "John is a detail-oriented project manager with 5 years of experience.",
-        },
-        {
-            id: 2,
-            taskCompletion: 'Success',
-            steps: 7,
-            name: 'Jane',
-            gender: 'Female',
-            age: 32,
-            occupation: 'Designer',
-            stepDetails: [
-                { stepNumber: 1, status: 'success' },
-                { stepNumber: 2, status: 'success' },
-                { stepNumber: 3, status: 'success' },
-                { stepNumber: 4, status: 'miss', description: 'Missed a key design element' },
-                { stepNumber: 5, status: 'success' },
-                { stepNumber: 6, status: 'success' },
-                { stepNumber: 7, status: 'success' },
-            ],
-            persona: "Jane is a creative designer with a keen eye for user experience.",
-        },
-        {
-            id: 3,
-            taskCompletion: 'Failure',
-            steps: 5,
-            name: 'Mike',
-            gender: 'Male',
-            age: 24,
-            occupation: 'Developer',
-            stepDetails: [
-                { stepNumber: 1, status: 'success' },
-                { stepNumber: 2, status: 'success' },
-                { stepNumber: 3, status: 'miss', description: 'Missed navigation step' },
-                { stepNumber: 4, status: 'miss', description: 'Failed to complete form' },
-                { stepNumber: 5, status: 'miss', description: 'Error in submission process' },
-            ],
-            persona: "Mike is a junior developer eager to learn new technologies.",
+            generalFeedback: "John completed all steps successfully, demonstrating a clear understanding of the task creation process. His efficiency in navigating the interface and attention to detail in task assignment and description showcases his project management skills.",
+            persona: {
+                name: "John",
+                age: 28,
+                gender: "Male",
+                occupation: "Project Manager",
+                location: "New York, NY",
+                characteristic: "John is a detail-oriented project manager with 5 years of experience in tech startups. He's known for his ability to streamline complex processes and keep teams motivated throughout project lifecycles."
+            },
         },
     ];
+    // Log the GET request
     console.log("GET request to /api/results");
+    // Return the mock results as JSON response
     return NextResponse.json(mockResults);
 }
+
 

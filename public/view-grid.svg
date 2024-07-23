@@ -1,0 +1,9 @@
+<svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="view/grid">
+<g id="Vector">
+<path d="M1 17.5H13V19.5H1V17.5Z" fill="white"/>
+<path d="M1 13.5H19V15.5H1V13.5Z" fill="white"/>
+<path d="M1 2.5C1 1.94772 1.44772 1.5 2 1.5H18C18.5523 1.5 19 1.94772 19 2.5V10.5C19 11.0523 18.5523 11.5 18 11.5H2C1.44772 11.5 1 11.0523 1 10.5V2.5Z" fill="white"/>
+</g>
+</g>
+</svg>

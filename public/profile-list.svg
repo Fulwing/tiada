@@ -1,0 +1,11 @@
+<svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="profile/list">
+<g id="Vector">
+<path d="M9 5C9 6.933 7.433 8.5 5.5 8.5C3.567 8.5 2 6.933 2 5C2 3.067 3.567 1.5 5.5 1.5C7.433 1.5 9 3.067 9 5Z" fill="white"/>
+<path d="M14 17.5C14 14.1863 11.3137 11.5 8 11.5H3C1.89543 11.5 1 12.3954 1 13.5V18.5H14V17.5Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M13 9.5H19V11.5H13V9.5Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M14 3.5H19V5.5H14V3.5Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16 15.5H19V17.5H16V15.5Z" fill="white"/>
+</g>
+</g>
+</svg>
