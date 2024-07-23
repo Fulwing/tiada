@@ -1,10 +1,7 @@
-
-import { FC, useCallback } from "react";
-import {Handle, Position} from "@xyflow/react";
-import Input from "postcss/lib/input";
-import { useDropzone } from 'react-dropzone';
-
-import {useState} from "react";
+import React, {FC, useState} from "react";
+import {Handle, Position, useNodeId} from "@xyflow/react";
+import {useDropzone} from 'react-dropzone';
+import Image from "next/image";
 
 
 
@@ -72,7 +69,7 @@ const NodeMenu: FC = () => {
 
 
 const StepNode: FC = () => {
-
+    const nodeId = useNodeId();
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
@@ -84,11 +81,12 @@ const StepNode: FC = () => {
   
     return (
 <div className="pt-10 rounded-lg shadow-lg p-4 flex flex-col gap-2 bg-[#333]">
+    <span>{nodeId}</span>
     <Handle type="source" position={Position.Left} style={{ background: '#555'}} />
     <div {...getRootProps()} className={`flex justify-center items-center w-full rounded-lg ${uploadedImage ? 'h-auto bg-gray-200' : 'h-48 bg-gray-300'} `}>
     <input {...getInputProps()} />
-    {uploadedImage ? <img src={uploadedImage} alt="Uploaded" className="max-h-[36rem] max-w-full" /> : <p className="text-gray-500 text-sm">Upload image here</p>}
-</div>
+    {uploadedImage ? <Image src={uploadedImage} alt={"uploaded"} className={"max-h-[36rem] max-w-full"}></Image> : <p className="text-gray-500 text-sm">Upload image here</p>}
+    </div>
     <Handle type="target" position={Position.Right} style={{ background: '#555' }} />
     <NodeMenu/>
 </div>
