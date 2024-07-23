@@ -124,21 +124,23 @@ export async function POST(request: Request) {
     const res = await request.json();
     //const { number, age, story } = res;
     const {number, feature, test_prob, temp} = res;
-    //const prompt = `Create a detailed persona for a character named ${name}, age ${age}, who ${story}`;
-    const sys_prompt = "You are a persona creator. You will be asked to generate a few personas for specific product testing task\
+    const sys_prompt = "You are a really professional persona creator. \
+                        You will be asked to generate personas for specific product testing task\
                         Please generate a persona based on the given requirements.";
-    
+
+    let history_messages:{ role: 'system'|'user'|'assistant', content: string }[] = [
+              { role: 'system', content: sys_prompt },
+              { role: "user", content: `For the software product with testing problem as describe belowed,\
+                                Create a virtual persona that has the feature of ${feature}.\
+                                Given product and testing problem: ${test_prob}.`}
+    ];
+
     let generate_result = [];
     for (let i=0; i<number; i++){
       try {
         const response = await openai.chat.completions.create({
           model: 'gpt-4-turbo',
-          messages: [
-            { role: 'system', content: sys_prompt },
-            { role: "user", content: `For the software product with testing problem as describe belowed,\
-                                      Create a virtual persona that has the feature of ${feature}.\
-                                      Given product and testing problem: ${test_prob}.`}
-          ],
+          messages: history_messages,
           functions: [
             {
               name: "createpersona",
@@ -170,6 +172,10 @@ export async function POST(request: Request) {
                     type: "string",
                     description: "A around 200 words description of the persona's characteristic. Should be detailed describe the persona's background, experience, and personality."
                   },
+                  expericence: {
+                    type: "boolean",
+                    description: "True if the persona has experience in using the product, otherwise False."
+                  }
                 }
               }
             }
@@ -178,18 +184,43 @@ export async function POST(request: Request) {
           temperature: temp,
         });
         const new_persona = response.choices[0].message.function_call?.arguments;
-        console.log(new_persona);
+        console.log(new_persona); 
         if (new_persona) {
+          // update the message history
+          history_messages.push({role:'assistant',content:new_persona},
+                                {role:'user',
+                                 content:`keep generating persona for the product testing task. remember to the feature ${feature}.\
+                                 and the testing problem: ${test_prob}.`});
           const persona_obj = JSON.parse(new_persona);
-          generate_result.push(persona_obj); //Response.json({ persona: persona_obj }, { status: 200 });
+          generate_result.push(persona_obj); 
         }
-        //return Response.json({ persona: response.choices[0].message.function_call?.arguments }, { status: 200 });
       } catch (error) {
         console.error('Error calling OpenAI API:', error);
         //return Response.json({ error: 'Failed to generate persona from OpenAI' }, { status: 500 });
       }
     }
-    Response.json({ personas: generate_result }, { status: 200 });
-    //return NextResponse.json({ message: "Persona generation not yet implemented" }, { status: 501 });
+    try {
+      //return a list of generated personas obj
+      Response.json({ personas: generate_result }, { status: 200 });
+    } catch (error) {
+      return Response.json({ error: 'Failed to generate persona from OpenAI' }, { status: 500 });
+    }
 }
 
+
+// Update persona
+export async function updatePersona(request: Request) {
+  const res = await request.json();
+  const { name, occupation, age, gender, expericence, location, characteristic } = res;
+  //update persona in the database
+  //TODO: implement the database update here
+  return Response.json({ error: 'Not yet implemented update persona' }, { status: 500 });
+}
+
+// Delete persona
+export async function deletePersona(request: Request) {
+  const res = await request.json();
+  const { id } = res;
+  //delete persona in the database
+  return Response.json({ error: 'Not yet implemented delete persona' }, { status: 500 });
+}
