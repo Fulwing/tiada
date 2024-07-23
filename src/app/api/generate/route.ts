@@ -224,3 +224,40 @@ export async function deletePersona(request: Request) {
   //delete persona in the database
   return Response.json({ error: 'Not yet implemented delete persona' }, { status: 500 });
 }
+
+//@Daniel
+// const task = "";
+// const persona_description = "";
+// const task_instruction_prompt= 
+//     `Now you are using the app, the interface you are seeing is provide in the image,\
+//     remember that your ultimate goal of using this app is: ${task}.\
+//     Tell me what you will do with this interface to complete the ultimate task.\
+//     Your response can be either:\
+//       a. click the button/ toggle swith\
+//       b. sroll up\
+//       c. sroll down\
+//     when you choose the option, please describe the touchpoint location in detailed\
+//     and provide a reason for your choice.`;
+
+// const ask_response_prompt = 
+//     "Now you are navigating to this page after your previous action, what will you do next?\
+//     Your response can be either:\
+//       a. click the button/ toggle swith\
+//       b. sroll up\
+//       c. sroll down\
+//     when you choose the option, please describe the touchpoint location in detailed and provide a reason for your\ choice."
+
+// const ask_do_again_prompt =
+//     "Sorry, your action might be a wrong decision to complete the task, please try again."
+
+// let initial_messages = [ 
+//   { role: "system", 
+// 	  content: `You are a professional human simulation robot, with given a persona description, you should try to\ simulate that person. Then take action/response regarding tha task provided by user, you should make action\ decision based on the persona features and your own imagination and prediction.\
+//     Here is the given persona information: ${persona_description}`
+//   },
+//   { role: "user",
+//     constent: task_instruction_prompt}
+// ]
+
+// // everytime the user provide a response, you should either push an ask_response_prompt or ask_try_again_prompt to the intial_messages list
+
