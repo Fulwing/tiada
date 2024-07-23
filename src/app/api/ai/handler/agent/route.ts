@@ -15,17 +15,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'Node not found' }, { status: 404 });
         }
 
-        const prompt = `Validate if the predicted action "${predictedAction}" is correct based on the marked touchpoints in the following UI screenshot. Marked Screenshot: ${node.markedPicture.toString('base64')}`;
+        const prompt = `Validate if the predicted action "${predictedAction}" is correct based on the marked touchpoints in the following UI screenshot. Answer start with Yes or No and a explain.`;
 
         const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4o',
             messages: [
                 { role: 'system', content: 'You are an assistant that validates UI actions.' },
-                { role: 'user', content: prompt },
+                {
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: prompt },
+                        { type: 'image_url', image_url: { url: `data:image/png;base64,${node.markedPicture.toString('base64')}` } },
+                    ],
+                },
             ],
         });
 
-        const isCorrect = response.choices?.[0]?.message?.content?.trim().toLowerCase() === 'true';
+        const isCorrect = response.choices?.[0]?.message?.content?.trim().toLocaleLowerCase().startsWith('y');
 
         return NextResponse.json({ isCorrect }, { status: 200 });
     } catch (error: unknown) {

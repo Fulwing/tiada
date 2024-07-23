@@ -17,15 +17,22 @@ export async function POST(req: Request) {
 
         conversationHistory.push({
             role: 'user',
-            content: `Analyze the following UI screenshot and determine the action to take based on the image. Screenshot: ${node.picture.toString('base64')}`,
+            content: [
+                { type: 'text', text: 'Analyze the following UI screenshot and determine the action to take based on the image.' },
+                { type: 'image_url', image_url: { url: `data:image/png;base64,${node.picture.toString('base64')}` } },
+            ],
         });
 
         const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4o',
             messages: conversationHistory,
         });
 
         const action = response.choices?.[0]?.message?.content?.trim();
+
+        if (!action) {
+            throw new Error('No action received from OpenAI');
+        }
 
         conversationHistory.push({
             role: 'assistant',

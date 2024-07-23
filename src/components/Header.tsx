@@ -22,6 +22,9 @@ const Header = () => {
           <Link href="/about">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">About</button>
           </Link>
+          <Link href="/teststeps">
+            <button className="text-lg font-semibold hover:text-gray-200 transition-colors">teststeps</button>
+          </Link>
         </div>
       </nav>
     </header>
