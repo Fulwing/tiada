@@ -11,6 +11,7 @@ import {
   Connection
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import ImageUploadNode from './ImageUploadNode';
 
 interface FlowElement extends Node {
   data: { label: string };
@@ -28,6 +29,9 @@ const initialNodes: FlowElement[] = [
   { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node' } },
 ];
 
+const nodeTypes = { uploadImage: ImageUploadNode };
+
+
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2', animated: true }];
 
 function FlowComponent() {
@@ -40,6 +44,7 @@ function FlowComponent() {
 
   const addNode = useCallback(() => {
     const newNode: FlowElement = {
+      type: 'uploadImage',
       id: `node_${nodes.length + 1}`,
       position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
       data: { label: `${nodeName}: ${nodeDesc}` }
@@ -50,7 +55,7 @@ function FlowComponent() {
   }, [nodes.length, nodeName, nodeDesc, setNodes]);
 
   return (
-    <div className="p-4">
+    <div className="pb-20 pt-2 pl-5 w-full">
       <div className="flex gap-2 mb-2">
         <input
           type="text"
@@ -76,8 +81,9 @@ function FlowComponent() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeTypes}
         fitView
-        style={{ height: 500 }}
+        style={{ height: 500}}
       >
         <MiniMap />
         <Controls />

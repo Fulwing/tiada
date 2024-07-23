@@ -10,6 +10,9 @@ const Header = () => {
           <Link href="/">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">Home</button>
           </Link>
+          <Link href="/steps">
+            <button className="text-lg font-semibold hover:text-gray-200 transition-colors">Steps</button>
+          </Link>
           <Link href="/generate">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">Generate</button>
           </Link>
