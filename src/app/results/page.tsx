@@ -1,7 +1,7 @@
 // src/app/results/page.tsx
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import OverallEvaluation from '../../components/OverallEvaluation';
 import PersonaDetails from '../../components/PersonaDetails';
@@ -203,33 +203,32 @@ export default function ResultsPage() {
     const [selectedJourneyDetails, setSelectedJourneyDetails] = useState<{ steps: Step[], generalFeedback: string } | null>(null);
     const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | null>(null);
 
-
-
+    const fetchData = useCallback(async () => {
+      try {
+        // TODO: Replace this with actual API call when backend is ready
+        const response = await fetch('/api/results');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (Array.isArray(data) && data.every(isTestResult)) {
+          setData(data);
+        } else {
+          throw new Error('Invalid data structure received from API');
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error instanceof Error ? error.message : 'An unknown error occurred');
+        setLoading(false);
+      }
+    }, []);
+  
     // Fetch data from the API when the component mounts
     useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            // TODO: Replace this with actual API call when backend is ready
-          const response = await fetch('/api/results');
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data = await response.json();
-          if (Array.isArray(data) && data.every(isTestResult)) {
-            setData(data);
-          } else {
-            throw new Error('Invalid data structure received from API');
-          }
-          setLoading(false);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setError(error instanceof Error ? error.message : 'An unknown error occurred');
-          setLoading(false);
-        }
-      };
+      fetchData();
+    }, [fetchData]);
+  
       
       // Helper function to validate TestResult object
       function isTestResult(obj: any): obj is TestResult {
