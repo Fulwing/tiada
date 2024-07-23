@@ -1,4 +1,4 @@
-import { pgTable, serial, customType, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, customType, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 const bytea = customType<{
   data: Buffer
@@ -10,7 +10,7 @@ const bytea = customType<{
 })
 
 export const nodeTable = pgTable('node_table', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   picture: bytea('picture').notNull(),
   markedPicture: bytea('markedPicture').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow()

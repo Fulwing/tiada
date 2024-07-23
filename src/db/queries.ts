@@ -8,7 +8,7 @@ export async function addNode(data: InsertNode) {
 }
 
 export async function getNodeById(id: SelectNode['id']): Promise<{
-  id: number;
+  id: string;
   picture: Buffer;
   markedPicture: Buffer;
   createdAt: Date;

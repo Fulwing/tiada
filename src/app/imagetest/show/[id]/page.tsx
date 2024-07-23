@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 type NodeProps = {
-  id: number;
+  id: string;
   picture: string;
   markedPicture: string;
   createdAt: string;

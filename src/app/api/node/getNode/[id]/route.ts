@@ -3,7 +3,7 @@ import { getNodeById } from '../../../../../db/queries';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
 
   try {
