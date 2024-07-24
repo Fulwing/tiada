@@ -45,7 +45,7 @@ export async function addMultiplePersonas(personas: InsertPersona[]) {
 }
 
 export async function getMultiplePersonasByCoreId(id: SelectPersona['coreId']): Promise<{
-  id: number;
+  id: string;
   name: string;
   occupation: string;
   age: number;

@@ -1,5 +1,5 @@
 export default interface Persona {
-    id: number;
+    id?: string;
     name: string;
     occupation: string;
     age: number;
@@ -13,7 +13,7 @@ export default interface Persona {
 
 const mockPersonas: Persona[] = [
     {
-        id: 1,
+        id: '1',
         name: "Samantha Parker",
         occupation: "Digital Marketing Specialist",
         age: 29,
@@ -24,7 +24,7 @@ const mockPersonas: Persona[] = [
         coreId: 'yes'
     },
     {
-        id: 2,
+        id: '2',
         name: "Michael Chen",
         occupation: "Software Engineer",
         age: 34,

@@ -8,7 +8,7 @@ import PersonaDetails from '../../components/PersonaDetails';
 import UserJourneyDetails from '../../components/UserJourneyDetails';
 import StepDetailsPopup from '../../components/StepDetailsPopup';
 import ChatWithPersona from '../../components/ChatWithPersona';
-import { TestResult, Step } from '../../types/index';
+import { TestResult, Step } from '../../types/test/result';
 
 // Helper function to format time in minutes and seconds
 const formatTime = (seconds: number) => {

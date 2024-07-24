@@ -2,7 +2,7 @@
 
 // Import necessary modules from Next.js server and project types
 import { NextResponse } from 'next/server';
-import { TestResult, Step } from '../../../types/index';
+import { TestResult, Step } from '../../../types/test/result';
 
 // Handle GET requests to the /api/results endpoint
 export async function GET() {
