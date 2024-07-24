@@ -1,7 +1,8 @@
 import { db } from './index';
-import { InsertNode, SelectNode, nodeTable } from './schema';
+import { InsertNode, InsertPersona, SelectNode, nodeTable, personaTable } from './schema';
 import { eq } from 'drizzle-orm';
 
+// node table
 export async function addNode(data: InsertNode) {
     const result = await db.insert(nodeTable).values(data).returning({ insertedId: nodeTable.id });
     return result[0];
@@ -30,4 +31,15 @@ export async function getNodeById(id: SelectNode['id']): Promise<{
     markedPicture: node.markedPicture,
     createdAt: node.createdAt,
   };
+}
+
+// persona table
+export async function addPersona(data: InsertPersona) {
+  const result = await db.insert(personaTable).values(data).returning({ insertedId: nodeTable.id });
+  return result[0];
+}
+
+export async function addMultiplePersonas(personas: InsertPersona[]) {
+  const result = await db.insert(personaTable).values(personas).returning({ insertedId: personaTable.id });
+  return result.map(row => row.insertedId);
 }

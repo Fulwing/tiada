@@ -90,17 +90,7 @@ export default function Page() {
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-
-interface Persona {
-  id: number;
-  name: string;
-  occupation: string;
-  age: number;
-  gender: string;
-  experience: boolean;
-  location: string;
-  characteristic: string;
-}
+import Persona from '../../types/test/persona'
 
 function ToolBar() {
     return (

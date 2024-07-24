@@ -1,4 +1,4 @@
-import { pgTable, customType, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, customType, timestamp, varchar, serial, integer, boolean, text } from 'drizzle-orm/pg-core';
 
 const bytea = customType<{
   data: Buffer
@@ -16,5 +16,21 @@ export const nodeTable = pgTable('node_table', {
   createdAt: timestamp('created_at').notNull().defaultNow()
 });
 
+export const personaTable = pgTable('persona_table', {
+  id: serial('id').primaryKey(),
+  name: varchar('name').notNull(),
+  occupation: varchar('occupation').notNull(),
+  age: integer('age').notNull(),
+  gender: varchar('gender').notNull(),
+  experience: boolean('experience').notNull(),
+  location: varchar('location').notNull(),
+  characteristic: text('characteristic').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow()
+});
+
 export type InsertNode = typeof nodeTable.$inferInsert;
 export type SelectNode = typeof nodeTable.$inferSelect;
+
+
+export type InsertPersona = typeof personaTable.$inferInsert;
+export type SelectPersona = typeof personaTable.$inferSelect;
