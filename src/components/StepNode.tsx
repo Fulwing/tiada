@@ -1,10 +1,18 @@
-import React, {FC, useState} from "react";
-import {Handle, Position, useNodeId} from "@xyflow/react";
+import React, {FC, memo, useEffect, useState} from "react";
+import {Handle, Position, Node, NodeProps, useNodesState, useNodeId} from "@xyflow/react";
 import {useDropzone} from 'react-dropzone';
+import {v4 as uuid} from 'uuid'
 
 
 
-
+export type StepNode = Node<
+    {
+        markedImage?: string;
+        unmarkedImage?: string;
+        updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => void;
+    },
+    'counter'
+>;
 
 
 const StartEndCheckBox: FC = () => {
@@ -68,40 +76,51 @@ const NodeMenu: FC = () => {
 
 }
 
-
-
-const StepNode: FC = () => {
-    const nodeId = useNodeId();
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
-  const {getRootProps, getInputProps} = useDropzone({
-      onDrop: acceptedFiles => {
-          const file = acceptedFiles[0];
-          setUploadedImage(URL.createObjectURL(file));
-      }
-  });
-  
-    return (
-<div className=" rounded-lg shadow-lg p-4 flex flex-col gap-2 bg-[#333]">
-    <div className={"justify-between flex"}>
-    <h1 className="text-white text-m font-semibold">
-        Stage #
-    </h1>
-        <button>
-        </button>
-    </div>
-    <div {...getRootProps()} className={`flex justify-center items-center w-full rounded-lg ${uploadedImage ? 'h-auto bg-gray-200' : 'h-48 bg-gray-300'} `}>
-    <input {...getInputProps()} />
-    {uploadedImage ? <img src={uploadedImage} alt="Uploaded" className="max-h-[36rem] max-w-full"/> :
-        <p className="text-gray-500 text-sm">Upload image here</p>}
-    </div>
-    <Handle id = "true" type="source" position={Position.Top} style={{ background: '#00FF00'}} />
-    <Handle id= "unlinked" type="target" position={Position.Left} style={{ background: '#555'  }} />
-    <Handle id = "false" type="source" position={Position.Bottom} style={{ background: '#FF0000' }} />
-    <NodeMenu/>
-</div>
-    );
-
+interface StepNodeData {
+    markedImage?: string;
+    unmarkedImage?: string;
+    updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => void;
 }
 
-export default StepNode;
+const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({ data, isConnectable }) => {
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const nodeId = useNodeId();
+
+    const { getRootProps, getInputProps } = useDropzone({
+        onDrop: acceptedFiles => {
+            const file = acceptedFiles[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                setUploadedImage(URL.createObjectURL(file));
+                data.updateNodeData({ unmarkedImage: base64String });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    return (
+        <div className="rounded-lg shadow-lg p-4 flex flex-col gap-2 bg-[#333]">
+            <div className="justify-between flex">
+                <h1 className="text-white text-xs font-semibold">
+                    Node {nodeId ? (nodeId.length > 10 ? `[${nodeId.substring(0, 8)}...]` : nodeId) : 'No ID'}
+                </h1>
+            </div>
+            <div {...getRootProps()}
+                 className={`flex justify-center items-center w-full rounded-lg ${uploadedImage ? 'h-auto bg-gray-200' : 'h-48 bg-gray-300'} `}>
+                <input {...getInputProps()} />
+                {uploadedImage ? <img src={uploadedImage} alt="Uploaded" className="inner-image max-h-[36rem] max-w-full"/> :
+                    <p className="text-gray-500 text-sm">Upload image here</p>}
+            </div>
+            <Handle id="true" type="source" position={Position.Top} style={{ background: '#00FF00'}} />
+            <Handle id="unlinked" type="target" position={Position.Left} style={{ background: '#555'  }} />
+            <Handle id="false" type="source" position={Position.Bottom} style={{ background: '#FF0000' }} />
+            <NodeMenu />
+        </div>
+    );
+};
+
+const MemoizedStepNodeComponent = memo(StepNodeComponent);
+MemoizedStepNodeComponent.displayName = 'StepNodeComponent';
+
+export default MemoizedStepNodeComponent;

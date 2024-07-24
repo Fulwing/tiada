@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useState} from 'react';
+import React, {FC, useCallback, useState, useMemo, useEffect} from 'react';
 import {
     addEdge,
     Background,
@@ -17,15 +17,21 @@ import {v4 as uuid} from 'uuid'
 import Image from 'next/image';
 import {toPng} from 'html-to-image';
 
-interface FlowNode {
+import StepNodeComponent from './StepNode';
+
+interface StepNode {
     parentId: string;
     id: string;
     type?: string;
     position: { x: number; y: number };
-    data: { label: string };
+    data: {
+        markedImage: string;
+        unmarkedImage: string;
+        updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => void;
+    };
 }
 
-const downloadNodeImages = async (nodes: FlowNode[]) => {
+const printNodeImagesBase64 = async (nodes: StepNode[]) => {
     for (const node of nodes) {
         if (!node.parentId) {
             const nodeElement = document.querySelector(`.react-flow__node[data-id='${node.id}']`);
@@ -39,37 +45,45 @@ const downloadNodeImages = async (nodes: FlowNode[]) => {
                         transform: `translate(0, 0)`,
                     },
                 });
-                const a = document.createElement('a');
-                a.href = png;
-                a.download = `node-${node.id}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                console.log(png);
             }
         }
     }
 };
 
-const DownloadButton: FC = () => {
-    const {getNodes} = useReactFlow();
+
+
+
+interface DownloadButtonProps {
+    onNextButton: () => void;
+}
+
+const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
+    const { getNodes } = useReactFlow();
+
     const onClick = () => {
         const nodes = getNodes().map(node => ({
             ...node,
             data: {
                 ...node.data,
-                label: 'label' in node.data ? node.data.label : 'Default Label',
+                markedImage: '',
+                unmarkedImage: ''
             }
-        })) as FlowNode[];
-        downloadNodeImages(nodes).then(r => {});
+        })) as StepNode[];
+        printNodeImagesBase64(nodes).then(() => {});
     };
 
     return (
-    <button
-        className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2 m-5"
-        onClick={onClick}
-        style={{cursor: 'pointer'}}>
-        Next
-    </button>);
+        <button
+            className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2 m-5"
+            onClick={() => {
+                onClick();
+                onNextButton();
+            }}
+            style={{ cursor: 'pointer' }}>
+            Next
+        </button>
+    );
 };
 
 
@@ -82,6 +96,10 @@ interface GoalItemProps {
     totalNodes: number;
     totalDepth?: number;
 }
+
+
+
+
 
 
 const ToolItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
@@ -126,16 +144,18 @@ export interface ToolBarProps {
     onInterfaceClick: () => void;
     onTouchPointsClick?: () => void;
     onActionsClick?: () => void;
+    onNextClick?: () => void;
     totalNodes: number;
 }
 
 export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
                                               onTouchPointsClick= () => {},
                                               onActionsClick = () => {},
-                                                totalNodes= 0
+                                                totalNodes= 0,
+                                              onNextClick = () => {}
 }) => {
   return (
-      <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333]">
+      <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333] justify-center">
         <div className="flex items-center justify-between w-full mb-4 mt-3 px-5">
           <div className="relative w-[18px] h-[21px]">
             <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
@@ -148,14 +168,18 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
         <div className="flex flex-col w-full mb-4">
           <h3 className="font-bold text-white text-xl flex-grow ml-2">Nodes</h3>
           <ToolItem name="Interface" onClickEvent={onInterfaceClick} />
-            {/*todo implement if you have time*/}
-          {/*<ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />*/}
+         {/*<ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />*/}
           {/*<ToolItem name="Actions" onClickEvent={onActionsClick} />*/}
           <GoalItem totalNodes={totalNodes} />
+
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            <p className="text-white  text-xs mt-10 flex-grow  justify-center pl-8"> Don't have any interface to test now?</p>
+            <button className="bg-white text-gray-500  w-auto h-12 rounded mb-5 ml-5 mr-5 mt-2">Select an example to test</button>
+
         </div>
 
 
-          <DownloadButton/>
+          <DownloadButton onNextButton={onNextClick}/>
 
 
       </div>
@@ -163,40 +187,51 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
 };
 
 
-interface FlowElement extends Node {
-  data: { label: string };
-}
 
-interface Edge {
-    id: string;
-    source: string;
-    target: string;
-    animated: boolean;
-}
 
-const initialNodes: FlowElement[] = [
+
+const initialNodes: StepNode[] = [
   //   todo possible set up initial layout for easy demo
-  { id: '1', position: { x: 100, y: 0 }, data: { label: 'Start Node' } },
-  { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node'}, parentId: '1' },
+  // { id: '1', position: { x: 100, y: 0 }, data: { label: 'Start Node' } },
+  // { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node'}, parentId: '1' },
 ];
 
-const nodeTypes = { stepNode: StepNode };
 
 
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2', animated: true }];
 
 export const FlowComponent: FC = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<StepNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [nodeName, setNodeName] = useState('');
-  const [nodeDesc, setNodeDesc] = useState('');
+
+
+    const getNodesConnectedByTrueEdge = () => {
+        // Filter edges to get those with green color
+        const trueEdges = edges.filter(edge => edge.id.includes('true'));
+
+        // Collect source and target node IDs from these edges
+        const connectedNodeIds = new Set(trueEdges.flatMap(edge => [edge.source, edge.target]));
+
+        // Filter nodes to get those connected by a "true" edge
+        const connectedNodes = nodes.filter(node => connectedNodeIds.has(node.id));
+        console.log(connectedNodes);
+        return connectedNodes;
+    };
+
+
+
+
+
+    const nodeTypes = useMemo(() => ({ stepNode: StepNodeComponent }), []);
+
 
     const onConnect = useCallback(
         (params: any) => {
-            // Determine the handleId value (you can check either sourceHandle or targetHandle)
             const handleId = params.sourceHandle || params.targetHandle;
-            const isHandleIdTrue = handleId === 'true'; // or some logic to determine the handleId's boolean value
+            const isHandleIdTrue = handleId === 'true';
             const edgeColor = isHandleIdTrue ? 'green' : 'red';
 
             setEdges((eds) =>
@@ -204,26 +239,34 @@ export const FlowComponent: FC = () => {
                     {
                         ...params,
                         type: 'smoothstep',
-                        style: { strokeWidth: 5, stroke: edgeColor }
-                    },
+                        style: { strokeWidth: 5, stroke: edgeColor },
+                        id: isHandleIdTrue ? `true-${uuid()}` : `false-${uuid()}`,                    },
                     eds
                 )
             );
         },
         [setEdges]
     );
+
+
+
   const addNode = useCallback(() => {
     const newUuid = uuid()
-    const newNode: FlowElement = {
+    const newNode: StepNode = {
+        parentId: '',
       type: 'stepNode',
       id: newUuid,
       position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
-      data: { label: `${nodeName}: ${nodeDesc}` }
+      data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
+              setNodes((nds) =>
+                  nds.map((node) => (node.id === newUuid ? { ...node, data: { ...node.data, ...data } } : node))
+              );
+          }, },
     };
     setNodes((nds) => nds.concat(newNode));
-    setNodeName('');
-    setNodeDesc('');
-  }, [nodeName, nodeDesc, setNodes]);
+  }, [setNodes]);
+
+
 
   return (
     <div className='flex  bg-[#272728] w-full' >
@@ -231,6 +274,7 @@ export const FlowComponent: FC = () => {
              onActionsClick={() => {}}
              onTouchPointsClick={() => {}}
              totalNodes={nodes.length}
+             onNextClick={getNodesConnectedByTrueEdge}
     />
     <div className="pb-20 pt-2 pl-5 w-full">
       <div className="flex gap-2 mb-2">
