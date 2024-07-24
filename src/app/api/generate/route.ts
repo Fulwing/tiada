@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         );
 
         const persona_obj = JSON.parse(new_persona);
-        persona_obj.coreId = coreId;
+        persona_obj.coreId = coreId;  // Add coreId to the persona
         generate_result.push(persona_obj);
       }
     } catch (error) {
@@ -101,6 +101,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ personas: generate_result }, { status: 200 });
   } catch (error) {
+    console.error('Error in /api/generate:', error);
     return NextResponse.json({ error: 'Failed to generate personas from OpenAI' }, { status: 500 });
   }
 }

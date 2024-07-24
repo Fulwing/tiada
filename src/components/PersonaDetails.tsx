@@ -3,28 +3,23 @@
 // Import necessary modules from React and Next.js Image component
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
+import { SelectPersona } from '../db/schema';
 
-// Define the interface for PersonaDetailsProps
+// Defines interface for PersonaDetailsProps to ensure type safety for props.
 interface PersonaDetailsProps {
-  persona: {
-    name: string;
-    age: number;
-    gender: string;
-    occupation: string;
-    location: string;
-    characteristic: string;
-  };
+  persona: SelectPersona | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Define the PersonaDetails functional component
+
+// PersonaDetails component displays detailed information about a selected persona.
 const PersonaDetails: React.FC<PersonaDetailsProps> = ({ persona, isOpen, onClose }) => {
   const [width, setWidth] = useState(463);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
-  // Effect to handle mouse move and mouse up events for resizing the sidebar
+    // Handles resizing of the sidebar.
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
@@ -45,11 +40,12 @@ const PersonaDetails: React.FC<PersonaDetailsProps> = ({ persona, isOpen, onClos
     };
   }, []);
 
-  // Return null if the sidebar is not open or persona data is missing
+  // Render null if not open or no persona is selected.
   if (!isOpen || !persona) return null;
 
   return (
     <div
+      // Sidebar content here.
       ref={sidebarRef}
       className="fixed top-0 right-0 h-full bg-[#333] border-l border-[#272728] flex flex-col font-['Almarai']"
       style={{ width: `${width}px` }}
@@ -62,14 +58,17 @@ const PersonaDetails: React.FC<PersonaDetailsProps> = ({ persona, isOpen, onClos
       <div className="flex p-4">
         <Image src="/ellipse-65.svg" alt="User" width={66} height={64} className="rounded-full" />
         <div className="ml-6 flex-1">
-          {Object.entries(persona).map(([key, value]) => (
-            key !== 'characteristic' && (
-              <p key={key} className="text-white text-base leading-6">
-                <span className="font-normal">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>{' '}
-                <span className="text-[#BEBEBE] font-normal">{value}</span>
-              </p>
-            )
-          ))}
+        {Object.entries(persona).map(([key, value]) => (
+          key !== 'characteristic' && (
+            <p key={key} className="text-white text-base leading-6">
+              <span className="font-normal">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>{' '}
+              <span className="text-[#BEBEBE] font-normal">
+            {value instanceof Date ? value.toLocaleString() : String(value)}
+            </span>
+            </p>
+          )
+        ))}
+
         </div>
       </div>
       <div className="p-4 overflow-y-auto flex-1">
@@ -83,7 +82,7 @@ const PersonaDetails: React.FC<PersonaDetailsProps> = ({ persona, isOpen, onClos
   );
 };
 
-// Export the PersonaDetails component as the default export
+// Export the component.
 export default PersonaDetails;
 
 

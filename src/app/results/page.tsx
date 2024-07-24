@@ -3,12 +3,14 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { SelectPersona } from '../../db/schema';
+import { TestResult, Step } from '../../types/index';
 import OverallEvaluation from '../../components/OverallEvaluation';
 import PersonaDetails from '../../components/PersonaDetails';
 import UserJourneyDetails from '../../components/UserJourneyDetails';
 import StepDetailsPopup from '../../components/StepDetailsPopup';
 import ChatWithPersona from '../../components/ChatWithPersona';
-import { TestResult, Step } from '../../types/test/result';
+
 
 // Helper function to format time in minutes and seconds
 const formatTime = (seconds: number) => {
@@ -92,7 +94,7 @@ const calculateErrors = (steps: Step[]) => {
 };
 
 // Component to display the user journey and its details
-function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: TestResult; onShowPersona: (persona: any) => void; onShowJourneyDetails: (steps: Step[], generalFeedback: string) => void }) {
+function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: TestResult; onShowPersona: (persona: SelectPersona) => void; onShowJourneyDetails: (steps: Step[], generalFeedback: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedStep, setSelectedStep] = useState<Step | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -112,14 +114,14 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
     }
   };
 
-  const handleShowPersona = (persona: any) => {
+  const handleShowPersona = () => {
     setSelectedStep(null);
-    onShowPersona(persona);
+    onShowPersona(result.persona);
   };
 
-  const handleShowJourneyDetails = (steps: Step[], generalFeedback: string) => {
+  const handleShowJourneyDetails = () => {
     setSelectedStep(null);
-    onShowJourneyDetails(steps, generalFeedback);
+    onShowJourneyDetails(result.stages, result.generalFeedback);
   };  
 
   return (
@@ -129,9 +131,9 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
         <span className="w-[10%] text-[#7D7D7D]">{result.steps}</span>
         <span className="w-[15%] text-[#7D7D7D]">{formatTime(result.completionTime)}</span>
         <span className={`w-[15%] ${errors > 0 ? 'text-[#FF4848]' : 'text-[#02FF2B]'}`}>{errors} Errors</span>
-        <span className="w-[15%] text-[#7D7D7D]">{result.name}</span>
-        <span className="w-[10%] text-[#7D7D7D]">{result.age}</span>
-        <span className="w-[15%] text-[#7D7D7D]">{result.occupation}</span>
+        <span className="w-[15%] text-[#7D7D7D]">{result.persona.name}</span>
+        <span className="w-[10%] text-[#7D7D7D]">{result.persona.age}</span>
+        <span className="w-[15%] text-[#7D7D7D]">{result.persona.occupation}</span>
         <Image src="/navigation-ic-list-arrow-down.svg" alt="Expand" width={24} height={24} className={`ml-auto transform ${expanded ? 'rotate-180' : ''}`} />
       </div>
       {expanded && (
@@ -160,10 +162,10 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
               ))}
             </div>
             <div className="flex flex-col space-y-2 w-[141px]">
-              <button className="bg-white text-[#3C4257] px-2 py-1 rounded text-sm w-full" onClick={() => handleShowPersona(result.persona)}>
+              <button className="bg-white text-[#3C4257] px-2 py-1 rounded text-sm w-full" onClick={handleShowPersona}>
                 Check Persona
               </button>
-              <button className="bg-white text-[#3C4257] px-2 py-1 rounded text-sm w-full" onClick={() => handleShowJourneyDetails(result.stages, result.generalFeedback)}>
+              <button className="bg-white text-[#3C4257] px-2 py-1 rounded text-sm w-full" onClick={handleShowJourneyDetails}>
                 View full details
               </button>
               <button className="bg-[#625AFA] text-white px-2 py-1 rounded text-sm w-full" onClick={() => setChatOpen(true)}>
@@ -186,124 +188,118 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
       <ChatWithPersona
         isOpen={chatOpen}
         onClose={() => setChatOpen(false)}
-        personaName={result.name}
+        personaName={result.persona.name}
       />
     </div>
   );
 }
 
-
 // Main ResultsPage component
 export default function ResultsPage() {
-    const [data, setData] = useState<TestResult[] | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [selectedPersona, setSelectedPersona] = useState<any>(null);
-    const [selectedJourneyDetails, setSelectedJourneyDetails] = useState<{ steps: Step[], generalFeedback: string } | null>(null);
-    const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | null>(null);
+  const [data, setData] = useState<TestResult[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [selectedPersona, setSelectedPersona] = useState<SelectPersona | null>(null);
+  const [selectedJourneyDetails, setSelectedJourneyDetails] = useState<{ steps: Step[], generalFeedback: string } | null>(null);
+  const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | null>(null);
 
-    const fetchData = useCallback(async () => {
-      try {
-        // TODO: Replace this with actual API call when backend is ready
-        const response = await fetch('/api/results');
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (Array.isArray(data) && data.every(isTestResult)) {
-          setData(data);
-        } else {
-          throw new Error('Invalid data structure received from API');
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError(error instanceof Error ? error.message : 'An unknown error occurred');
-        setLoading(false);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await fetch('/api/results');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    }, []);
-  
-    // Fetch data from the API when the component mounts
-    useEffect(() => {
-      fetchData();
-    }, [fetchData]);
-  
-      
-      // Helper function to validate TestResult object
-      function isTestResult(obj: any): obj is TestResult {
-        return obj && typeof obj === 'object'
-          && 'id' in obj
-          && 'taskCompletion' in obj
-          && 'steps' in obj
-          && 'name' in obj
-          && 'gender' in obj
-          && 'age' in obj
-          && 'occupation' in obj
-          && 'completionTime' in obj
-          && 'persona' in obj
-          && 'stages' in obj
-          && 'generalFeedback' in obj
-          && Array.isArray(obj.stages);
+      const data = await response.json();
+      if (Array.isArray(data) && data.every(isTestResult)) {
+        setData(data);
+      } else {
+        throw new Error('Invalid data structure received from API');
       }
-      
-
-    // Function to calculate overall evaluation metrics
-    const calculateMetrics = (results: TestResult[]) => {
-        const totalPersonas = results.length;
-        const completedPersonas = results.filter(r => r.taskCompletion === 'Success').length;
-        const taskCompletionRatio = Math.round((completedPersonas / totalPersonas) * 100);
-        const totalSteps = results.reduce((sum, r) => sum + r.steps, 0);
-        const averageSteps = Math.round(totalSteps / totalPersonas);
-        const totalCompletionTime = results.reduce((sum, r) => sum + r.completionTime, 0);
-        const averageCompletionTime = Math.round(totalCompletionTime / totalPersonas);
-
-        return { taskCompletionRatio, totalPersonas, completedPersonas, averageSteps, averageCompletionTime };
-    };
-
-    
-    
-
-    // Function to sort the data based on the number of failures
-    const sortData = () => {
-        if (data) {
-          const sortedData = [...data].sort((a, b) => {
-            const aFailures = a.stages.filter(step => step.status === 'miss').length;
-            const bFailures = b.stages.filter(step => step.status === 'miss').length;
-            return sortOrder === 'asc' ? aFailures - bFailures : bFailures - aFailures;
-          });
-          setData(sortedData);
-          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-        }
-      };
-      
-    if (loading) return <p className="p-6 text-[#7D7D7D]">Loading...</p>;
-    if (error) return <p className="p-6 text-[#FF4848]">Error: {error}</p>;
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+      setLoading(false);
+    }
+  }, []);
+  
   
 
-    const metrics = data ? calculateMetrics(data) : { taskCompletionRatio: 0, totalPersonas: 0, completedPersonas: 0, averageSteps: 0, averageCompletionTime: 0 };
+  // Helper function to validate TestResult object
+  function isTestResult(obj: any): obj is TestResult {
+    return obj && typeof obj === 'object'
+      && 'id' in obj
+      && 'taskCompletion' in obj
+      && 'steps' in obj
+      && 'completionTime' in obj
+      && 'persona' in obj
+      && 'stages' in obj
+      && 'generalFeedback' in obj
+      && Array.isArray(obj.stages);
+  }
+  
 
-    const handleShowPersona = (persona: any) => {
-        setSelectedPersona(persona);
-        setOpenSideMenu('persona');
-      };
-    
-      const handleClosePersona = () => {
-        setSelectedPersona(null);
-        setOpenSideMenu(null);
-      };
-    
-      const handleShowJourneyDetails = (steps: Step[], generalFeedback: string) => {
-        setSelectedJourneyDetails({ steps, generalFeedback });
-        setOpenSideMenu('journey');
-      };
-    
-      const handleCloseJourneyDetails = () => {
-        setSelectedJourneyDetails(null);
-        setOpenSideMenu(null);
-      };
-    
 
+  // Fetch data from the API when the component mounts
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // Function to calculate overall evaluation metrics
+  const calculateMetrics = (results: TestResult[]) => {
+    const totalPersonas = results.length;
+    const completedPersonas = results.filter(r => r.taskCompletion === 'Success').length;
+    const taskCompletionRatio = Math.round((completedPersonas / totalPersonas) * 100);
+    const totalSteps = results.reduce((sum, r) => sum + r.steps, 0);
+    const averageSteps = Math.round(totalSteps / totalPersonas);
+    const totalCompletionTime = results.reduce((sum, r) => sum + r.completionTime, 0);
+    const averageCompletionTime = Math.round(totalCompletionTime / totalPersonas);
+
+    return { taskCompletionRatio, totalPersonas, completedPersonas, averageSteps, averageCompletionTime };
+  };
+
+  // Function to sort the data based on the number of failures
+  const sortData = () => {
+    if (data) {
+      const sortedData = [...data].sort((a, b) => {
+        const aFailures = a.stages.filter(step => step.status === 'miss').length;
+        const bFailures = b.stages.filter(step => step.status === 'miss').length;
+        return sortOrder === 'asc' ? aFailures - bFailures : bFailures - aFailures;
+      });
+      setData(sortedData);
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    }
+  };
+    
+  if (loading) return <p className="p-6 text-[#7D7D7D]">Loading...</p>;
+  if (error) return <p className="p-6 text-[#FF4848]">Error: {error}</p>;
+
+  const metrics = data ? calculateMetrics(data) : { taskCompletionRatio: 0, totalPersonas: 0, completedPersonas: 0, averageSteps: 0, averageCompletionTime: 0 };
+
+  const handleShowPersona = (persona: SelectPersona) => {
+    setSelectedPersona(persona);
+    setOpenSideMenu('persona');
+  };
+
+
+
+  const handleClosePersona = () => {
+    setSelectedPersona(null);
+    setOpenSideMenu(null);
+  };
+
+  const handleShowJourneyDetails = (steps: Step[], generalFeedback: string) => {
+    setSelectedJourneyDetails({ steps, generalFeedback });
+    setOpenSideMenu('journey');
+  };
+
+  const handleCloseJourneyDetails = () => {
+    setSelectedJourneyDetails(null);
+    setOpenSideMenu(null);
+  };
+    
     return (
         <div className="min-h-screen bg-[#272728] text-[#7D7D7D] flex">
             <main className="flex-1 p-6">
@@ -346,10 +342,11 @@ export default function ResultsPage() {
                 {/* Add content for suggestions here */}
             </div>
             <PersonaDetails
-                persona={selectedPersona}
-                isOpen={openSideMenu === 'persona'}
-                onClose={handleClosePersona}
+              persona={selectedPersona}
+              isOpen={openSideMenu === 'persona'}
+              onClose={handleClosePersona}
             />
+
             <UserJourneyDetails
                 isOpen={openSideMenu === 'journey'}
                 onClose={handleCloseJourneyDetails}

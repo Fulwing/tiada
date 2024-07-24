@@ -88,47 +88,92 @@ export default function Page() {
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import Persona from '../../types/test/persona'
+import { SelectPersona } from '../../db/schema';
 
-function ToolBar() {
+// ToolBar component for persona generation settings and initiating the generation process.
+function ToolBar({ onGenerate }: { onGenerate: (personas: SelectPersona[]) => void }) {
+  const [number, setNumber] = useState(1);
+  const [feature, setFeature] = useState('');
+  const [testProb, setTestProb] = useState('');
+  const [temp, setTemp] = useState(0.7);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [coreId, setCoreId] = useState('');
+
+    // Handles form submission for generating personas.
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ number, feature, test_prob: testProb, temp, coreId }),
+      });
+      const data = await response.json();
+      console.log('Response data:', data);
+      
+      if (response.ok && Array.isArray(data.personas)) {
+        onGenerate(data.personas);
+      } else if (data.error) {
+        throw new Error(`${data.error}: ${data.details || ''}`);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Error generating personas:', error);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+  // Render the form with inputs for each parameter of the persona generation.
     return (
-        <div className="flex flex-col items-center w-[340px] h-[985px] p-[8px_17px] border border-[#505050] bg-[#333]">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center w-[340px] h-[985px] p-[8px_17px] border border-[#505050] bg-[#333]">
             <div className="flex items-center justify-between w-full mb-4">
                 <div className="relative w-[18px] h-[21px]">
-                    <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
-                    <Image src="/group-1.svg" alt="Node Overlay" layout="fill" className="absolute left-[-1px] top-[-1px]" />
+                    <Image src="/subtract.svg" alt="Node" width={18} height={21} />
+                    <Image src="/group-1.svg" alt="Node Overlay" width={18} height={21} className="absolute left-[-1px] top-[-1px]" />
                 </div>
                 <h1 className="text-white text-xl font-bold flex-grow ml-2">Generate Personas</h1>
                 <Image src="/question.svg" alt="Help" width={20} height={20} />
             </div>
             
-            <h2 className="text-white text-lg self-start mb-2">Personal Collection</h2>
-            
-            <div className="flex flex-col w-full gap-2 mb-4">
-                <div className="flex justify-between items-center border-b border-[#505050] py-2">
-                    <span className="text-white">Collections</span>
-                    <Image src="/menu-item-list-chevron-right-condensced.svg" alt="Expand" width={24} height={24} />
-                </div>
-                <div className="flex justify-between items-center w-full">
-                    <span className="text-white">New Collection</span>
-                    <div className="bg-[#9E9E9E40] rounded-full w-[24px] h-[24px] flex items-center justify-center">
-                        <Image src="/add.svg" alt="Add" width={16} height={16} />
-                    </div>
-                </div>
-                <input className="bg-[#9E9E9E40] text-white p-2 rounded" placeholder="Collection Name" />
-                <input className="bg-[#9E9E9E40] text-white p-2 rounded" placeholder="Personas Number" type="number" />
-            </div>
-            
             <h2 className="text-white text-lg self-start mb-2">Persona Settings</h2>
             
             <div className="flex flex-col w-full gap-2 mb-4">
-                <span className="text-white">Features</span>
-                <textarea className="bg-[#9E9E9E40] text-white p-2 rounded h-[140px]" placeholder="Ex: At least half of the personas should be female..." />
+                <span className="text-white">Number of Personas</span>
+                <input 
+                    className="bg-[#9E9E9E40] text-white p-2 rounded" 
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={number}
+                    onChange={(e) => setNumber(parseInt(e.target.value))}
+                />
+
+                <span className="text-white">Feature</span>
+                <textarea 
+                    className="bg-[#9E9E9E40] text-white p-2 rounded h-[140px]" 
+                    placeholder="Ex: At least half of the personas should be female..." 
+                    value={feature}
+                    onChange={(e) => setFeature(e.target.value)}
+                />
                 
                 <span className="text-white">Testing Problem</span>
-                <textarea className="bg-[#9E9E9E40] text-white p-2 rounded h-[140px]" placeholder="Ex: Aim to test what kind of occupation feature might be aligned with our product" />
+                <textarea 
+                    className="bg-[#9E9E9E40] text-white p-2 rounded h-[140px]" 
+                    placeholder="Ex: Aim to test what kind of occupation feature might be aligned with our product" 
+                    value={testProb}
+                    onChange={(e) => setTestProb(e.target.value)}
+                />
                 
                 <div className="flex justify-between items-center">
                     <span className="text-white">Temperature</span>
@@ -136,98 +181,103 @@ function ToolBar() {
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-[#C4C4C4]">Stereo</span>
-                    <input type="range" className="w-[200px]" />
+                    <input 
+                        type="range" 
+                        className="w-[200px]" 
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={temp}
+                        onChange={(e) => setTemp(parseFloat(e.target.value))}
+                    />
                     <span className="text-[#C4C4C4]">Wild</span>
                 </div>
+                <div className="text-center text-[#C4C4C4]">{temp.toFixed(2)}</div>
             </div>
             
-            <button className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-full mt-auto">Generate</button>
-        </div>
+            <button 
+                type="submit" 
+                className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-full mt-auto"
+                disabled={loading}
+            >
+                {loading ? 'Generating...' : 'Generate'}
+            </button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+        </form>
     );
 }
 
-function PersonaList({ personas }: { personas: Persona[] }) {
-    return (
-        <div className="flex-1 p-[9px_35px] bg-[#272728]">
-            <div className="flex justify-end mb-4">
-                <Image src="/sort.svg" alt="Sort" width={20} height={20} />
-            </div>
-            <div className="bg-[#272728] rounded-md">
-                <div className="flex text-[#7D7D7D] p-4 mb-2">
-                    <span className="flex-1 px-2">Name</span>
-                    <span className="flex-1 px-2">Occupation</span>
-                    <span className="w-1/6 px-2">Age</span>
-                    <span className="w-1/6 px-2">Gender</span>
-                    <span className="w-1/6 px-2">Experience</span>
-                    <span className="flex-1 px-2">Location</span>
-                </div>
-                {personas.map((persona) => (
-                    <PersonaItem key={persona.id} persona={persona} />
-                ))}
-            </div>
+// PersonaList component to display generated personas.
+function PersonaList({ personas }: { personas: SelectPersona[] }) {
+  return (
+    <div className="flex-1 p-[9px_35px] bg-[#272728]">
+      <div className="flex justify-end mb-4">
+        <Image src="/sort.svg" alt="Sort" width={20} height={20} />
+      </div>
+      <div className="bg-[#272728] rounded-md">
+        <div className="flex text-[#7D7D7D] p-4 mb-2">
+          <span className="flex-1 px-2">Name</span>
+          <span className="flex-1 px-2">Occupation</span>
+          <span className="w-1/6 px-2">Age</span>
+          <span className="w-1/6 px-2">Gender</span>
+          <span className="w-1/6 px-2">Experience</span>
+          <span className="flex-1 px-2">Location</span>
         </div>
-    );
+        {personas.length > 0 ? (
+          personas.map((persona, index) => (
+            <PersonaItem key={index} persona={persona} />
+          ))
+        ) : (
+          <p className="text-white text-center p-4">No personas generated yet.</p>
+        )}
+      </div>
+    </div>
+  );
 }
 
-function PersonaItem({ persona }: { persona: Persona }) {
-    const [expanded, setExpanded] = useState(false);
+// PersonaItem component displays details for a single persona.
+function PersonaItem({ persona }: { persona: SelectPersona }) {
+  const [expanded, setExpanded] = useState(false);
 
-    return (
-        <div className="bg-[#333] mb-2 rounded">
-            <div className="flex items-center text-[#7D7D7D] p-4 cursor-pointer" onClick={() => setExpanded(!expanded)}>
-                <span className="flex-1 px-2">{persona.name}</span>
-                <span className="flex-1 px-2">{persona.occupation}</span>
-                <span className="w-1/6 px-2">{persona.age}</span>
-                <span className="w-1/6 px-2">{persona.gender}</span>
-                <span className={`w-1/6 px-2 ${persona.experience ? 'text-[#00FF85]' : 'text-[#FF4848]'}`}>
-                    {persona.experience ? 'True' : 'False'}
-                </span>
-                <span className="flex-1 px-2">{persona.location}</span>
-            </div>
-            {expanded && (
-                <div className="p-4 bg-[#333] rounded-b-md">
-                    <p className="text-[#7D7D7D] mb-4">{persona.characteristic}</p>
-                    <div className="flex justify-end gap-2">
-                        <button className="bg-[#262626] text-white px-4 py-2 rounded-full">Edit</button>
-                        <button className="bg-[#FF1D1D] text-white px-4 py-2 rounded-full">Delete</button>
-                    </div>
-                </div>
-            )}
+  return (
+    <div className="bg-[#333] mb-2 rounded">
+      <div className="flex items-center text-[#7D7D7D] p-4 cursor-pointer" onClick={() => setExpanded(!expanded)}>
+        <span className="flex-1 px-2">{persona.name}</span>
+        <span className="flex-1 px-2">{persona.occupation}</span>
+        <span className="w-1/6 px-2">{persona.age}</span>
+        <span className="w-1/6 px-2">{persona.gender}</span>
+        <span className={`w-1/6 px-2 ${persona.experience ? 'text-[#00FF85]' : 'text-[#FF4848]'}`}>
+          {persona.experience ? 'True' : 'False'}
+        </span>
+        <span className="flex-1 px-2">{persona.location}</span>
+      </div>
+      {expanded && (
+        <div className="p-4 bg-[#333] rounded-b-md">
+          <p className="text-[#7D7D7D] mb-4">{persona.characteristic}</p>
         </div>
-    );
+      )}
+    </div>
+  );
 }
 
+// Main component of the GeneratePersonasPage.
 export default function GeneratePersonasPage() {
-    const [personas, setPersonas] = useState<Persona[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+  const [personas, setPersonas] = useState<SelectPersona[]>([]);
 
-    useEffect(() => {
-        fetch('/api/generate')
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch personas');
-                return res.json();
-            })
-            .then(data => {
-                setPersonas(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setError('Failed to load personas');
-                setLoading(false);
-            });
-    }, []);
+  const handleGenerate = (newPersonas: SelectPersona[]) => {
+    console.log('New personas received:', newPersonas);
+    setPersonas(prevPersonas => [...prevPersonas, ...newPersonas]);
+  };
 
-    if (loading) return <div className="p-6 text-white">Loading...</div>;
-    if (error) return <div className="p-6 text-red-500">{error}</div>;
-
-    return (
-        <div className="flex min-h-screen bg-[#272728]">
-            <ToolBar />
-            <PersonaList personas={personas} />
-        </div>
-    );
+  return (
+    <div className="flex min-h-screen bg-[#272728]">
+      <ToolBar onGenerate={handleGenerate} />
+      <PersonaList personas={personas} />
+    </div>
+  );
 }
+
+
+
 
 
