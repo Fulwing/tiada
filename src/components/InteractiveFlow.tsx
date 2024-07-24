@@ -1,17 +1,15 @@
-// In the file where ToolBar is defined
 import React, {FC, useCallback, useState} from 'react';
 import {
     addEdge,
     Background,
-    Connection,
     Controls,
     MiniMap,
     Node,
     ReactFlow,
+    ReactFlowProvider,
     useEdgesState,
     useNodesState,
     useReactFlow,
-    ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import StepNode from './StepNode';
@@ -20,6 +18,7 @@ import Image from 'next/image';
 import {toPng} from 'html-to-image';
 
 interface FlowNode {
+    parentId: string;
     id: string;
     type?: string;
     position: { x: number; y: number };
@@ -28,29 +27,31 @@ interface FlowNode {
 
 const downloadNodeImages = async (nodes: FlowNode[]) => {
     for (const node of nodes) {
-        const nodeElement = document.querySelector(`.react-flow__node[data-id='${node.id}']`);
-        if (nodeElement) {
-            const htmlElement = nodeElement as HTMLElement;
-            const png = await toPng(htmlElement, {
-                backgroundColor: 'white',
-                width: htmlElement.offsetWidth,
-                height: htmlElement.offsetHeight,
-                style: {
-                    transform: `translate(0, 0)`,
-                },
-            });
-            const a = document.createElement('a');
-            a.href = png;
-            a.download = `node-${node.id}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+        if (!node.parentId) {
+            const nodeElement = document.querySelector(`.react-flow__node[data-id='${node.id}']`);
+            if (nodeElement) {
+                const htmlElement = nodeElement as HTMLElement;
+                const png = await toPng(htmlElement, {
+                    backgroundColor: 'white',
+                    width: htmlElement.offsetWidth,
+                    height: htmlElement.offsetHeight,
+                    style: {
+                        transform: `translate(0, 0)`,
+                    },
+                });
+                const a = document.createElement('a');
+                a.href = png;
+                a.download = `node-${node.id}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
         }
     }
 };
 
 const DownloadButton: FC = () => {
-    const { getNodes } = useReactFlow();
+    const {getNodes} = useReactFlow();
     const onClick = () => {
         const nodes = getNodes().map(node => ({
             ...node,
@@ -59,27 +60,28 @@ const DownloadButton: FC = () => {
                 label: 'label' in node.data ? node.data.label : 'Default Label',
             }
         })) as FlowNode[];
-        downloadNodeImages(nodes);
+        downloadNodeImages(nodes).then(r => {});
     };
 
-    return <button onClick={onClick}>Download</button>;
+    return (
+    <button
+        className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2 m-5"
+        onClick={onClick}
+        style={{cursor: 'pointer'}}>
+        Next
+    </button>);
 };
 
 
-
-
-
-
 interface ToolItemProps {
-  name: string;
-  onClickEvent: () => void;
+    name: string;
+    onClickEvent: () => void;
 }
 
 interface GoalItemProps {
     totalNodes: number;
     totalDepth?: number;
 }
-
 
 
 const ToolItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
@@ -115,7 +117,7 @@ const GoalItem: FC<GoalItemProps> = ({totalNodes, totalDepth}) => {
           <p className="ml-2 text-white text-l flex-grow">/ 3 depth</p>
         </div>
 
-        <p className='pl-8 pt-5 text-white text-l flex-grow'> Dead Points </p>
+        {/*<p className='pl-8 pt-5 text-white text-l flex-grow'> Dead Points </p>*/}
       </div>
   );
 };
@@ -146,20 +148,16 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
         <div className="flex flex-col w-full mb-4">
           <h3 className="font-bold text-white text-xl flex-grow ml-2">Nodes</h3>
           <ToolItem name="Interface" onClickEvent={onInterfaceClick} />
-          <ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />
-          <ToolItem name="Actions" onClickEvent={onActionsClick} />
+            {/*todo implement if you have time*/}
+          {/*<ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />*/}
+          {/*<ToolItem name="Actions" onClickEvent={onActionsClick} />*/}
           <GoalItem totalNodes={totalNodes} />
         </div>
 
 
           <DownloadButton/>
 
-          <button
-            className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2 m-5"
-            style={{ cursor: 'pointer' }}
-        >
-          Next
-        </button>
+
       </div>
   );
 };
@@ -177,8 +175,9 @@ interface Edge {
 }
 
 const initialNodes: FlowElement[] = [
+  //   todo possible set up initial layout for easy demo
   { id: '1', position: { x: 100, y: 0 }, data: { label: 'Start Node' } },
-  { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node' } },
+  { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node'}, parentId: '1' },
 ];
 
 const nodeTypes = { stepNode: StepNode };
@@ -193,8 +192,26 @@ export const FlowComponent: FC = () => {
   const [nodeName, setNodeName] = useState('');
   const [nodeDesc, setNodeDesc] = useState('');
 
-  const onConnect = useCallback((params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+    const onConnect = useCallback(
+        (params: any) => {
+            // Determine the handleId value (you can check either sourceHandle or targetHandle)
+            const handleId = params.sourceHandle || params.targetHandle;
+            const isHandleIdTrue = handleId === 'true'; // or some logic to determine the handleId's boolean value
+            const edgeColor = isHandleIdTrue ? 'green' : 'red';
 
+            setEdges((eds) =>
+                addEdge(
+                    {
+                        ...params,
+                        type: 'smoothstep',
+                        style: { strokeWidth: 5, stroke: edgeColor }
+                    },
+                    eds
+                )
+            );
+        },
+        [setEdges]
+    );
   const addNode = useCallback(() => {
     const newUuid = uuid()
     const newNode: FlowElement = {
@@ -225,6 +242,7 @@ export const FlowComponent: FC = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+
         fitView
         style={{ height: 500}}
       >
@@ -244,6 +262,3 @@ const WrappedFlowComponent: FC = () => (
 );
 
 export default WrappedFlowComponent;
-
-
-// export default FlowComponent;
