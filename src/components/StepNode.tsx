@@ -1,72 +1,96 @@
-import React, {FC, memo, useEffect, useState} from "react";
+import React, {FC, memo, useContext, useEffect, useState} from "react";
 import {Handle, Position, Node, NodeProps, useNodesState, useNodeId} from "@xyflow/react";
 import {useDropzone} from 'react-dropzone';
-import {v4 as uuid} from 'uuid'
+import { UnmarkedImageContext } from './InteractiveFlow';
 
 
 
-export type StepNode = Node<
-    {
-        markedImage?: string;
-        unmarkedImage?: string;
-        updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => void;
-    },
-    'counter'
->;
+
 
 
 const StartEndCheckBox: FC = () => {
+    const [checked, setChecked] = useState<'start' | 'end' | null>(null);
+    const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
+    const nodeId = useNodeId() as string;
 
-  // State to track which checkbox is checked ('start', 'end', or null)
-  const [checked, setChecked] = useState<'start' | 'end' | null>(null);
+    const handleCheckboxChange = (value: 'start' | 'end') => {
+        setChecked((prev) => (prev === value ? null : value));
+        if (value === 'start') {
+            setNodeData(nodeId, { start: !nodeData.get(nodeId)?.start });
+        } else if (value === 'end') {
+            setNodeData(nodeId, { end: !nodeData.get(nodeId)?.end });
+        }
+    };
 
-  // Handler function to change the checked state
-  const handleCheckboxChange = (value: 'start' | 'end') => {
-    setChecked((prev) => (prev === value ? null : value));
-  };
+    useEffect(() => {
+        if (nodeId && nodeData.has(nodeId)) {
+            const node = nodeData.get(nodeId);
+            if (node?.start) {
+                setChecked('start');
+            } else if (node?.end) {
+                setChecked('end');
+            } else {
+                setChecked(null);
+            }
+        }
+    }, [nodeId, nodeData]);
 
-  return (
-    <div className="gap-3 h-9 rounded-full p-4 flex justify-center items-center w-32 z-0 ">
-      <div className="flex">
-        <input
-          className="bg-[#272728]"
-          type="checkbox"
-          checked={checked === 'start'}
-          onChange={() => handleCheckboxChange('start')}
-        />
-        <span className="text-xs text-white ml-2">Start</span>
-      </div>
-      <div className="flex">
-        <input
-          type="checkbox"
-          checked={checked === 'end'}
-          onChange={() => handleCheckboxChange('end')}
-        />
-        <span className="text-xs text-white ml-2">End</span>
-      </div>
-    </div>
-  );
-
-
-
-}
+    return (
+        <div className="gap-3 h-9 rounded-full p-4 flex justify-center items-center w-32 z-0">
+            <div className="flex">
+                <input
+                    className="bg-[#272728]"
+                    type="checkbox"
+                    checked={checked === 'start'}
+                    onChange={() => handleCheckboxChange('start')}
+                />
+                <span className="text-xs text-white ml-2">Start</span>
+            </div>
+            <div className="flex">
+                <input
+                    type="checkbox"
+                    checked={checked === 'end'}
+                    onChange={() => handleCheckboxChange('end')}
+                />
+                <span className="text-xs text-white ml-2">End</span>
+            </div>
+        </div>
+    );
+};
 
 
 
 
 const NodeMenu: FC = () => {
-
     const [selectedOption, setSelectedOption] = useState('');
+    const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
+    const nodeId = useNodeId() as string;
+
+    const handleOptionChange = (option: 'true' | 'false') => {
+        setNodeData(nodeId, { conditions: option === 'true' });
+    };
+
+    useEffect(() => {
+        if (nodeId && nodeData.has(nodeId)) {
+            setSelectedOption(nodeData.get(nodeId)?.conditions ? 'true' : 'false');
+        }
+    }, [nodeId, nodeData]);
 
     return (
       <div className = "flex gap-3 justify-center pl-2">
         <div className="w-28 h-5 rounded-full shadow-lg p-4 flex justify-center  items-center bg-[#272728]">
         <div className="flex  gap-1 p-3">
           <div className={`rounded-full ${selectedOption === 'true' ? 'bg-[#09A854]' : 'bg-transparent'}`}>
-            <button className={`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'true' ? 'text-black' : 'text-white'}`} onClick={() => setSelectedOption('true')}>True</button>
+            <button className={`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'true' ? 'text-black' : 'text-white'}`} onClick={() => {
+                setSelectedOption('true');
+                handleOptionChange('true');
+            }}>True</button>
           </div>
           <div className={`rounded-full ${selectedOption === 'false' ? 'bg-[#D93535]' : 'bg-transparent'}`}>
-            <button className= {`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'false' ? 'text-black' : 'text-white'}`} onClick={() => setSelectedOption('false')}>False</button>
+            <button className= {`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'false' ? 'text-black' : 'text-white'}`} onClick={() => {
+                setSelectedOption('false');
+                handleOptionChange('false');
+            }}>False</button>
           </div>
         </div>
       </div>
@@ -84,20 +108,30 @@ interface StepNodeData {
 
 const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({ data, isConnectable }) => {
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-    const nodeId = useNodeId();
-
+    const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
+    const nodeId = useNodeId() as string;
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: acceptedFiles => {
             const file = acceptedFiles[0];
+            setUploadedImage(URL.createObjectURL(file));
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64String = reader.result as string;
-                setUploadedImage(URL.createObjectURL(file));
-                data.updateNodeData({ unmarkedImage: base64String });
+                if (nodeId) {
+                    setNodeData(nodeId, { unmarkedImage: base64String });
+                }
+                data.updateNodeData({ markedImage: '', unmarkedImage: base64String });
             };
             reader.readAsDataURL(file);
         }
     });
+
+    useEffect(() => {
+        if (nodeId && nodeData.has(nodeId)) {
+            setUploadedImage(nodeData.get(nodeId)?.unmarkedImage || null);
+        }
+    }, [nodeId, nodeData]);
 
     return (
         <div className="rounded-lg shadow-lg p-4 flex flex-col gap-2 bg-[#333]">

@@ -1,10 +1,9 @@
-import React, {FC, useCallback, useState, useMemo, useEffect} from 'react';
+import React, {createContext, FC, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import {
     addEdge,
     Background,
     Controls,
     MiniMap,
-    Node,
     ReactFlow,
     ReactFlowProvider,
     useEdgesState,
@@ -13,11 +12,11 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import StepNode from './StepNode';
+import StepNodeComponent from './StepNode';
 import {v4 as uuid} from 'uuid'
 import Image from 'next/image';
 import {toPng} from 'html-to-image';
 
-import StepNodeComponent from './StepNode';
 
 interface StepNode {
     parentId: string;
@@ -45,7 +44,7 @@ const printNodeImagesBase64 = async (nodes: StepNode[]) => {
                         transform: `translate(0, 0)`,
                     },
                 });
-                console.log(png);
+                // console.log(png);
             }
         }
     }
@@ -60,17 +59,50 @@ interface DownloadButtonProps {
 
 const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
     const { getNodes } = useReactFlow();
+    const { nodeData } = useContext(UnmarkedImageContext);
+    const { getEdges } = useReactFlow();
+
+    function ListOfSortedNodeIds() {
+        const nodeIds = Array.from(nodeData.keys());
+        const startNode = nodeIds.find(nodeId => nodeData.get(nodeId)?.start);
+
+        if (!startNode) {
+            return [];
+        }
+
+        const edges = getEdges();
+        const connectedNodes = new Set<string>();
+
+        const traverse = (nodeId: string) => {
+            connectedNodes.add(nodeId);
+            edges.forEach(edge => {
+                if (edge.id.includes('true')) {
+                    if (edge.source === nodeId && !connectedNodes.has(edge.target)) {
+                        traverse(edge.target);
+                    }
+                    if (edge.target === nodeId && !connectedNodes.has(edge.source)) {
+                        traverse(edge.source);
+                    }
+                }
+            });
+        };
+
+        traverse(startNode);
+
+        return Array.from(connectedNodes);
+    }
 
     const onClick = () => {
         const nodes = getNodes().map(node => ({
             ...node,
             data: {
                 ...node.data,
-                markedImage: '',
-                unmarkedImage: ''
             }
         })) as StepNode[];
         printNodeImagesBase64(nodes).then(() => {});
+        const orderedNodeIds = ListOfSortedNodeIds();
+        console.log("Ordered Node IDs:", orderedNodeIds);
+        console.log("Node Data Map:", Array.from(nodeData.entries()));
     };
 
     return (
@@ -96,6 +128,7 @@ interface GoalItemProps {
     totalNodes: number;
     totalDepth?: number;
 }
+
 
 
 
@@ -191,9 +224,7 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
 
 
 const initialNodes: StepNode[] = [
-  //   todo possible set up initial layout for easy demo
-  // { id: '1', position: { x: 100, y: 0 }, data: { label: 'Start Node' } },
-  // { id: '2', position: { x: 100, y: 100 }, data: { label: 'End Node'}, parentId: '1' },
+
 ];
 
 
@@ -203,19 +234,21 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2', animated: true }];
 
 export const FlowComponent: FC = () => {
 
-
   const [nodes, setNodes, onNodesChange] = useNodesState<StepNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { nodeData } = useContext(UnmarkedImageContext);
 
+    useEffect(() => {
+        nodeData.forEach((data, nodeId) => {
+            if (data.unmarkedImage) {
+                // console.log(`Object for Node ${nodeId}:`, data);
+            }
+        });
+    }, [nodeData]);
 
     const getNodesConnectedByTrueEdge = () => {
-        // Filter edges to get those with green color
         const trueEdges = edges.filter(edge => edge.id.includes('true'));
-
-        // Collect source and target node IDs from these edges
         const connectedNodeIds = new Set(trueEdges.flatMap(edge => [edge.source, edge.target]));
-
-        // Filter nodes to get those connected by a "true" edge
         const connectedNodes = nodes.filter(node => connectedNodeIds.has(node.id));
         console.log(connectedNodes);
         return connectedNodes;
@@ -240,7 +273,7 @@ export const FlowComponent: FC = () => {
                         ...params,
                         type: 'smoothstep',
                         style: { strokeWidth: 5, stroke: edgeColor },
-                        id: isHandleIdTrue ? `true-${uuid()}` : `false-${uuid()}`,                    },
+                        id: isHandleIdTrue ? `true-${uuid()}` : `false-${uuid()}`},
                     eds
                 )
             );
@@ -250,21 +283,21 @@ export const FlowComponent: FC = () => {
 
 
 
-  const addNode = useCallback(() => {
-    const newUuid = uuid()
-    const newNode: StepNode = {
-        parentId: '',
-      type: 'stepNode',
-      id: newUuid,
-      position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
-      data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
-              setNodes((nds) =>
-                  nds.map((node) => (node.id === newUuid ? { ...node, data: { ...node.data, ...data } } : node))
-              );
-          }, },
-    };
-    setNodes((nds) => nds.concat(newNode));
-  }, [setNodes]);
+    const addNode = useCallback(() => {
+        const newUuid = uuid();
+        const newNode: StepNode = {
+            parentId: '',
+            type: 'stepNode',
+            id: newUuid,
+            position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
+            data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
+                    setNodes((nds) =>
+                        nds.map((node) => (node.id === newUuid ? { ...node, data: { ...node.data, ...data } } : node))
+                    );
+                }, },
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [setNodes]);
 
 
 
@@ -299,10 +332,32 @@ export const FlowComponent: FC = () => {
   );
 }
 
-const WrappedFlowComponent: FC = () => (
-    <ReactFlowProvider>
-        <FlowComponent />
-    </ReactFlowProvider>
-);
+export const UnmarkedImageContext = createContext<{
+    nodeData: Map<string, { unmarkedImage: string | null; markedImage: string | null; start: boolean; end: boolean; conditions: boolean }>;
+    setNodeData: (nodeId: string, data: { unmarkedImage?: string | null; markedImage?: string | null; start?: boolean; end?: boolean; conditions?: boolean }) => void;
+}>({ nodeData: new Map(), setNodeData: () => {} });
+
+
+
+const WrappedFlowComponent: FC = () => {
+    const [nodeData, setNodeDataState] = useState<Map<string, { unmarkedImage: string | null; markedImage: string | null; start: boolean; end: boolean; conditions: boolean }>>(new Map());
+
+    const setNodeData = (nodeId: string, data: { unmarkedImage?: string | null; markedImage?: string | null; start?: boolean; end?: boolean; conditions?: boolean }) => {
+        setNodeDataState(prev => {
+            const newData = new Map(prev);
+            const existingData = newData.get(nodeId) || { unmarkedImage: null, markedImage: null, start: false, end: false, conditions: false };
+            newData.set(nodeId, { ...existingData, ...data });
+            return newData;
+        });
+    };
+
+    return (
+        <UnmarkedImageContext.Provider value={{ nodeData, setNodeData }}>
+            <ReactFlowProvider>
+                <FlowComponent />
+            </ReactFlowProvider>
+        </UnmarkedImageContext.Provider>
+    );
+};
 
 export default WrappedFlowComponent;
