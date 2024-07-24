@@ -10,7 +10,7 @@ const openai = new OpenAI({
 export async function POST(request: Request) {
   console.log("POST request to /api/generate");
   const res = await request.json();
-  const { number, feature, test_prob, temp } = res;
+  const { number, feature, test_prob, temp, coreId } = res;
   const sys_prompt = `You are a really professional persona creator. 
                       You will be asked to generate personas for a specific product testing task.
                       Please generate a persona based on the given requirements.`;
@@ -87,6 +87,7 @@ export async function POST(request: Request) {
         );
 
         const persona_obj = JSON.parse(new_persona);
+        persona_obj.coreId = coreId;
         generate_result.push(persona_obj);
       }
     } catch (error) {

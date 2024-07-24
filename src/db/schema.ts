@@ -13,6 +13,7 @@ export const nodeTable = pgTable('node_table', {
   id: varchar('id').primaryKey(),
   picture: bytea('picture').notNull(),
   markedPicture: bytea('markedPicture').notNull(),
+  coreId: varchar('core_id').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow()
 });
 
@@ -25,6 +26,7 @@ export const personaTable = pgTable('persona_table', {
   experience: boolean('experience').notNull(),
   location: varchar('location').notNull(),
   characteristic: text('characteristic').notNull(),
+  coreId: varchar('core_id').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow()
 });
 

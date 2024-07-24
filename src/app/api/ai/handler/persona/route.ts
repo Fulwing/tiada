@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getNodeById } from '../../../../../db/queries';
 import OpenAI from 'openai';
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
                 { type: 'image_url', image_url: { url: `data:image/png;base64,${node.picture.toString('base64')}` } },
             ],
         });
-
+    
         const response = await openai.chat.completions.create({
             model: 'gpt-4o',
             messages: conversationHistory,
@@ -36,7 +36,9 @@ export async function POST(req: Request) {
 
         conversationHistory.push({
             role: 'assistant',
-            content: action,
+            content: [
+                { type: 'text', text: action },
+            ]
         });
 
         return NextResponse.json({ action, conversationHistory }, { status: 200 });
