@@ -1,7 +1,9 @@
 import React, {FC, useState} from "react";
-import {Handle, Position, useNodeId} from "@xyflow/react";
+import {Handle, Position, useNodeId, XYPosition} from "@xyflow/react";
 import {useDropzone} from 'react-dropzone';
 import Image from "next/image";
+
+
 
 
 
@@ -85,7 +87,9 @@ const StepNode: FC = () => {
     <Handle type="source" position={Position.Left} style={{ background: '#555'}} />
     <div {...getRootProps()} className={`flex justify-center items-center w-full rounded-lg ${uploadedImage ? 'h-auto bg-gray-200' : 'h-48 bg-gray-300'} `}>
     <input {...getInputProps()} />
-    {uploadedImage ? <Image src={uploadedImage} alt={"uploaded"} className={"max-h-[36rem] max-w-full"}></Image> : <p className="text-gray-500 text-sm">Upload image here</p>}
+    {uploadedImage ? <img src={uploadedImage} alt="Uploaded" className="max-h-[36rem] max-w-full"/> :
+        <p className="text-gray-500 text-sm">Upload image here</p>}
+
     </div>
     <Handle type="target" position={Position.Right} style={{ background: '#555' }} />
     <NodeMenu/>

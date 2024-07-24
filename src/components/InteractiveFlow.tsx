@@ -9,16 +9,63 @@ import {
     Node,
     ReactFlow,
     useEdgesState,
-    useNodesState
+    useNodesState,
+    useReactFlow,
+    ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import StepNode from './StepNode';
-import { v4 as uuid } from 'uuid'
+import {v4 as uuid} from 'uuid'
+import Image from 'next/image';
+import {toPng} from 'html-to-image';
+
+const downloadNodeImages = async (nodes) => {
+    for (const node of nodes) {
+        const nodeElement = document.querySelector(`.react-flow__node[data-id='${node.id}']`);
+        if (nodeElement) {
+            const png = await toPng(nodeElement, {
+                backgroundColor: 'white',
+                width: nodeElement.offsetWidth,
+                height: nodeElement.offsetHeight,
+                style: {
+                    transform: `translate(0, 0)`,
+                },
+            });
+            const a = document.createElement('a');
+            a.href = png;
+            a.download = `node-${node.id}.png`; // Naming each file uniquely
+            document.body.appendChild(a); // Append to body to ensure it works in all browsers
+            a.click();
+            document.body.removeChild(a); // Clean up
+        }
+    }
+};
+
+const DownloadButton: FC = () => {
+    const { getNodes } = useReactFlow();
+    const onClick = () => {
+        const nodes = getNodes();
+        downloadNodeImages(nodes);
+    };
+
+    return <button onClick={onClick}>Download</button>;
+};
+
+
+
+
+
+
 interface ToolItemProps {
   name: string;
   onClickEvent: () => void;
 }
-import Image from 'next/image';
+
+interface GoalItemProps {
+    totalNodes: number;
+    totalDepth?: number;
+}
+
 
 
 const ToolItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
@@ -32,7 +79,7 @@ const ToolItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
   );
 };
 
-const GoalItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
+const GoalItem: FC<GoalItemProps> = ({totalNodes, totalDepth}) => {
   return (
       <div className="flex-col py-5 flex justify-between items-left w-full">
         <h3 className="font-bold text-white text-xl flex-grow ml-2">Goals</h3>
@@ -42,7 +89,7 @@ const GoalItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
               className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
               placeholder="Maximum Steps"
           />
-          <p className="ml-2 text-white text-l flex-grow">/ 7 steps</p>
+          <p className="ml-2 text-white text-l flex-grow">/ {totalNodes} steps</p>
         </div>
 
         <div className="flex items-center pl-10 pt-4">
@@ -63,11 +110,13 @@ export interface ToolBarProps {
     onInterfaceClick: () => void;
     onTouchPointsClick?: () => void;
     onActionsClick?: () => void;
+    totalNodes: number;
 }
 
 export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
                                               onTouchPointsClick= () => {},
-                                              onActionsClick = () => {}
+                                              onActionsClick = () => {},
+                                                totalNodes= 0
 }) => {
   return (
       <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333]">
@@ -85,10 +134,13 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
           <ToolItem name="Interface" onClickEvent={onInterfaceClick} />
           <ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />
           <ToolItem name="Actions" onClickEvent={onActionsClick} />
-          <GoalItem name="Goals" onClickEvent={() => { }} />
+          <GoalItem totalNodes={totalNodes} />
         </div>
 
-        <button
+
+          <DownloadButton/>
+
+          <button
             className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2 m-5"
             style={{ cursor: 'pointer' }}
         >
@@ -144,7 +196,11 @@ export const FlowComponent: FC = () => {
 
   return (
     <div className='flex  bg-[#272728] w-full' >
-    <ToolBar onInterfaceClick={addNode} onActionsClick={() => {}} onTouchPointsClick={() => {}}/>
+    <ToolBar onInterfaceClick={addNode}
+             onActionsClick={() => {}}
+             onTouchPointsClick={() => {}}
+             totalNodes={nodes.length}
+    />
     <div className="pb-20 pt-2 pl-5 w-full">
       <div className="flex gap-2 mb-2">
       </div>
@@ -167,4 +223,13 @@ export const FlowComponent: FC = () => {
   );
 }
 
-export default FlowComponent;
+const WrappedFlowComponent: FC = () => (
+    <ReactFlowProvider>
+        <FlowComponent />
+    </ReactFlowProvider>
+);
+
+export default WrappedFlowComponent;
+
+
+// export default FlowComponent;
