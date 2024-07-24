@@ -19,24 +19,32 @@ import {v4 as uuid} from 'uuid'
 import Image from 'next/image';
 import {toPng} from 'html-to-image';
 
-const downloadNodeImages = async (nodes) => {
+interface FlowNode {
+    id: string;
+    type?: string;
+    position: { x: number; y: number };
+    data: { label: string };
+}
+
+const downloadNodeImages = async (nodes: FlowNode[]) => {
     for (const node of nodes) {
         const nodeElement = document.querySelector(`.react-flow__node[data-id='${node.id}']`);
         if (nodeElement) {
-            const png = await toPng(nodeElement, {
+            const htmlElement = nodeElement as HTMLElement;
+            const png = await toPng(htmlElement, {
                 backgroundColor: 'white',
-                width: nodeElement.offsetWidth,
-                height: nodeElement.offsetHeight,
+                width: htmlElement.offsetWidth,
+                height: htmlElement.offsetHeight,
                 style: {
                     transform: `translate(0, 0)`,
                 },
             });
             const a = document.createElement('a');
             a.href = png;
-            a.download = `node-${node.id}.png`; // Naming each file uniquely
-            document.body.appendChild(a); // Append to body to ensure it works in all browsers
+            a.download = `node-${node.id}.png`;
+            document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a); // Clean up
+            document.body.removeChild(a);
         }
     }
 };
@@ -44,7 +52,13 @@ const downloadNodeImages = async (nodes) => {
 const DownloadButton: FC = () => {
     const { getNodes } = useReactFlow();
     const onClick = () => {
-        const nodes = getNodes();
+        const nodes = getNodes().map(node => ({
+            ...node,
+            data: {
+                ...node.data,
+                label: 'label' in node.data ? node.data.label : 'Default Label',
+            }
+        })) as FlowNode[];
         downloadNodeImages(nodes);
     };
 
