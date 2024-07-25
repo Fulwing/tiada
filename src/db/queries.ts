@@ -33,6 +33,30 @@ export async function getNodeById(id: SelectNode['id']): Promise<{
   };
 }
 
+export async function getFakeNode(): Promise<{
+  id: string;
+  picture: Buffer;
+  markedPicture: Buffer;
+  createdAt: Date;
+}[] | null> {
+  const nodes = await db
+    .select()
+    .from(nodeTable)
+    .execute();
+
+  if (nodes.length === 0) {
+    return null;
+  }
+
+  return nodes.map(node => ({
+    id: node.id,
+    picture: Buffer.from(node.picture),
+    markedPicture: Buffer.from(node.markedPicture),
+    createdAt: new Date(node.createdAt),
+  }));
+}
+
+
 // persona table
 export async function addPersona(data: InsertPersona) {
   const result = await db.insert(personaTable).values(data).returning({ insertedId: nodeTable.id });
