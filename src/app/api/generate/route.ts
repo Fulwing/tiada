@@ -97,7 +97,7 @@ export async function POST(request: Request) {
 
   try {
 
-    const insertedIds = await addMultiplePersonas(generate_result);
+    await addMultiplePersonas(generate_result);
 
     return NextResponse.json({ personas: generate_result }, { status: 200 });
   } catch (error) {
