@@ -1,8 +1,8 @@
-import React, {FC, memo, useContext, useEffect, useState} from "react";
-import {Handle, Position, Node, NodeProps, useNodesState, useNodeId} from "@xyflow/react";
-import {useDropzone} from 'react-dropzone';
+import React, { FC, memo, useContext, useEffect, useState } from "react";
+import { Handle, Position, Node, NodeProps, useNodesState, useNodeId } from "@xyflow/react";
+import { useDropzone } from 'react-dropzone';
 import { UnmarkedImageContext } from './InteractiveFlow';
-
+import Image from 'next/image';
 
 
 
@@ -74,26 +74,26 @@ const NodeMenu: FC = () => {
     }, [nodeId, nodeData]);
 
     return (
-      <div className = "flex gap-3 justify-center pl-2">
-        <div className="w-28 h-5 rounded-full shadow-lg p-4 flex justify-center  items-center bg-[#272728]">
-        <div className="flex  gap-1 p-3">
-          <div className={`rounded-full ${selectedOption === 'true' ? 'bg-[#09A854]' : 'bg-transparent'}`}>
-            <button className={`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'true' ? 'text-black' : 'text-white'}`} onClick={() => {
-                setSelectedOption('true');
-                handleOptionChange('true');
-            }}>True</button>
-          </div>
-          <div className={`rounded-full ${selectedOption === 'false' ? 'bg-[#D93535]' : 'bg-transparent'}`}>
-            <button className= {`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'false' ? 'text-black' : 'text-white'}`} onClick={() => {
-                setSelectedOption('false');
-                handleOptionChange('false');
-            }}>False</button>
-          </div>
+        <div className="flex gap-3 justify-center pl-2">
+            <div className="w-28 h-5 rounded-full shadow-lg p-4 flex justify-center  items-center bg-[#272728]">
+                <div className="flex  gap-1 p-3">
+                    <div className={`rounded-full ${selectedOption === 'true' ? 'bg-[#09A854]' : 'bg-transparent'}`}>
+                        <button className={`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'true' ? 'text-black' : 'text-white'}`} onClick={() => {
+                            setSelectedOption('true');
+                            handleOptionChange('true');
+                        }}>True</button>
+                    </div>
+                    <div className={`rounded-full ${selectedOption === 'false' ? 'bg-[#D93535]' : 'bg-transparent'}`}>
+                        <button className={`h-2 text-xs text-white w-12 font-semibold ${selectedOption === 'false' ? 'text-black' : 'text-white'}`} onClick={() => {
+                            setSelectedOption('false');
+                            handleOptionChange('false');
+                        }}>False</button>
+                    </div>
+                </div>
+            </div>
+            <StartEndCheckBox />
         </div>
-      </div>
-       <StartEndCheckBox/>
-       </div>
-      );
+    );
 
 }
 
@@ -137,13 +137,17 @@ const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({
                 </h1>
             </div>
             <div {...getRootProps()}
-                 className={`flex justify-center items-center w-full rounded-lg ${uploadedImage ? 'h-auto bg-gray-200' : 'h-48 bg-gray-300'} `}>
+                className={`flex justify-center items-center w-full rounded-lg ${uploadedImage ? 'h-auto bg-gray-200' : 'h-48 bg-gray-300'} `}>
                 <input {...getInputProps()} />
-                {uploadedImage ? <img src={uploadedImage} alt="Uploaded" className="inner-image max-h-[36rem] max-w-full"/> :
+                {uploadedImage ? <Image
+                    src={uploadedImage}
+                    alt="Uploaded"
+                    className="inner-image max-h-[36rem] max-w-full"
+                /> :
                     <p className="text-gray-500 text-sm">Upload image here</p>}
             </div>
-            <Handle id="true" type="source" position={Position.Top} style={{ background: '#00FF00'}} />
-            <Handle id="unlinked" type="target" position={Position.Left} style={{ background: '#555'  }} />
+            <Handle id="true" type="source" position={Position.Top} style={{ background: '#00FF00' }} />
+            <Handle id="unlinked" type="target" position={Position.Left} style={{ background: '#555' }} />
             <Handle id="false" type="source" position={Position.Bottom} style={{ background: '#FF0000' }} />
             <NodeMenu />
         </div>

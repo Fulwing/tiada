@@ -1,43 +1,43 @@
-// src/app/api/results/route.ts
 import { NextResponse } from 'next/server';
-import { db } from '../../../db';
-import { personaTable, SelectPersona } from '../../../db/schema';
-import { TestResult, Step } from '../../../types/index';
-
+import { getMultipleResultsByCoreId } from '../../../db/queries';
+import { TestResult, Step } from '../../../types/test/result';
 
 // Handle GET requests to the /api/results endpoint
-export async function GET() {
-    try {
-      const personas = await db.select().from(personaTable);
-  
-      const mockResults: TestResult[] = personas.map((persona, index) => ({
-        id: index + 1,
-        taskCompletion: Math.random() > 0.5 ? 'Success' : 'Failure',
-        steps: Math.floor(Math.random() * 10) + 1,
-        completionTime: Math.floor(Math.random() * 600) + 60,
-        persona: persona as SelectPersona,
-        stages: generateMockStages(Math.floor(Math.random() * 10) + 1),
-        generalFeedback: `Feedback for ${persona.name}'s performance...`
-      }));
-  
-      return NextResponse.json(mockResults);
-    } catch (error) {
-      console.error("Error fetching results:", error);
-      return NextResponse.json({ error: "Failed to fetch results" }, { status: 500 });
+export async function GET(req: Request) {
+  try {
+    const url = new URL(req.url);
+    const coreId = url.searchParams.get('coreId');
+
+    if (!coreId) {
+      return NextResponse.json({ error: 'coreId parameter is required' }, { status: 400 });
     }
-  }
-  
-  
-  
-  function generateMockStages(count: number): Step[] {
-    return Array.from({ length: count }, (_, i) => ({
-      stepNumber: i + 1,
-      status: Math.random() > 0.3 ? 'success' : 'miss',
-      description: `Step ${i + 1} description`,
-      image: '/rectangle-6.png',
-      userAction: `User action for step ${i + 1}`,
-      userExplanation: `User explanation for step ${i + 1}`
+
+    const testResults = await getMultipleResultsByCoreId(coreId);
+
+    if (!testResults) {
+      return NextResponse.json({ error: 'No test results found' }, { status: 404 });
+    }
+
+    const mockResults: TestResult[] = testResults.map((testResult) => ({
+      id: testResult.id,
+      taskCompletion: testResult.taskCompletion,
+      steps: testResult.steps,
+      name: testResult.name,
+      gender: testResult.gender,
+      age: testResult.age,
+      occupation: testResult.occupation,
+      completionTime: testResult.completionTime,
+      persona: testResult.persona,
+      stages: testResult.stages,
+      generalFeedback: testResult.generalFeedback,
+      personaId: testResult.personaId,
+      coreId: testResult.coreId
     }));
+
+    return NextResponse.json(mockResults);
+  } catch (error) {
+    console.error("Error fetching results:", error);
+    return NextResponse.json({ error: "Failed to fetch results" }, { status: 500 });
   }
-  
-  
+}
+

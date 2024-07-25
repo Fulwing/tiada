@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const pictureFile = formData.get('picture') as File;
     const markedPictureFile = formData.get('markedPicture') as File;
     const id = formData.get('id') as string;
-    const coreId = formData.get('core_id') as string;
+    // const coreId = formData.get('core_id') as string;
 
     if (!pictureFile || !markedPictureFile) {
         return NextResponse.json({ message: 'Missing images' }, { status: 400 });
@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
     const markedPictureBuffer = Buffer.from(await markedPictureFile.arrayBuffer());
 
     const data = {
-        id: id,
+        id: '3',
         picture: pictureBuffer,
         markedPicture: markedPictureBuffer,
-        coreId: coreId
+        coreId: 'KBNX34'
     };
 
     try {

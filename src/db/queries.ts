@@ -1,5 +1,6 @@
 import { db } from './index';
-import { InsertNode, InsertPersona, SelectNode, SelectPersona, nodeTable, personaTable } from './schema';
+import { InsertNode, InsertPersona, InsertResult, SelectNode, SelectPersona, SelectResult, nodeTable, personaTable, resultTable } from './schema';
+import { TestResult, Step } from '../types/test/result'
 import { eq } from 'drizzle-orm';
 
 // node table
@@ -63,6 +64,28 @@ export async function addPersona(data: InsertPersona) {
   return result[0];
 }
 
+export async function getPersonaById(id: SelectPersona['id']): Promise<{
+  id: string;
+  name: string;
+  occupation: string;
+  age: number;
+  gender: string;
+  experience: boolean;
+  location: string;
+  characteristic: string;
+  coreId: string;
+  createdAt: Date;
+} | null> {
+
+  const persona = await db
+    .select()
+    .from(personaTable)
+    .where(eq(personaTable.id, id))
+    .execute();
+
+  return persona[0];
+}
+
 export async function addMultiplePersonas(personas: InsertPersona[]) {
   const result = await db.insert(personaTable).values(personas).returning({ insertedId: personaTable.id });
   return result.map(row => row.insertedId);
@@ -104,6 +127,57 @@ export async function getMultiplePersonasByCoreId(id: SelectPersona['coreId']): 
       coreId: persona.coreId,
       createdAt: persona.createdAt
     }));
+  } catch (error) {
+    console.error("Error fetching personas by coreId:", error);
+    return null;
+  }
+}
+
+// result table
+export async function addMultipleResults(results: InsertResult[]) {
+  const result = await db.insert(resultTable).values(results).returning({ insertedId: resultTable.id });
+  return result.map(row => row.insertedId);
+}
+
+export async function getMultipleResultsByCoreId(coreId: SelectResult['coreId']): Promise<TestResult[] | null> {
+
+  try {
+    const results = await db
+      .select()
+      .from(resultTable)
+      .where(eq(resultTable.coreId, coreId))
+      .execute();
+
+    if (!results.length) {
+      return null;
+    }
+
+    return await Promise.all(results.map(async (result) => {
+      const persona = await getPersonaById(result.personaId);
+      return {
+          id: result.id,
+          taskCompletion: result.taskCompletion,
+          steps: result.steps,
+          name: persona?.name ?? '',
+          gender: persona?.gender ?? '',
+          age: persona?.age ?? 0,
+          occupation: persona?.occupation ?? '',
+          completionTime: result.completionTime,
+          persona: {
+              name: persona?.name ?? '',
+              age: persona?.age ?? 0,
+              gender: persona?.gender ?? '',
+              occupation: persona?.occupation ?? '',
+              location: persona?.location ?? '',
+              characteristic: persona?.characteristic ?? '',
+          },
+          stages: result.stepObj as Step[],
+          generalFeedback: result.generalFeedback,
+          personaId: result.personaId,
+          coreId: result.coreId
+      };
+  }));
+  
   } catch (error) {
     console.error("Error fetching personas by coreId:", error);
     return null;

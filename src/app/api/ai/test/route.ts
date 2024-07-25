@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import Persona from '../../../../types/test/persona'
-import { TestResult } from '../../../../types/test/result'
+import { Step } from '../../../../types/test/result'
+import { InsertResult } from '../../../../db/schema'
 import ConversationEntry from '../../../../types/test/chat'
-import { getMultiplePersonasByCoreId } from '../../../../db/queries';
+import { getMultiplePersonasByCoreId, addMultipleResults} from '../../../../db/queries';
 
 export async function POST(req: Request) {
-    
+
     const { jobDetails, screenshots, coreId } = await req.json();
     const personas: Persona[] = (await getMultiplePersonasByCoreId(coreId)) ?? [];
-    let testResult: TestResult;
+    let testResults: InsertResult[] = [];
+    let testResult: InsertResult;
     let conversationHistory: ConversationEntry[] = []
 
     const results = await Promise.all(personas.map(async (persona) => {
@@ -23,7 +25,11 @@ export async function POST(req: Request) {
         const personaResults = [];
 
         // result prepare
+        const startTime = new Date().getTime();
+        let stages: Step[] = [];
+        testResult.personaId = persona.id ?? "nullPersonaId";
         testResult.taskCompletion = 'Success'
+        testResult.coreId = coreId;
 
         while (stepIndex < screenshots.length) {
             // Send screenshot to persona AI
@@ -42,7 +48,7 @@ export async function POST(req: Request) {
                 throw new Error('Failed to fetch data from Persona AI');
             }
 
-            const { action, conversationHistory: newConversationHistory } = await personaResponse.json();
+            const { action, reason, conversationHistory: newConversationHistory, personaText } = await personaResponse.json();
             conversationHistory = newConversationHistory;
 
             // Validate action with agent AI
@@ -52,7 +58,7 @@ export async function POST(req: Request) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    predictedAction: action,
+                    predictedAction: personaText,
                     screenshotId: screenshots[stepIndex],
                 }),
             });
@@ -71,12 +77,45 @@ export async function POST(req: Request) {
             }
 
             stepIndex++;
+
+            // conclude data for Step
+            stages.push({
+                stepNumber: stepIndex,
+                status: isCorrect ? 'success' : 'miss',
+                description: isCorrect ? 'doing correct' : 'missed the button',
+                image: `${screenshots[stepIndex]}`,
+                userAction: action,
+                userExplanation: reason,
+            });
+        }
+
+        const general_feedback = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ai/handler/generalfeedback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                conversationHistory
+            }),
+        });
+
+        if (!general_feedback.ok) {
+            throw new Error('Failed to fetch general feedback');
         }
 
         // result conclude
+        const endTime = new Date().getTime();
+        testResult.completionTime = endTime - startTime;
+        testResult.generalFeedback = await general_feedback.json();
+        testResult.steps = stepIndex;
+        testResult.stepObj = stages;
+
+        testResults.push(testResult);
 
         return personaResults;
     }));
+
+    await addMultipleResults(testResults);
 
     return NextResponse.json({ results }, { status: 200 });
 }
