@@ -130,7 +130,7 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
     return (
         <Link href="/generate">
             <button
-                className="bg-[#6A6DCD] text-white py-3 px-6 rounded-lg shadow-lg hover:bg-[#5a5fb4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6A6DCD] transform transition-transform duration-300 ease-in-out hover:scale-105 w-full mt-4 mb-2"
+                className="flex justify-center p-32 bg-[#6A6DCD] text-white py-2 rounded w-1/2 mt-64 mb-2 hover:bg-[#5a5fb0] hover:shadow-lg mx-auto"
                 onClick={() => {
                     onClick();
                     onNextButton();
@@ -170,7 +170,7 @@ const GoalItem: FC<GoalItemProps> = ({ totalNodes, totalDepth }) => {
             <div className="flex items-center pl-10 pt-4">
                 <input
                     type="number"
-                    className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
+                    className="bg-[#9E9E9E40] text-white p-2 w-40 rounded"
                     placeholder="Maximum Steps"
                 />
                 <p className="ml-2 text-white text-l flex-grow">/ {totalNodes} steps</p>
@@ -179,7 +179,7 @@ const GoalItem: FC<GoalItemProps> = ({ totalNodes, totalDepth }) => {
             <div className="flex items-center pl-10 pt-4">
                 <input
                     type="number"
-                    className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
+                    className="bg-[#9E9E9E40] text-white p-2 w-40 rounded"
                     placeholder="Maximum Depth"
                 />
                 <p className="ml-2 text-white text-l flex-grow">/ 3 depth</p>
@@ -205,8 +205,8 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
     onNextClick = () => { }
 }) => {
     return (
-        <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333] mt-20 justify-start pt-10">
-            <div className="flex items-center justify-between w-full mb-4 px-5">
+<div className=" flex-col items-center w-[370px] h-auto border border-[#505050] bg-[#333] justify-start pt-10 ">
+              <div className="flex items-center justify-between w-full mb-4 px-5">
                 <div className="relative w-[18px] h-[21px]">
                     <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
                     <Image src="/group-1.svg" alt="Node Overlay" layout="fill" className="absolute left-[-1px] top-[-1px]" />
@@ -373,7 +373,7 @@ export const FlowComponent: FC = () => {
     }, [setNodes]);
 
     return (
-        <div className='flex  bg-[#272728] w-full'>
+        <div className='flex bg-[#272728] w-full min-h-screen '>
             <ToolBar
                 onInterfaceClick={addNode}
                 onActionsClick={() => { }}
@@ -381,7 +381,7 @@ export const FlowComponent: FC = () => {
                 totalNodes={nodes.length}
                 onNextClick={getNodesConnectedByTrueEdge}
             />
-            <div className="pb-20 pt-2 pl-5 w-full">
+            <div className="pb-20 pt-20 pl-5 w-full h-screen">
                 <div className="flex gap-2 mb-2"></div>
                 <ReactFlow
                     nodes={nodes}

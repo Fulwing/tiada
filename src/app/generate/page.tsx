@@ -103,9 +103,10 @@ function ToolBar({ onGenerate, personas, setLoadingScreen }: { onGenerate: (pers
       router.push(`/results`);
     }
   };
+{/* <div className=" flex-col items-center w-[370px] h-auto border border-[#505050] bg-[#333] justify-start pt-10 overflow-y-hidden	"> */}
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col items-center w-[340px] h-[985px] p-[8px_17px] border border-[#505050] bg-[#333]">
+    <form onSubmit={handleSubmit} className="flex-col items-center w-[370px] h-auto p-[8px_17px] border border-[#505050] bg-[#333]">
       <div className="flex items-center justify-between w-full mb-4">
         <div className="relative w-[18px] h-[21px]">
           <Image src="/subtract.svg" alt="Node" width={18} height={21} />
