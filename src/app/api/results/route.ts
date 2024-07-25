@@ -6,7 +6,7 @@ import { TestResult, Step } from '../../../types/test/result';
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const coreId = url.searchParams.get('coreId');
+    const coreId = url.searchParams.get('userId');
 
     if (!coreId) {
       return NextResponse.json({ error: 'coreId parameter is required' }, { status: 400 });

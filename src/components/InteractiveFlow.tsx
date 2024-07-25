@@ -1,4 +1,4 @@
-import React, {createContext, FC, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
+import React, { createContext, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
     addEdge,
     Background,
@@ -11,11 +11,10 @@ import {
     useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import StepNode from './StepNode';
 import StepNodeComponent from './StepNode';
-import {v4 as uuid} from 'uuid'
+import { v4 as uuid } from 'uuid'
 import Image from 'next/image';
-import {toPng} from 'html-to-image';
+import { toPng } from 'html-to-image';
 
 interface StepNode {
     parentId: string;
@@ -48,9 +47,6 @@ const printNodeImagesBase64 = async (nodes: StepNode[]) => {
         }
     }
 };
-
-
-
 
 interface DownloadButtonProps {
     onNextButton: () => void;
@@ -124,30 +120,24 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
 
         const combinedArray = [];
 
-        printNodeImagesBase64(nodes).then(() => {});
+        printNodeImagesBase64(nodes).then(() => { });
         const orderedNodeIds = ListOfSortedNodeIds();
-        // console.log("Ordered Node IDs:", orderedNodeIds);
-        // console.log("Node Data Map:", Array.from(nodeData.entries()));
-        combinedArray.push(orderedNodeIds ,Array.from(nodeData.entries()));
-        // postDataToDB(combinedArray).then(() => {}); //
+        combinedArray.push(orderedNodeIds, Array.from(nodeData.entries()));
         console.log(combinedArray);
     };
 
-
-
     return (
         <button
-            className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-80 mt-auto mb-2 m-5"
-            onClick={() => {
-                onClick();
-                onNextButton();
-            }}
-            style={{ cursor: 'pointer' }}>
-            Next
+          className="bg-[#6A6DCD] text-white py-3 px-6 rounded-lg shadow-lg hover:bg-[#5a5fb4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6A6DCD] transform transition-transform duration-300 ease-in-out hover:scale-105 w-full mt-4 mb-2"
+          onClick={() => {
+            onClick();
+            onNextButton();
+          }}
+          style={{ cursor: 'pointer' }}>
+          Next
         </button>
-    );
+      );
 };
-
 
 interface ToolItemProps {
     name: string;
@@ -159,48 +149,42 @@ interface GoalItemProps {
     totalDepth?: number;
 }
 
-
-
-
-
-
-
 const ToolItem: FC<ToolItemProps> = ({ name, onClickEvent }) => {
-  return (
-      <div className=" border-b border-[#505050] pl-8 px-5 py-5 flex justify-between items-left w-full">
-        <span className="text-white">{name}</span>
-        <div style={{ cursor: 'pointer' }} className="bg-[#9E9E9E40] rounded-full w-[24px] h-[24px] flex items-center justify-center">
-          <Image src="/add.svg" alt="Add" width={16} height={16} onClick={onClickEvent} />
+    return (
+        <div className=" border-b border-[#505050] pl-8 px-5 py-5 flex justify-between items-left w-full">
+            <span className="text-white">{name}</span>
+            <div style={{ cursor: 'pointer' }} className="bg-[#9E9E9E40] rounded-full w-[24px] h-[24px] flex items-center justify-center">
+                <Image src="/add.svg" alt="Add" width={16} height={16} onClick={onClickEvent} />
+            </div>
         </div>
-      </div>
-  );
+    );
 };
 
-const GoalItem: FC<GoalItemProps> = ({totalNodes, totalDepth}) => {
-  return (
-      <div className="flex-col py-5 flex justify-between items-left w-full">
-        <h3 className="font-bold text-white text-xl flex-grow ml-2">Goals</h3>
-        <div className="flex items-center pl-10 pt-4">
-          <input
-              type="number"
-              className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
-              placeholder="Maximum Steps"
-          />
-          <p className="ml-2 text-white text-l flex-grow">/ {totalNodes} steps</p>
-        </div>
+const GoalItem: FC<GoalItemProps> = ({ totalNodes, totalDepth }) => {
+    return (
+        <div className="flex-col py-5 flex justify-between items-left w-full">
+            <h3 className="font-bold text-white text-xl flex-grow ml-2">Goals</h3>
+            <div className="flex items-center pl-10 pt-4">
+                <input
+                    type="number"
+                    className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
+                    placeholder="Maximum Steps"
+                />
+                <p className="ml-2 text-white text-l flex-grow">/ {totalNodes} steps</p>
+            </div>
 
-        <div className="flex items-center pl-10 pt-4">
-          <input
-              type="number"
-              className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
-              placeholder="Maximum Depth"
-          />
-          <p className="ml-2 text-white text-l flex-grow">/ 3 depth</p>
-        </div>
+            <div className="flex items-center pl-10 pt-4">
+                <input
+                    type="number"
+                    className="bg-[#9E9E9E40] text-white p-2 w-36 rounded"
+                    placeholder="Maximum Depth"
+                />
+                <p className="ml-2 text-white text-l flex-grow">/ 3 depth</p>
+            </div>
 
-        {/*<p className='pl-8 pt-5 text-white text-l flex-grow'> Dead Points </p>*/}
-      </div>
-  );
+            {/*<p className='pl-8 pt-5 text-white text-l flex-grow'> Dead Points </p>*/}
+        </div>
+    );
 };
 
 export interface ToolBarProps {
@@ -212,48 +196,42 @@ export interface ToolBarProps {
 }
 
 export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
-                                              onTouchPointsClick= () => {},
-                                              onActionsClick = () => {},
-                                                totalNodes= 0,
-                                              onNextClick = () => {}
+    onTouchPointsClick = () => { },
+    onActionsClick = () => { },
+    totalNodes = 0,
+    onNextClick = () => { }
 }) => {
-  return (
-      <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333] justify-center">
-        <div className="flex items-center justify-between w-full mb-4 mt-3 px-5">
-          <div className="relative w-[18px] h-[21px]">
-            <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
-            <Image src="/group-1.svg" alt="Node Overlay" layout="fill" className="absolute left-[-1px] top-[-1px]" />
-          </div>
-          <h1 className="text-white text-xl font-bold flex-grow ml-2">Add Nodes</h1>
-          <Image src="/question.svg" alt="Help" width={20} height={20} />
+    return (
+        <div className="flex flex-col items-center w-[340px] h-screen border border-[#505050] bg-[#333] mt-20 justify-start pt-10">
+            <div className="flex items-center justify-between w-full mb-4 px-5">
+                <div className="relative w-[18px] h-[21px]">
+                    <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
+                    <Image src="/group-1.svg" alt="Node Overlay" layout="fill" className="absolute left-[-1px] top-[-1px]" />
+                </div>
+                <h1 className="text-white text-xl font-bold flex-grow ml-2">Add Nodes</h1>
+                <Image src="/question.svg" alt="Help" width={20} height={20} />
+            </div>
+
+            <div className="flex flex-col w-full mb-4">
+                <h3 className="font-bold text-white text-xl flex-grow ml-2">Nodes</h3>
+                <ToolItem name="Interface" onClickEvent={onInterfaceClick} />
+                {/*<ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />*/}
+                {/*<ToolItem name="Actions" onClickEvent={onActionsClick} />*/}
+                <GoalItem totalNodes={totalNodes} />
+
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
+                <p className="text-white text-xs mt-10 flex-grow justify-center pl-8"> Don't have any interface to test now?</p>
+                <button className="bg-white text-gray-500 w-auto h-12 rounded mb-5 ml-5 mr-5 mt-2">Select an example to test</button>
+            </div>
+
+            <DownloadButton onNextButton={onNextClick} />
         </div>
-
-        <div className="flex flex-col w-full mb-4">
-          <h3 className="font-bold text-white text-xl flex-grow ml-2">Nodes</h3>
-          <ToolItem name="Interface" onClickEvent={onInterfaceClick} />
-         {/*<ToolItem name="Touch Points" onClickEvent={onTouchPointsClick} />*/}
-          {/*<ToolItem name="Actions" onClickEvent={onActionsClick} />*/}
-          <GoalItem totalNodes={totalNodes} />
-
-            {/* eslint-disable-next-line react/no-unescaped-entities */}
-            <p className="text-white  text-xs mt-10 flex-grow  justify-center pl-8"> Don't have any interface to test now?</p>
-            <button className="bg-white text-gray-500  w-auto h-12 rounded mb-5 ml-5 mr-5 mt-2">Select an example to test</button>
-
-        </div>
-
-
-          <DownloadButton onNextButton={onNextClick}/>
-
-
-      </div>
-  );
+    );
 };
 
 const node1id = uuid();
 const node2id = uuid();
 const node3id = uuid();
-
-
 
 const initialNodes: StepNode[] = [
     {
@@ -261,48 +239,38 @@ const initialNodes: StepNode[] = [
         type: 'stepNode',
         id: node1id,
         position: { x: 100, y: 100 },
-        data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {} },
-
+        data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => { } },
     },
     {
         parentId: '',
         type: 'stepNode',
         id: node2id,
-        position: {x: 500, y: 100},
+        position: { x: 500, y: 100 },
         data: {
             markedImage: '',
             unmarkedImage: '',
-            updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
-            }
+            updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => { }
         }
     },
     {
         parentId: '',
         type: 'stepNode',
         id: node3id,
-        position: {x: 900, y: 100},
+        position: { x: 900, y: 100 },
         data: {
             markedImage: '',
             unmarkedImage: '',
-            updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
-            }
+            updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => { }
         }
     },
-
-
 ];
-
-
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2', animated: true }];
 
 export const FlowComponent: FC = () => {
-
     const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
-
-
-  const [nodes, setNodes, onNodesChange] = useNodesState<StepNode>(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState<StepNode>(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
     const isFetchInitialized = useRef(false);
 
@@ -317,9 +285,9 @@ export const FlowComponent: FC = () => {
 
                     const data = await res.json();
 
-                    setNodeData(node1id, { unmarkedImage: data[0].picture});
+                    setNodeData(node1id, { unmarkedImage: data[0].picture });
                     setNodeData(node2id, { unmarkedImage: data[1].picture });
-                    setNodeData(node3id, { unmarkedImage: data[2].picture});
+                    setNodeData(node3id, { unmarkedImage: data[2].picture });
 
                     console.log(data);
                 } catch (error) {
@@ -332,11 +300,10 @@ export const FlowComponent: FC = () => {
                     console.log('done');
                 }
             };
-            fetchFakeNode().then(() => {});
+            fetchFakeNode().then(() => { });
             isFetchInitialized.current = true;
         }
     }, [setNodeData]);
-
 
     const isInitialized = useRef(false);
 
@@ -361,12 +328,7 @@ export const FlowComponent: FC = () => {
         return connectedNodes;
     };
 
-
-
-
-
     const nodeTypes = useMemo(() => ({ stepNode: StepNodeComponent }), []);
-
 
     const onConnect = useCallback(
         (params: any) => {
@@ -380,15 +342,14 @@ export const FlowComponent: FC = () => {
                         ...params,
                         type: 'smoothstep',
                         style: { strokeWidth: 5, stroke: edgeColor },
-                        id: isHandleIdTrue ? `true-${uuid()}` : `false-${uuid()}`},
+                        id: isHandleIdTrue ? `true-${uuid()}` : `false-${uuid()}`
+                    },
                     eds
                 )
             );
         },
         [setEdges]
     );
-
-
 
     const addNode = useCallback(() => {
         const newUuid = uuid();
@@ -397,54 +358,51 @@ export const FlowComponent: FC = () => {
             type: 'stepNode',
             id: newUuid,
             position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
-            data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
+            data: {
+                markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
                     setNodes((nds) =>
                         nds.map((node) => (node.id === newUuid ? { ...node, data: { ...node.data, ...data } } : node))
                     );
-                }, },
+                },
+            },
         };
         setNodes((nds) => nds.concat(newNode));
     }, [setNodes]);
 
-
-
-  return (
-    <div className='flex  bg-[#272728] w-full' >
-    <ToolBar onInterfaceClick={addNode}
-             onActionsClick={() => {}}
-             onTouchPointsClick={() => {}}
-             totalNodes={nodes.length}
-             onNextClick={getNodesConnectedByTrueEdge}
-    />
-    <div className="pb-20 pt-2 pl-5 w-full">
-      <div className="flex gap-2 mb-2">
-      </div>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-
-        fitView
-        style={{ height: 500}}
-      >
-        <MiniMap />
-        <Controls />
-        <Background />
-      </ReactFlow>
-    </div>
-    </div>
-  );
+    return (
+        <div className='flex  bg-[#272728] w-full'>
+            <ToolBar
+                onInterfaceClick={addNode}
+                onActionsClick={() => { }}
+                onTouchPointsClick={() => { }}
+                totalNodes={nodes.length}
+                onNextClick={getNodesConnectedByTrueEdge}
+            />
+            <div className="pb-20 pt-2 pl-5 w-full">
+                <div className="flex gap-2 mb-2"></div>
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    nodeTypes={nodeTypes}
+                    fitView
+                    style={{ height: 'calc(100vh - 80px)' }} // Adjust the height here
+                >
+                    <MiniMap />
+                    <Controls />
+                    <Background />
+                </ReactFlow>
+            </div>
+        </div>
+    );
 }
 
 export const UnmarkedImageContext = createContext<{
     nodeData: Map<string, { unmarkedImage: string | null; markedImage: string | null; start: boolean; end: boolean; conditions: boolean }>;
     setNodeData: (nodeId: string, data: { unmarkedImage?: string | null; markedImage?: string | null; start?: boolean; end?: boolean; conditions?: boolean }) => void;
-}>({ nodeData: new Map(), setNodeData: () => {} });
-
-
+}>({ nodeData: new Map(), setNodeData: () => { } });
 
 const WrappedFlowComponent: FC = () => {
     const [nodeData, setNodeDataState] = useState<Map<string, { unmarkedImage: string | null; markedImage: string | null; start: boolean; end: boolean; conditions: boolean }>>(new Map());

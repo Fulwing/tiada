@@ -6,13 +6,23 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Inter', sans-serif;
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling */
 }
 
 .loader {
   border-top-color: #3498db;
   animation: spin 1s infinite linear;
+}
+
+main {
+  padding-top: 80px; /* Adjust based on the height of your header */
+}
+
+.flex-1 {
+  overflow: auto; /* Allow the main content to scroll internally if necessary */
 }
 
 @keyframes spin {

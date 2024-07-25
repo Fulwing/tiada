@@ -30,9 +30,8 @@ function StepHover({ step }: { step: Step }) {
       onMouseLeave={() => setShowHover(false)}
     >
       <div
-        className={`w-3 h-3 rounded-full ${
-          step.status === 'success' ? 'bg-[#02FF2B]' : 'bg-[#FF4848]'
-        }`}
+        className={`w-3 h-3 rounded-full ${step.status === 'success' ? 'bg-[#02FF2B]' : 'bg-[#FF4848]'
+          }`}
       ></div>
       {showHover && (
         <div className="absolute z-10 w-[102px] h-[158px] -left-12 -top-20 bg-[#272728] border border-[#7D7D7D] rounded-[7px] flex flex-col items-center justify-center overflow-hidden">
@@ -63,8 +62,8 @@ function StepCompletion({ steps }: { steps: Step[] }) {
           <div key={step.stepNumber} className="flex flex-col items-center" style={{ width: '60px', position: 'relative' }}>
             <div className="flex items-center justify-center" style={{ width: '60px', height: '20px' }}>
               {index > 0 && (
-                <div 
-                  className={`h-0.5 absolute ${step.status === 'success' ? 'bg-[#02FF2B]' : 'bg-[#FF4848]'}`} 
+                <div
+                  className={`h-0.5 absolute ${step.status === 'success' ? 'bg-[#02FF2B]' : 'bg-[#FF4848]'}`}
                   style={{
                     width: '60px',
                     left: '-30px',
@@ -75,8 +74,8 @@ function StepCompletion({ steps }: { steps: Step[] }) {
               )}
               <StepHover step={step} />
             </div>
-            <span 
-              className={`text-[13px] font-light ${step.status === 'success' ? 'text-[#7D7D7D]' : 'text-[#FF6666]'} transform -rotate-45 mt-4`} 
+            <span
+              className={`text-[13px] font-light ${step.status === 'success' ? 'text-[#7D7D7D]' : 'text-[#FF6666]'} transform -rotate-45 mt-4`}
               style={{ whiteSpace: 'nowrap', position: 'absolute', top: '24px', left: '50%', transform: 'translateX(-50%) rotate(-45deg)' }}
             >
               {step.status === 'success' ? `Stage ${step.stepNumber}` : `Miss ${missCount}`}
@@ -122,7 +121,7 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
   const handleShowJourneyDetails = () => {
     setSelectedStep(null);
     onShowJourneyDetails(result.stages, result.generalFeedback);
-  };  
+  };
 
   return (
     <div className="bg-[#333333] rounded-lg mb-4">
@@ -206,8 +205,16 @@ export default function ResultsPage() {
 
 
   const fetchData = useCallback(async () => {
+
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+      console.error('No userId found in localStorage');
+      return;
+    }
+
     try {
-      const response = await fetch('/api/results');
+      const response = await fetch(`/api/results?userId=${userId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -224,8 +231,8 @@ export default function ResultsPage() {
       setLoading(false);
     }
   }, []);
-  
-  
+
+
 
   // Helper function to validate TestResult object
   function isTestResult(obj: any): obj is TestResult {
@@ -239,7 +246,7 @@ export default function ResultsPage() {
       && 'generalFeedback' in obj
       && Array.isArray(obj.stages);
   }
-  
+
 
 
   // Fetch data from the API when the component mounts
@@ -272,7 +279,7 @@ export default function ResultsPage() {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     }
   };
-    
+
   if (loading) return <p className="p-6 text-[#7D7D7D]">Loading...</p>;
   if (error) return <p className="p-6 text-[#FF4848]">Error: {error}</p>;
 
@@ -299,62 +306,62 @@ export default function ResultsPage() {
     setSelectedJourneyDetails(null);
     setOpenSideMenu(null);
   };
-    
-    return (
-        <div className="min-h-screen bg-[#272728] text-[#7D7D7D] flex">
-            <main className="flex-1 p-6">
-                <OverallEvaluation {...metrics} />
-                <div className="mb-4">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center">
-                            <Image src="/flag.svg" alt="Flag" width={24} height={24} className="mr-2" />
-                            <h2 className="text-xl font-semibold text-[#FFFFFF]">Task completion</h2>
-                        </div>
-                        <button onClick={sortData}>
-                            <Image src="/sort.svg" alt="Sort" width={20} height={24} />
-                        </button>
-                    </div>
-                    <div className="flex items-center text-[#7D7D7D] p-4 rounded-md mb-4 bg-[#272728]">
-                        <span className="w-[15%] font-medium">Task Completion</span>
-                        <span className="w-[10%] font-medium">Steps</span>
-                        <span className="w-[15%] font-medium">Time Used</span>
-                        <span className="w-[15%] font-medium">Errors Made</span>
-                        <span className="w-[15%] font-medium">Name</span>
-                        <span className="w-[10%] font-medium">Age</span>
-                        <span className="w-[15%] font-medium">Occupation</span>
-                        <Image src="/settings-ic-settings.svg" alt="Settings" width={24} height={24} className="ml-auto" />
-                    </div>
-                </div>
-                {data && data.map((result) => (
-                    <UserJourney 
-                        key={result.id} 
-                        result={result} 
-                        onShowPersona={handleShowPersona}
-                        onShowJourneyDetails={handleShowJourneyDetails}
-                    />
-                ))}
-            </main>
-            <div className="w-1/4 p-4">
-                <div className="flex items-center mt-2">
-                    <span className="mr-2 text-[18px] text-[#FFFFFF]">Suggestions for user testing</span>
-                    <Image src="/help-message.svg" alt="Chat" width={24} height={24} />
-                </div>
-                {/* Add content for suggestions here */}
+
+  return (
+    <div className="min-h-screen bg-[#272728] text-[#7D7D7D] flex">
+      <main className="flex-1 p-6">
+        <OverallEvaluation {...metrics} />
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <Image src="/flag.svg" alt="Flag" width={24} height={24} className="mr-2" />
+              <h2 className="text-xl font-semibold text-[#FFFFFF]">Task completion</h2>
             </div>
-            <PersonaDetails
-              persona={selectedPersona}
-              isOpen={openSideMenu === 'persona'}
-              onClose={handleClosePersona}
-            />
-
-            <UserJourneyDetails
-                isOpen={openSideMenu === 'journey'}
-                onClose={handleCloseJourneyDetails}
-                steps={selectedJourneyDetails?.steps || []}
-                generalFeedback={selectedJourneyDetails?.generalFeedback || ''}
-            />
-
+            <button onClick={sortData}>
+              <Image src="/sort.svg" alt="Sort" width={20} height={24} />
+            </button>
+          </div>
+          <div className="flex items-center text-[#7D7D7D] p-4 rounded-md mb-4 bg-[#272728]">
+            <span className="w-[15%] font-medium">Task Completion</span>
+            <span className="w-[10%] font-medium">Steps</span>
+            <span className="w-[15%] font-medium">Time Used</span>
+            <span className="w-[15%] font-medium">Errors Made</span>
+            <span className="w-[15%] font-medium">Name</span>
+            <span className="w-[10%] font-medium">Age</span>
+            <span className="w-[15%] font-medium">Occupation</span>
+            <Image src="/settings-ic-settings.svg" alt="Settings" width={24} height={24} className="ml-auto" />
+          </div>
         </div>
-    );
+        {data && data.map((result) => (
+          <UserJourney
+            key={result.id}
+            result={result}
+            onShowPersona={handleShowPersona}
+            onShowJourneyDetails={handleShowJourneyDetails}
+          />
+        ))}
+      </main>
+      <div className="w-1/4 p-4">
+        <div className="flex items-center mt-2">
+          <span className="mr-2 text-[18px] text-[#FFFFFF]">Suggestions for user testing</span>
+          <Image src="/help-message.svg" alt="Chat" width={24} height={24} />
+        </div>
+        {/* Add content for suggestions here */}
+      </div>
+      <PersonaDetails
+        persona={selectedPersona}
+        isOpen={openSideMenu === 'persona'}
+        onClose={handleClosePersona}
+      />
+
+      <UserJourneyDetails
+        isOpen={openSideMenu === 'journey'}
+        onClose={handleCloseJourneyDetails}
+        steps={selectedJourneyDetails?.steps || []}
+        generalFeedback={selectedJourneyDetails?.generalFeedback || ''}
+      />
+
+    </div>
+  );
 }
 
