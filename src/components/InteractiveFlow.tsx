@@ -91,6 +91,29 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
         return Array.from(connectedNodes);
     }
 
+    const postDataToDB = async (data: any) => {
+        try {
+            const response = await fetch('/api/node/addNode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to post data to the database');
+            }
+
+            const result = await response.json();
+            console.log('Data posted successfully:', result);
+            return result;
+        } catch (error) {
+            console.error('Error posting data:', error);
+            throw error;
+        }
+    };
+
     const onClick = () => {
         const nodes = getNodes().map(node => ({
             ...node,
@@ -98,11 +121,19 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
                 ...node.data,
             }
         })) as StepNode[];
+
+        const combinedArray = [];
+
         printNodeImagesBase64(nodes).then(() => {});
         const orderedNodeIds = ListOfSortedNodeIds();
-        console.log("Ordered Node IDs:", orderedNodeIds);
-        console.log("Node Data Map:", Array.from(nodeData.entries()));
+        // console.log("Ordered Node IDs:", orderedNodeIds);
+        // console.log("Node Data Map:", Array.from(nodeData.entries()));
+        combinedArray.push(orderedNodeIds ,Array.from(nodeData.entries()));
+        // postDataToDB(combinedArray).then(() => {}); //
+        console.log(combinedArray);
     };
+
+
 
     return (
         <button
