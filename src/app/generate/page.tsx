@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -32,14 +32,13 @@ function PersonaList({ personas }: { personas: SelectPersona[] }) {
   );
 }
 
-function ToolBar({ onGenerate, personas }: { onGenerate: (personas: SelectPersona[]) => void; personas: SelectPersona[] }) {
+function ToolBar({ onGenerate, personas, setLoadingScreen }: { onGenerate: (personas: SelectPersona[]) => void; personas: SelectPersona[]; setLoadingScreen: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [number, setNumber] = useState(1);
   const [feature, setFeature] = useState('');
   const [testProb, setTestProb] = useState('');
   const [temp, setTemp] = useState(0.7);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingScreen, setLoadingScreen] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -214,6 +213,7 @@ export default function GeneratePersonasPage() {
   const [personas, setPersonas] = useState<SelectPersona[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(false);
+  
 
   useEffect(() => {
     const fetchPersonas = async () => {
@@ -252,7 +252,7 @@ export default function GeneratePersonasPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#272728]">
       <div className="flex flex-1 mt-20 p-4 overflow-hidden">
-        <ToolBar onGenerate={handleGenerate} personas={personas} />
+        <ToolBar onGenerate={handleGenerate} personas={personas} setLoadingScreen={setLoadingScreen} />
         {loading ? (
           <div className="flex flex-1 items-center justify-center text-white text-xl">
             <div className="flex flex-col items-center">
@@ -269,20 +269,18 @@ export default function GeneratePersonasPage() {
       </div>
       {loadingScreen && (
         <div className="loading-screen">
-          <canvas id="loadingCanvas" width="800" height="600"></canvas>
-          <div className="flex items-center justify-center">
-            <svg className="animate-spin h-12 w-12 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <div className="flex flex-col items-center justify-center h-full">
+            <svg className="animate-spin h-16 w-16 text-white mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p className="text-gray-800 text-xl ml-4">Loading...</p>
+            <p className="text-white text-xl ml-4">Testing...</p>
           </div>
         </div>
       )}
       <style jsx>{`
         .loading-screen {
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
           position: fixed;
@@ -290,10 +288,11 @@ export default function GeneratePersonasPage() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(39, 39, 40, 0.9);
+          background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(128, 0, 128, 1) 100%);
           z-index: 9999;
         }
       `}</style>
     </div>
   );
+  
 }
