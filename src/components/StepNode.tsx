@@ -25,15 +25,12 @@ const StartEndCheckBox: FC = () => {
     useEffect(() => {
         if (nodeId && nodeData.has(nodeId)) {
             const node = nodeData.get(nodeId);
-            if (node?.start) {
-                setChecked('start');
-            } else if (node?.end) {
-                setChecked('end');
-            } else {
-                setChecked(null);
+            const newChecked = node?.start ? 'start' : node?.end ? 'end' : null;
+            if (newChecked !== checked) {
+                setChecked(newChecked);
             }
         }
-    }, [nodeId, nodeData]);
+    }, [nodeId, nodeData, checked]);
 
     return (
         <div className="gap-3 h-9 rounded-full p-4 flex justify-center items-center w-32 z-0">
@@ -119,7 +116,7 @@ const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({
             reader.onloadend = () => {
                 const base64String = reader.result as string;
                 if (nodeId) {
-                    setNodeData(nodeId, { unmarkedImage: base64String });
+                    setNodeData(nodeId, { markedImage: base64String });
                 }
                 data.updateNodeData({ markedImage: '', unmarkedImage: base64String });
             };
@@ -129,7 +126,6 @@ const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({
 
     useEffect(() => {
         if (nodeId && nodeData.has(nodeId)) {
-            setUploadedImage(nodeData.get(nodeId)?.unmarkedImage || null);
         }
     }, [nodeId, nodeData]);
 

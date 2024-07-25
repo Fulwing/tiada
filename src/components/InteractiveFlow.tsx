@@ -1,4 +1,4 @@
-import React, {createContext, FC, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, {createContext, FC, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
     addEdge,
     Background,
@@ -16,7 +16,6 @@ import StepNodeComponent from './StepNode';
 import {v4 as uuid} from 'uuid'
 import Image from 'next/image';
 import {toPng} from 'html-to-image';
-
 
 interface StepNode {
     parentId: string;
@@ -219,14 +218,48 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
   );
 };
 
-
+const node1id = uuid();
+const node2id = uuid();
+const node3id = uuid();
 
 
 
 const initialNodes: StepNode[] = [
+    {
+        parentId: '',
+        type: 'stepNode',
+        id: node1id,
+        position: { x: 100, y: 100 },
+        data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {} },
+
+    },
+    {
+        parentId: '',
+        type: 'stepNode',
+        id: node2id,
+        position: {x: 500, y: 100},
+        data: {
+            markedImage: '',
+            unmarkedImage: '',
+            updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
+            }
+        }
+    },
+    {
+        parentId: '',
+        type: 'stepNode',
+        id: node3id,
+        position: {x: 900, y: 100},
+        data: {
+            markedImage: '',
+            unmarkedImage: '',
+            updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => {
+            }
+        }
+    },
+
 
 ];
-
 
 
 
@@ -234,17 +267,60 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2', animated: true }];
 
 export const FlowComponent: FC = () => {
 
+    const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
+
+
   const [nodes, setNodes, onNodesChange] = useNodesState<StepNode>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const { nodeData } = useContext(UnmarkedImageContext);
+
+    const isFetchInitialized = useRef(false);
 
     useEffect(() => {
-        nodeData.forEach((data, nodeId) => {
-            if (data.unmarkedImage) {
-                // console.log(`Object for Node ${nodeId}:`, data);
-            }
-        });
-    }, [nodeData]);
+        if (!isFetchInitialized.current) {
+            const fetchFakeNode = async () => {
+                try {
+                    const res = await fetch(`/api/node/getFakeNode/`);
+                    if (!res.ok) {
+                        throw new Error('not found');
+                    }
+
+                    const data = await res.json();
+
+                    setNodeData(node1id, { unmarkedImage: data[0].picture});
+                    setNodeData(node2id, { unmarkedImage: data[1].picture });
+                    setNodeData(node3id, { unmarkedImage: data[2].picture});
+
+                    console.log(data);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        console.log(error.message);
+                    } else {
+                        console.log('An unknown error occurred');
+                    }
+                } finally {
+                    console.log('done');
+                }
+            };
+            fetchFakeNode().then(() => {});
+            isFetchInitialized.current = true;
+        }
+    }, [setNodeData]);
+
+
+    const isInitialized = useRef(false);
+
+    useEffect(() => {
+        if (!isInitialized.current) {
+            const initialNodeData = new Map<string, { unmarkedImage: string | null; markedImage: string | null; start: boolean; end: boolean; conditions: boolean }>();
+            initialNodes.forEach(node => {
+                initialNodeData.set(node.id, { unmarkedImage: null, markedImage: null, start: false, end: false, conditions: false });
+            });
+            initialNodeData.forEach((data, nodeId) => {
+                setNodeData(nodeId, data);
+            });
+            isInitialized.current = true;
+        }
+    }, [setNodeData]);
 
     const getNodesConnectedByTrueEdge = () => {
         const trueEdges = edges.filter(edge => edge.id.includes('true'));
