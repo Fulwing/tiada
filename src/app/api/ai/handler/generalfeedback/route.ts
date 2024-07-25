@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getNodeById } from '../../../../../db/queries';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -15,7 +14,7 @@ export async function POST(req: Request) {
         const response = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
             messages: [
-                { role: 'system', content: conversationHistory },
+                { role: 'user', content: conversationHistory },
                 {
                     role: 'user',
                     content: [

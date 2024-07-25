@@ -7,13 +7,23 @@ import { getMultiplePersonasByCoreId, addMultipleResults} from '../../../../db/q
 
 export async function POST(req: Request) {
 
-    const { jobDetails, screenshots, coreId } = await req.json();
+    const { jobDetails, screenshots, userId: coreId } = await req.json();
     const personas: Persona[] = (await getMultiplePersonasByCoreId(coreId)) ?? [];
     let testResults: InsertResult[] = [];
-    let testResult: InsertResult;
     let conversationHistory: ConversationEntry[] = []
 
     const results = await Promise.all(personas.map(async (persona) => {
+
+        // Initialize testResult as a new object
+        let testResult: InsertResult = {
+            personaId: persona.id ?? "nullPersonaId",
+            taskCompletion: 'Success',
+            coreId: coreId,
+            completionTime: 0,
+            generalFeedback: '',
+            steps: 0,
+            stepObj: []
+        };
 
         // data initialize
         conversationHistory.push(
@@ -27,9 +37,6 @@ export async function POST(req: Request) {
         // result prepare
         const startTime = new Date().getTime();
         let stages: Step[] = [];
-        testResult.personaId = persona.id ?? "nullPersonaId";
-        testResult.taskCompletion = 'Success'
-        testResult.coreId = coreId;
 
         while (stepIndex < screenshots.length) {
             // Send screenshot to persona AI
@@ -98,10 +105,6 @@ export async function POST(req: Request) {
                 conversationHistory
             }),
         });
-
-        if (!general_feedback.ok) {
-            throw new Error('Failed to fetch general feedback');
-        }
 
         // result conclude
         const endTime = new Date().getTime();

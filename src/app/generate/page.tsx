@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { SelectPersona } from '../../db/schema';
+import { useRouter } from 'next/navigation';
 
 function PersonaList({ personas }: { personas: SelectPersona[] }) {
   return (
@@ -39,6 +39,8 @@ function ToolBar({ onGenerate, personas }: { onGenerate: (personas: SelectPerson
   const [temp, setTemp] = useState(0.7);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +72,36 @@ function ToolBar({ onGenerate, personas }: { onGenerate: (personas: SelectPerson
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStartTesting = async () => {
+    setLoadingScreen(true);
+
+    const userId = localStorage.getItem('userId');
+
+    try {
+      const response = await fetch('/api/ai/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jobDetails: testProb, screenshots: ['1', '2', '3'], userId }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        // Handle successful response
+        console.log('Test successful:', data);
+      } else {
+        // Handle error response
+        console.error('Test error:', data);
+      }
+    } catch (error) {
+      console.error('Error during testing:', error);
+    } finally {
+      setLoadingScreen(false);
+      router.push(`/results`);
     }
   };
 
@@ -135,21 +167,20 @@ function ToolBar({ onGenerate, personas }: { onGenerate: (personas: SelectPerson
 
       <button
         type="submit"
-        className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-full mt-auto mb-2"
+        className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-full mt-auto mb-2 hover:bg-[#5a5fb0] hover:shadow-lg"
         disabled={loading}
       >
         {loading ? 'Generating...' : 'Generate'}
       </button>
-      <Link href="/results">
-        <button
-          type="button"
-          className={`bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform w-full ${personas.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-600 hover:to-indigo-600 hover:shadow-lg hover:-translate-y-1'
-            }`}
-          disabled={personas.length === 0}
-        >
-          Start Testing
-        </button>
-      </Link>
+      <button
+        type="button"
+        className={`bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform w-full ${personas.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-600 hover:to-indigo-600 hover:shadow-lg hover:-translate-y-1'
+          }`}
+        onClick={handleStartTesting}
+        disabled={personas.length === 0}
+      >
+        Start Testing
+      </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </form>
   );
@@ -182,6 +213,7 @@ function PersonaItem({ persona }: { persona: SelectPersona }) {
 export default function GeneratePersonasPage() {
   const [personas, setPersonas] = useState<SelectPersona[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(false);
 
   useEffect(() => {
     const fetchPersonas = async () => {
@@ -235,6 +267,33 @@ export default function GeneratePersonasPage() {
           <PersonaList personas={personas} />
         )}
       </div>
+      {loadingScreen && (
+        <div className="loading-screen">
+          <canvas id="loadingCanvas" width="800" height="600"></canvas>
+          <div className="flex items-center justify-center">
+            <svg className="animate-spin h-12 w-12 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-gray-800 text-xl ml-4">Loading...</p>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        .loading-screen {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(39, 39, 40, 0.9);
+          z-index: 9999;
+        }
+      `}</style>
     </div>
   );
 }

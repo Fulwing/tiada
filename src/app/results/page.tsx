@@ -11,7 +11,6 @@ import UserJourneyDetails from '../../components/UserJourneyDetails';
 import StepDetailsPopup from '../../components/StepDetailsPopup';
 import ChatWithPersona from '../../components/ChatWithPersona';
 
-
 // Helper function to format time in minutes and seconds
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -203,9 +202,7 @@ export default function ResultsPage() {
   const [selectedJourneyDetails, setSelectedJourneyDetails] = useState<{ steps: Step[], generalFeedback: string } | null>(null);
   const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | null>(null);
 
-
   const fetchData = useCallback(async () => {
-
     const userId = localStorage.getItem('userId');
 
     if (!userId) {
@@ -232,8 +229,6 @@ export default function ResultsPage() {
     }
   }, []);
 
-
-
   // Helper function to validate TestResult object
   function isTestResult(obj: any): obj is TestResult {
     return obj && typeof obj === 'object'
@@ -246,8 +241,6 @@ export default function ResultsPage() {
       && 'generalFeedback' in obj
       && Array.isArray(obj.stages);
   }
-
-
 
   // Fetch data from the API when the component mounts
   useEffect(() => {
@@ -290,8 +283,6 @@ export default function ResultsPage() {
     setOpenSideMenu('persona');
   };
 
-
-
   const handleClosePersona = () => {
     setSelectedPersona(null);
     setOpenSideMenu(null);
@@ -308,7 +299,7 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#272728] text-[#7D7D7D] flex">
+    <div className="min-h-screen bg-[#272728] text-[#7D7D7D] flex pt-16">
       <main className="flex-1 p-6">
         <OverallEvaluation {...metrics} />
         <div className="mb-4">
@@ -360,8 +351,6 @@ export default function ResultsPage() {
         steps={selectedJourneyDetails?.steps || []}
         generalFeedback={selectedJourneyDetails?.generalFeedback || ''}
       />
-
     </div>
   );
 }
-
