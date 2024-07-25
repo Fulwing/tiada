@@ -15,6 +15,7 @@ import StepNodeComponent from './StepNode';
 import { v4 as uuid } from 'uuid'
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
+import Link from 'next/link';
 
 interface StepNode {
     parentId: string;
@@ -127,16 +128,18 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
     };
 
     return (
-        <button
-          className="bg-[#6A6DCD] text-white py-3 px-6 rounded-lg shadow-lg hover:bg-[#5a5fb4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6A6DCD] transform transition-transform duration-300 ease-in-out hover:scale-105 w-full mt-4 mb-2"
-          onClick={() => {
-            onClick();
-            onNextButton();
-          }}
-          style={{ cursor: 'pointer' }}>
-          Next
-        </button>
-      );
+        <Link href="/generate">
+            <button
+                className="bg-[#6A6DCD] text-white py-3 px-6 rounded-lg shadow-lg hover:bg-[#5a5fb4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6A6DCD] transform transition-transform duration-300 ease-in-out hover:scale-105 w-full mt-4 mb-2"
+                onClick={() => {
+                    onClick();
+                    onNextButton();
+                }}
+                style={{ cursor: 'pointer' }}>
+                Next
+            </button>
+        </Link>
+    );
 };
 
 interface ToolItemProps {
