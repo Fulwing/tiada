@@ -5,6 +5,10 @@ import { InsertResult } from '../../../../db/schema'
 import ConversationEntry from '../../../../types/test/chat'
 import { getMultiplePersonasByCoreId, addMultipleResults, addPersonaChat} from '../../../../db/queries';
 
+export const config = {
+    maxDuration: 500, //sec
+};
+
 export async function POST(req: Request) {
 
     const { jobDetails, screenshots, userId: coreId } = await req.json();

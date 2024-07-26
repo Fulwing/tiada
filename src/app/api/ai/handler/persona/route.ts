@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getNodeById } from '../../../../../db/queries';
 import OpenAI from 'openai';
 
+export const config = {
+    maxDuration: 300, //sec
+};
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -31,7 +35,7 @@ export async function POST(req: Request) {
         const personaText = response.choices?.[0]?.message?.content?.trim();
         let action, reason;
 
-        console.log("personaText",personaText);
+        console.log("personaText", personaText);
 
         if (personaText) {
             const actionStart = personaText.indexOf("Action: ");

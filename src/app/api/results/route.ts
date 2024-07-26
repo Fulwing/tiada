@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getMultipleResultsByCoreId } from '../../../db/queries';
 import { TestResult, Step } from '../../../types/test/result';
 
+export const config = {
+  maxDuration: 100, //sec
+};
+
 // Handle GET requests to the /api/results endpoint
 export async function GET(req: Request) {
   try {
