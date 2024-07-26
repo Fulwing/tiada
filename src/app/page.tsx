@@ -62,7 +62,7 @@ export default function HomePage() {
           className={`fixed inset-0 flex items-center justify-center bg-gradient-to-b from-white to-gray-300 transition-opacity duration-500 ease-in-out ${transition ? 'opacity-100' : 'opacity-0'
             }`}
         >
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-32 right-12">
             <button
               onClick={handleCloseCanvasClick}
               className="text-gray-800 text-2xl font-bold"
