@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 
         // result conclude
         const endTime = new Date().getTime();
-        testResult.completionTime = endTime - startTime;
+        testResult.completionTime = (endTime - startTime) / 1000; //sec
         testResult.generalFeedback = await general_feedback.json();
         testResult.steps = stepIndex;
         testResult.stepObj = stages;

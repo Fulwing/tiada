@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { conversationHistory } = await req.json();
 
     try {
-        const prompt = `Based on user's performance give a general feedback of what should be improved on the product.`;
+        const prompt = `Based on user's performance give a general feedback of what should be improved on the product. Reply me with a title: To improve user performance with the product, consider the following feedback: and list in 1 2 3...`;
 
         conversationHistory.push({
             role: 'user',

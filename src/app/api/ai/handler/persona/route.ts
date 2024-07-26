@@ -31,8 +31,6 @@ export async function POST(req: Request) {
         const personaText = response.choices?.[0]?.message?.content?.trim();
         let action, reason;
 
-        console.log("personaText", personaText);
-
         if (personaText) {
             const actionStart = personaText.indexOf("Action: ");
             const reasonStart = personaText.indexOf("Reason: ");
@@ -54,7 +52,6 @@ export async function POST(req: Request) {
             ]
         });
 
-        console.log("everything is ok")
         return NextResponse.json({ action, reason, personaText, conversationHistory }, { status: 200 });
     } catch (error: unknown) {
         if (error instanceof Error) {

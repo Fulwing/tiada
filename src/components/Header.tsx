@@ -12,7 +12,7 @@ const Header = () => {
           <Link href="/">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">Home</button>
           </Link>
-          <Link href="/steps">
+          {/* <Link href="/steps">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">Steps</button>
           </Link>
           <Link href="/generate">
@@ -20,12 +20,9 @@ const Header = () => {
           </Link>
           <Link href="/results">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">Results</button>
-          </Link>
+          </Link> */}
           <Link href="/about">
             <button className="text-lg font-semibold hover:text-gray-200 transition-colors">About</button>
-          </Link>
-          <Link href="/teststeps">
-            <button className="text-lg font-semibold hover:text-gray-200 transition-colors">teststeps</button>
           </Link>
         </div>
       </nav>
