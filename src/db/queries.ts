@@ -28,9 +28,9 @@ export async function getNodeById(id: SelectNode['id']): Promise<{
   const node = nodes[0];
   return {
     id: node.id,
-    picture: node.picture,
-    markedPicture: node.markedPicture,
-    createdAt: node.createdAt,
+    picture: Buffer.from(node.picture),
+    markedPicture: Buffer.from(node.markedPicture),
+    createdAt: new Date(node.createdAt),
   };
 }
 
