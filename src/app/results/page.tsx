@@ -229,7 +229,7 @@ export default function ResultsPage() {
     }
   }, []);
 
-// Add this function near the top of your ResultsPage component
+/** Function to fetch images and data
 const fetchImages = async () => {
   try {
     const response = await fetch('/api/node/getFakeNode');
@@ -270,8 +270,7 @@ useEffect(() => {
   fetchDataAndImages();
 }, [fetchData]);
 
-
-
+*/
   // Helper function to validate TestResult object
   function isTestResult(obj: any): obj is TestResult {
     return obj && typeof obj === 'object'
@@ -286,9 +285,9 @@ useEffect(() => {
   }
 
   // Fetch data from the API when the component mounts
-  // useEffect(() => {
-  //   fetchData();
-  // }, [fetchData]);
+  useEffect(() => {
+  fetchData();
+  }, [fetchData]);
 
   // Function to calculate overall evaluation metrics
   const calculateMetrics = (results: TestResult[]) => {
