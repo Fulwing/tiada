@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getFakeNode } from '../../../../db/queries';
 
-export const config = {
-    maxDuration: 30, //sec
-};
-
 export async function GET() {
     try {
         const nodes = await getFakeNode();

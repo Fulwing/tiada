@@ -3,10 +3,6 @@ import Persona from '../../../types/test/persona'
 import { addMultiplePersonas } from '../../../db/queries';
 import OpenAI from 'openai';
 
-export const config = {
-  maxDuration: 500, //sec
-};
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
