@@ -166,21 +166,22 @@ function ToolBar({ onGenerate, personas, setLoadingScreen }: { onGenerate: (pers
       </div>
 
       <button
-        type="submit"
-        className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-full mt-auto mb-2 hover:bg-[#5a5fb0] hover:shadow-lg"
-        disabled={loading}
-      >
-        {loading ? 'Generating...' : 'Generate'}
-      </button>
-      <button
-        type="button"
-        className={`bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform w-full ${personas.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-600 hover:to-indigo-600 hover:shadow-lg hover:-translate-y-1'
-          }`}
-        onClick={handleStartTesting}
-        disabled={personas.length === 0}
-      >
-        Start Testing
-      </button>
+      type="submit"
+      className="bg-[#6A6DCD] text-white py-2 px-4 rounded w-full mb-2 hover:bg-[#5a5fb0] hover:shadow-lg"
+      disabled={loading}
+    >
+      {loading ? 'Generating...' : 'Generate'}
+    </button>
+    <button
+      type="button"
+      className={`bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform w-full ${personas.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-600 hover:to-indigo-600 hover:shadow-lg hover:-translate-y-1'
+        }`}
+      onClick={handleStartTesting}
+      disabled={personas.length === 0}
+    >
+      Start Testing
+    </button>
+
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </form>
   );

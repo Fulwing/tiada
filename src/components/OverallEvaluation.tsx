@@ -27,7 +27,7 @@ const OverallEvaluation: React.FC<OverallEvaluationProps> = ({
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+  };  
 
     // Helper function to get status badge based on value and threshold
   const getStatusBadge = (value: number, threshold: number) => {

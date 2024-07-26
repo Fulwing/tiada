@@ -47,7 +47,8 @@ const PersonaDetails: React.FC<PersonaDetailsProps> = ({ persona, isOpen, onClos
     <div
       // Sidebar content here.
       ref={sidebarRef}
-      className="fixed top-0 right-0 h-full bg-[#333] border-l border-[#272728] flex flex-col font-['Almarai']"
+      className="fixed top-16 right-0 h-[calc(100vh-64px)] bg-[#333] border-l border-[#272728] flex flex-col font-['Almarai']"
+      //className="fixed top-0 right-0 h-full bg-[#333] border-l border-[#272728] flex flex-col font-['Almarai']"
       style={{ width: `${width}px` }}
     >
       <div className="flex items-center p-4 border-b border-[#272728]">
