@@ -229,6 +229,49 @@ export default function ResultsPage() {
     }
   }, []);
 
+// Add this function near the top of your ResultsPage component
+const fetchImages = async () => {
+  try {
+    const response = await fetch('/api/node/getFakeNode');
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    return [];
+  }
+};
+
+
+  // Fetch data from the API when the component mounts
+useEffect(() => {
+  const fetchDataAndImages = async () => {
+    setLoading(true);
+    await fetchData();
+    const images = await fetchImages();
+    
+    if (images.length > 0) {
+      setData(prevData => {
+        if (!prevData) return null;
+        return prevData.map(result => ({
+          ...result,
+          stages: result.stages.map((stage, index) => ({
+            ...stage,
+            // image: `data:image/png;base64,${images[index % images.length].markedPicture}`,
+            image: `data:image/png;base64,${images[index].markedPicture}`,
+          })),
+        }));
+      });
+    }
+    setLoading(false);
+  };
+
+  fetchDataAndImages();
+}, [fetchData]);
+
+
+
   // Helper function to validate TestResult object
   function isTestResult(obj: any): obj is TestResult {
     return obj && typeof obj === 'object'
@@ -243,9 +286,9 @@ export default function ResultsPage() {
   }
 
   // Fetch data from the API when the component mounts
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
 
   // Function to calculate overall evaluation metrics
   const calculateMetrics = (results: TestResult[]) => {

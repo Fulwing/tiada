@@ -4,6 +4,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Step } from '../types/index';
+import FormattedFeedback from './FormattedFeedback';
 
 // Define the interface for UserJourneyDetailsProps
 interface UserJourneyDetailsProps {
@@ -82,7 +83,7 @@ const UserJourneyDetails: React.FC<UserJourneyDetailsProps> = ({ isOpen, onClose
         </div>
         <div className="mt-4">
           <h3 className="text-white font-bold mb-2">General Feedback</h3>
-          <p className="text-[#D0D0D0]">{generalFeedback}</p>
+          <FormattedFeedback feedback={generalFeedback} />
         </div>
       </div>
       <div
@@ -92,6 +93,8 @@ const UserJourneyDetails: React.FC<UserJourneyDetailsProps> = ({ isOpen, onClose
     </div>
   );
 };
+
+// LINE 86: <p className="text-[#D0D0D0]">{generalFeedback}</p>
 
 // Export the UserJourneyDetails component as the default export
 export default UserJourneyDetails;
