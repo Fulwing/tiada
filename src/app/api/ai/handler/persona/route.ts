@@ -31,6 +31,8 @@ export async function POST(req: Request) {
         const personaText = response.choices?.[0]?.message?.content?.trim();
         let action, reason;
 
+        console.log("personaText", personaText);
+
         if (personaText) {
             const actionStart = personaText.indexOf("Action: ");
             const reasonStart = personaText.indexOf("Reason: ");
@@ -38,9 +40,6 @@ export async function POST(req: Request) {
             if (actionStart !== -1 && reasonStart !== -1) {
                 action = personaText.substring(actionStart + 8, reasonStart - 2).trim();
                 reason = personaText.substring(reasonStart + 8).trim();
-
-                console.log("Action:", action);
-                console.log("Reason:", reason);
             } else {
                 console.error("The input string does not contain both 'Action:' and 'Reason:'.");
             }
@@ -51,10 +50,11 @@ export async function POST(req: Request) {
         conversationHistory.push({
             role: 'assistant',
             content: [
-                { type: 'text', text: personaText },
+                { type: 'text', text: personaText }
             ]
         });
 
+        console.log("everything is ok")
         return NextResponse.json({ action, reason, personaText, conversationHistory }, { status: 200 });
     } catch (error: unknown) {
         if (error instanceof Error) {

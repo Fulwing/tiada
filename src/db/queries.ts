@@ -1,5 +1,5 @@
 import { db } from './index';
-import { InsertNode, InsertPersona, InsertResult, SelectNode, SelectPersona, SelectResult, nodeTable, personaTable, resultTable } from './schema';
+import { InsertNode, InsertPersona, InsertPersonaChat, InsertResult, SelectNode, SelectPersona, SelectPersonaChat, SelectResult, nodeTable, personaChatTable, personaTable, resultTable } from './schema';
 import { TestResult, Step } from '../types/test/result'
 import { eq } from 'drizzle-orm';
 
@@ -155,31 +155,63 @@ export async function getMultipleResultsByCoreId(coreId: SelectResult['coreId'])
     return await Promise.all(results.map(async (result) => {
       const persona = await getPersonaById(result.personaId);
       return {
-          id: result.id,
-          taskCompletion: result.taskCompletion,
-          steps: result.steps,
+        id: result.id,
+        taskCompletion: result.taskCompletion,
+        steps: result.steps,
+        name: persona?.name ?? '',
+        gender: persona?.gender ?? '',
+        age: persona?.age ?? 0,
+        occupation: persona?.occupation ?? '',
+        completionTime: result.completionTime,
+        persona: {
           name: persona?.name ?? '',
-          gender: persona?.gender ?? '',
           age: persona?.age ?? 0,
+          gender: persona?.gender ?? '',
           occupation: persona?.occupation ?? '',
-          completionTime: result.completionTime,
-          persona: {
-              name: persona?.name ?? '',
-              age: persona?.age ?? 0,
-              gender: persona?.gender ?? '',
-              occupation: persona?.occupation ?? '',
-              location: persona?.location ?? '',
-              characteristic: persona?.characteristic ?? '',
-          },
-          stages: result.stepObj as Step[],
-          generalFeedback: result.generalFeedback,
-          personaId: result.personaId,
-          coreId: result.coreId
+          location: persona?.location ?? '',
+          characteristic: persona?.characteristic ?? '',
+        },
+        stages: result.stepObj as Step[],
+        generalFeedback: result.generalFeedback,
+        personaId: result.personaId,
+        coreId: result.coreId
       };
-  }));
-  
+    }));
+
   } catch (error) {
     console.error("Error fetching personas by coreId:", error);
     return null;
   }
+}
+
+// persona chat table
+export async function addPersonaChat(data: InsertPersonaChat) {
+  const result = await db.insert(personaChatTable).values(data).returning({ insertedId: personaChatTable.personaId });
+  return result[0];
+}
+
+export async function getPersonaChatById(id: SelectPersonaChat['personaId']): Promise<{
+  personaId: string;
+  createdAt: Date;
+  chatHistory: unknown;
+} | null> {
+
+  const personaChat = await db
+    .select()
+    .from(personaChatTable)
+    .where(eq(personaChatTable.personaId, id))
+    .execute();
+
+  return personaChat[0];
+}
+
+export async function updatePersonaChatById(
+  id: SelectPersonaChat['personaId'],
+  data: Partial<Omit<SelectPersonaChat, 'personaId'>>
+): Promise<void> {
+  await db
+    .update(personaChatTable)
+    .set(data)
+    .where(eq(personaChatTable.personaId, id))
+    .execute();
 }
