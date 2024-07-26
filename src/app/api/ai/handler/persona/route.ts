@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         conversationHistory.push({
             role: 'assistant',
             content: [
-                { type: 'text', text: personaText },
+                { type: 'text', text: personaText }
             ]
         });
 

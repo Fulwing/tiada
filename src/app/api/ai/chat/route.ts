@@ -11,18 +11,17 @@ export async function POST(req: Request) {
 
     try {
         const personaChat = await getPersonaChatById(personaId);
-        let conversationHistory;
 
         if (!personaChat) {
             return NextResponse.json({ message: 'Persona Chat not found' }, { status: 404 });
         }
 
-         conversationHistory = personaChat.chatHistory as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+        let conversationHistory: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = personaChat.chatHistory as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
         conversationHistory.push({
             role: 'user',
             content: [
-                { type: 'text', text: userText },
+                { type: 'text', text: userText }
             ],
         });
 
