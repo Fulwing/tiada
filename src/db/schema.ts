@@ -42,12 +42,20 @@ export const resultTable = pgTable('result_table', {
   createdAt: timestamp('created_at').notNull().defaultNow()
 });
 
+export const personaChatTable = pgTable('personachat_table', {
+  personaId: varchar('persona_id').notNull().primaryKey(),
+  chatHistory: jsonb('chat_history').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow()
+});
+
 export type InsertNode = typeof nodeTable.$inferInsert;
 export type SelectNode = typeof nodeTable.$inferSelect;
-
 
 export type InsertPersona = typeof personaTable.$inferInsert;
 export type SelectPersona = typeof personaTable.$inferSelect;
 
 export type InsertResult = typeof resultTable.$inferInsert;
 export type SelectResult = typeof resultTable.$inferSelect;
+
+export type InsertPersonaChat = typeof personaChatTable.$inferInsert;
+export type SelectPersonaChat = typeof personaChatTable.$inferSelect;

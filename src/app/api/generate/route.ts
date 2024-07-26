@@ -8,7 +8,6 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: Request) {
-  console.log("POST request to /api/generate");
   const res = await request.json();
   const { number, feature, test_prob, temp, coreId } = res;
   const sys_prompt = `You are a really professional persona creator. 
@@ -74,8 +73,6 @@ export async function POST(request: Request) {
       });
 
       const new_persona = response?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-
-      console.log(new_persona);
 
       if (new_persona) {
         history_messages.push(

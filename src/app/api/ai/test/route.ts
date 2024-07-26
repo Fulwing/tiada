@@ -3,7 +3,7 @@ import Persona from '../../../../types/test/persona'
 import { Step } from '../../../../types/test/result'
 import { InsertResult } from '../../../../db/schema'
 import ConversationEntry from '../../../../types/test/chat'
-import { getMultiplePersonasByCoreId, addMultipleResults} from '../../../../db/queries';
+import { getMultiplePersonasByCoreId, addMultipleResults, addPersonaChat} from '../../../../db/queries';
 
 export async function POST(req: Request) {
 
@@ -112,6 +112,12 @@ export async function POST(req: Request) {
         testResult.generalFeedback = await general_feedback.json();
         testResult.steps = stepIndex;
         testResult.stepObj = stages;
+
+        // add chat history 
+        await addPersonaChat({
+            personaId: persona.id ?? "nullPersonaId",
+            chatHistory: conversationHistory,
+        })
 
         testResults.push(testResult);
 

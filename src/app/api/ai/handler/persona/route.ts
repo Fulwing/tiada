@@ -38,9 +38,6 @@ export async function POST(req: Request) {
             if (actionStart !== -1 && reasonStart !== -1) {
                 action = personaText.substring(actionStart + 8, reasonStart - 2).trim();
                 reason = personaText.substring(reasonStart + 8).trim();
-
-                console.log("Action:", action);
-                console.log("Reason:", reason);
             } else {
                 console.error("The input string does not contain both 'Action:' and 'Reason:'.");
             }
