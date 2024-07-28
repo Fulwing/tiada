@@ -3,13 +3,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { SelectPersona } from '../../db/schema';
-import { TestResult, Step } from '../../types/index';
+import { TestResult, Step, TestPersona } from '../../types/test/result';
 import OverallEvaluation from '../../components/OverallEvaluation';
 import PersonaDetails from '../../components/PersonaDetails';
 import UserJourneyDetails from '../../components/UserJourneyDetails';
 import StepDetailsPopup from '../../components/StepDetailsPopup';
 import ChatWithPersona from '../../components/ChatWithPersona';
+import { isTestResult } from '../../lib/helper/typecheck/result'
 
 // Helper function to format time in minutes and seconds
 const formatTime = (seconds: number) => {
@@ -92,7 +92,7 @@ const calculateErrors = (steps: Step[]) => {
 };
 
 // Component to display the user journey and its details
-function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: TestResult; onShowPersona: (persona: SelectPersona) => void; onShowJourneyDetails: (steps: Step[], generalFeedback: string) => void }) {
+function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: TestResult; onShowPersona: (persona: TestPersona) => void; onShowJourneyDetails: (steps: Step[], generalFeedback: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedStep, setSelectedStep] = useState<Step | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -114,7 +114,9 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
 
   const handleShowPersona = () => {
     setSelectedStep(null);
-    onShowPersona(result.persona);
+    if (result.persona) {
+      onShowPersona(result.persona);
+    }
   };
 
   const handleShowJourneyDetails = () => {
@@ -129,9 +131,9 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
         <span className="w-[10%] text-[#7D7D7D]">{result.steps}</span>
         <span className="w-[15%] text-[#7D7D7D]">{formatTime(result.completionTime)}</span>
         <span className={`w-[15%] ${errors > 0 ? 'text-[#FF4848]' : 'text-[#02FF2B]'}`}>{errors} Errors</span>
-        <span className="w-[15%] text-[#7D7D7D]">{result.persona.name}</span>
-        <span className="w-[10%] text-[#7D7D7D]">{result.persona.age}</span>
-        <span className="w-[15%] text-[#7D7D7D]">{result.persona.occupation}</span>
+        <span className="w-[15%] text-[#7D7D7D]">{result.persona?.name}</span>
+        <span className="w-[10%] text-[#7D7D7D]">{result.persona?.age}</span>
+        <span className="w-[15%] text-[#7D7D7D]">{result.persona?.occupation}</span>
         <Image src="/navigation-ic-list-arrow-down.svg" alt="Expand" width={24} height={24} className={`ml-auto transform ${expanded ? 'rotate-180' : ''}`} />
       </div>
       {expanded && (
@@ -186,7 +188,8 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
       <ChatWithPersona
         isOpen={chatOpen}
         onClose={() => setChatOpen(false)}
-        personaName={result.persona.name}
+        personaName={result.persona?.name ?? 'undefined'}
+        personaId={result.personaId}
       />
     </div>
   );
@@ -198,7 +201,7 @@ export default function ResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [selectedPersona, setSelectedPersona] = useState<SelectPersona | null>(null);
+  const [selectedPersona, setSelectedPersona] = useState<TestPersona | null>(null);
   const [selectedJourneyDetails, setSelectedJourneyDetails] = useState<{ steps: Step[], generalFeedback: string } | null>(null);
   const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | null>(null);
 
@@ -229,64 +232,52 @@ export default function ResultsPage() {
     }
   }, []);
 
-/** Function to fetch images and data
-const fetchImages = async () => {
-  try {
-    const response = await fetch('/api/node/getFakeNode');
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+  /** Function to fetch images and data
+  const fetchImages = async () => {
+    try {
+      const response = await fetch('/api/node/getFakeNode');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      return [];
     }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching images:", error);
-    return [];
-  }
-};
-
-
-  // Fetch data from the API when the component mounts
-useEffect(() => {
-  const fetchDataAndImages = async () => {
-    setLoading(true);
-    await fetchData();
-    const images = await fetchImages();
-    
-    if (images.length > 0) {
-      setData(prevData => {
-        if (!prevData) return null;
-        return prevData.map(result => ({
-          ...result,
-          stages: result.stages.map((stage, index) => ({
-            ...stage,
-            // image: `data:image/png;base64,${images[index % images.length].markedPicture}`,
-            image: `data:image/png;base64,${images[index].markedPicture}`,
-          })),
-        }));
-      });
-    }
-    setLoading(false);
   };
-
-  fetchDataAndImages();
-}, [fetchData]);
-
-*/
-  // Helper function to validate TestResult object
-  function isTestResult(obj: any): obj is TestResult {
-    return obj && typeof obj === 'object'
-      && 'id' in obj
-      && 'taskCompletion' in obj
-      && 'steps' in obj
-      && 'completionTime' in obj
-      && 'persona' in obj
-      && 'stages' in obj
-      && 'generalFeedback' in obj
-      && Array.isArray(obj.stages);
-  }
+  
+  
+    // Fetch data from the API when the component mounts
+  useEffect(() => {
+    const fetchDataAndImages = async () => {
+      setLoading(true);
+      await fetchData();
+      const images = await fetchImages();
+      
+      if (images.length > 0) {
+        setData(prevData => {
+          if (!prevData) return null;
+          return prevData.map(result => ({
+            ...result,
+            stages: result.stages.map((stage, index) => ({
+              ...stage,
+              // image: `data:image/png;base64,${images[index % images.length].markedPicture}`,
+              image: `data:image/png;base64,${images[index].markedPicture}`,
+            })),
+          }));
+        });
+      }
+      setLoading(false);
+    };
+  
+    fetchDataAndImages();
+  }, [fetchData]);
+  
+  */
 
   // Fetch data from the API when the component mounts
   useEffect(() => {
-  fetchData();
+    fetchData();
   }, [fetchData]);
 
   // Function to calculate overall evaluation metrics
@@ -320,7 +311,7 @@ useEffect(() => {
 
   const metrics = data ? calculateMetrics(data) : { taskCompletionRatio: 0, totalPersonas: 0, completedPersonas: 0, averageSteps: 0, averageCompletionTime: 0 };
 
-  const handleShowPersona = (persona: SelectPersona) => {
+  const handleShowPersona = (persona: TestPersona) => {
     setSelectedPersona(persona);
     setOpenSideMenu('persona');
   };

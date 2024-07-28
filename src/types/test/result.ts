@@ -31,3 +31,12 @@ export interface TestResult {
   personaId: string;
   coreId: string;
 }
+
+export interface TestPersona {
+  name: string;
+  age: number;
+  gender: string;
+  occupation: string;
+  location: string;
+  characteristic: string;
+}

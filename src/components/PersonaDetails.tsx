@@ -3,11 +3,11 @@
 // Import necessary modules from React and Next.js Image component
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
-import { SelectPersona } from '../db/schema';
+import { TestPersona } from '@/types/test/result';
 
 // Defines interface for PersonaDetailsProps to ensure type safety for props.
 interface PersonaDetailsProps {
-  persona: SelectPersona | null;
+  persona: TestPersona | null;
   isOpen: boolean;
   onClose: () => void;
 }
