@@ -27,36 +27,65 @@ interface StepNode {
         unmarkedImage: string;
         updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => void;
     };
+    dragHandle: string;
 }
 
-const printNodeImagesBase64 = async (nodes: StepNode[]) => {
-    for (const node of nodes) {
-        if (!node.parentId) {
-            const nodeElement = document.querySelector(`.react-flow__node[data-id='${node.id}']`);
-            if (nodeElement) {
+
+
+
+const DownloadButton: FC = () => {
+    const { getNodes } = useReactFlow();
+    const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
+    const { getEdges } = useReactFlow();
+
+    async function printNodeImagesBase64(nodes: any): Promise<Array<[any, string]>> {
+        const results: Array<[any, string]> = [];
+    
+        const promises = nodes.map(async (node: any) => {
+            const nodeElement = document.querySelector(`.react-flow__node`);
+            if (nodeElement instanceof HTMLElement) {
                 const htmlElement = nodeElement as HTMLElement;
-                const png = await toPng(htmlElement, {
+                const croppedWidth = htmlElement.offsetWidth + 40;
+                const croppedHeight = htmlElement.offsetHeight + 40;
+    
+                // Create a hidden container
+                const hiddenContainer = document.createElement('div');
+                hiddenContainer.style.position = 'fixed';
+                hiddenContainer.style.left = '-9999px';
+                hiddenContainer.style.top = '-9999px';
+                document.body.appendChild(hiddenContainer);
+    
+                // Clone the element to apply cropping
+                const clonedElement = htmlElement.cloneNode(true) as HTMLElement;
+                clonedElement.style.position = 'absolute';
+                clonedElement.style.left = '-20px';
+                clonedElement.style.top = '-20px';
+                clonedElement.style.width = `${croppedWidth}px`;
+                clonedElement.style.height = `${croppedHeight}px`;
+                clonedElement.style.transform = 'translate(-20px, -20px)';
+    
+                hiddenContainer.appendChild(clonedElement);
+    
+                const png = await toPng(clonedElement, {
                     backgroundColor: 'white',
-                    width: htmlElement.offsetWidth,
-                    height: htmlElement.offsetHeight,
+                    width: htmlElement.offsetWidth - 45,
+                    height: htmlElement.offsetHeight - 140,
                     style: {
-                        transform: `translate(0, 0)`,
+                        transform: `translate(-25px, -35px)`,
                     },
                 });
-                // console.log(png);
+                document.body.removeChild(hiddenContainer);
+    
+                // Add the node and its PNG to the results array
+                results.push([node.id, png]);
             }
-        }
+        });
+    
+        // Wait for all promises to resolve
+        await Promise.all(promises);
+
+        return results;
     }
-};
-
-interface DownloadButtonProps {
-    onNextButton: () => void;
-}
-
-const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
-    const { getNodes } = useReactFlow();
-    const { nodeData } = useContext(UnmarkedImageContext);
-    const { getEdges } = useReactFlow();
 
     function ListOfSortedNodeIds() {
         const nodeIds = Array.from(nodeData.keys());
@@ -88,6 +117,33 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
         return Array.from(connectedNodes);
     }
 
+    function RemoveNonExistingNodesFromMap(nodeData: Map<string, any>, getNodes: () => Array<{ id: string }>) {
+        // Get the list of existing node IDs
+        const existingNodeIds = new Set(getNodes().map(node => node.id));
+    
+        // Convert nodeData keys to an array and loop through them
+        for (const nodeId of Array.from(nodeData.keys())) {
+            if (!existingNodeIds.has(nodeId)) {
+                nodeData.delete(nodeId);
+            }
+        }
+    }
+
+    function PrintNodeData (nodeData: Map<string, any>, getNodes: () => Array<{ id: string }>, markedImages: Array<[any, string]>) {
+        const nodes = getNodes();
+        const orderedNodeIds = ListOfSortedNodeIds();
+        const combinedArray = [];
+        RemoveNonExistingNodesFromMap(nodeData, getNodes);
+
+
+
+        combinedArray.push(orderedNodeIds, Array.from(nodeData.entries()), markedImages);
+        console.log(combinedArray);
+    }
+
+
+
+
     const postDataToDB = async (data: any) => {
         try {
             const response = await fetch('/api/node/addNode', {
@@ -111,34 +167,28 @@ const DownloadButton: FC<DownloadButtonProps> = ({ onNextButton }) => {
         }
     };
 
-    const onClick = () => {
-        const nodes = getNodes().map(node => ({
-            ...node,
-            data: {
-                ...node.data,
-            }
-        })) as StepNode[];
+    const onClick = async () => {
+        const nodes = getNodes();
+         const markedImages = await printNodeImagesBase64(nodes);    
 
-        const combinedArray = [];
 
-        printNodeImagesBase64(nodes).then(() => { });
-        const orderedNodeIds = ListOfSortedNodeIds();
-        combinedArray.push(orderedNodeIds, Array.from(nodeData.entries()));
-        console.log(combinedArray);
+            
+            PrintNodeData(nodeData, getNodes, markedImages);
+            
     };
 
     return (
-        <Link href="/generate">
+        // TODO delay the button until the images are loaded
+        // <Link href="/generate">
             <button
                 className="flex justify-center p-32 bg-[#6A6DCD] text-white py-2 rounded w-1/2 mt-64 mb-2 hover:bg-[#5a5fb0] hover:shadow-lg mx-auto"
                 onClick={() => {
                     onClick();
-                    onNextButton();
                 }}
                 style={{ cursor: 'pointer' }}>
                 Next
             </button>
-        </Link>
+        // </Link>
     );
 };
 
@@ -194,15 +244,12 @@ export interface ToolBarProps {
     onInterfaceClick: () => void;
     onTouchPointsClick?: () => void;
     onActionsClick?: () => void;
-    onNextClick?: () => void;
     totalNodes: number;
 }
 
 export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
-    onTouchPointsClick = () => { },
-    onActionsClick = () => { },
+
     totalNodes = 0,
-    onNextClick = () => { }
 }) => {
     return (
 <div className=" flex-col items-center w-[370px] h-auto border border-[#505050] bg-[#333] justify-start pt-10 ">
@@ -227,7 +274,7 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
                 <button className="bg-white text-gray-500 w-auto h-12 rounded mb-5 ml-5 mr-5 mt-2">Select an example to test</button>
             </div>
 
-            <DownloadButton onNextButton={onNextClick} />
+            <DownloadButton />
         </div>
     );
 };
@@ -243,6 +290,7 @@ const initialNodes: StepNode[] = [
         id: node1id,
         position: { x: 100, y: 100 },
         data: { markedImage: '', unmarkedImage: '', updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => { } },
+        dragHandle: '.custom-drag-handle',
     },
     {
         parentId: '',
@@ -253,7 +301,8 @@ const initialNodes: StepNode[] = [
             markedImage: '',
             unmarkedImage: '',
             updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => { }
-        }
+        },
+        dragHandle: '.custom-drag-handle',
     },
     {
         parentId: '',
@@ -264,7 +313,8 @@ const initialNodes: StepNode[] = [
             markedImage: '',
             unmarkedImage: '',
             updateNodeData: (data: { markedImage?: string; unmarkedImage?: string }) => { }
-        }
+        },
+        dragHandle: '.custom-drag-handle',
     },
 ];
 
@@ -275,38 +325,36 @@ export const FlowComponent: FC = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState<StepNode>(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-    const isFetchInitialized = useRef(false);
+    // const isFetchInitialized = useRef(false);
 
-    useEffect(() => {
-        if (!isFetchInitialized.current) {
-            const fetchFakeNode = async () => {
-                try {
-                    const res = await fetch(`/api/node/getFakeNode/`);
-                    if (!res.ok) {
-                        throw new Error('not found');
-                    }
+    // useEffect(() => {
+    //     if (!isFetchInitialized.current) {
+    //         const fetchFakeNode = async () => {
+    //             try {
+    //                 const res = await fetch(`/api/node/getFakeNode/`);
+    //                 if (!res.ok) {
+    //                     throw new Error('not found');
+    //                 }
 
-                    const data = await res.json();
+    //                 const data = await res.json();
 
-                    setNodeData(node1id, { unmarkedImage: data[0].picture });
-                    setNodeData(node2id, { unmarkedImage: data[1].picture });
-                    setNodeData(node3id, { unmarkedImage: data[2].picture });
-
-                    console.log(data);
-                } catch (error) {
-                    if (error instanceof Error) {
-                        console.log(error.message);
-                    } else {
-                        console.log('An unknown error occurred');
-                    }
-                } finally {
-                    console.log('done');
-                }
-            };
-            fetchFakeNode().then(() => { });
-            isFetchInitialized.current = true;
-        }
-    }, [setNodeData]);
+    //                 setNodeData(node1id, { unmarkedImage: data[0].picture });
+    //                 setNodeData(node2id, { unmarkedImage: data[1].picture });
+    //                 setNodeData(node3id, { unmarkedImage: data[2].picture });
+    //             } catch (error) {
+    //                 if (error instanceof Error) {
+    //                     console.log(error.message);
+    //                 } else {
+    //                     console.log('An unknown error occurred');
+    //                 }
+    //             } finally {
+    //                 console.log('done');
+    //             }
+    //         };
+    //         fetchFakeNode().then(() => { });
+    //         isFetchInitialized.current = true;
+    //     }
+    // }, [setNodeData]);
 
     const isInitialized = useRef(false);
 
@@ -359,6 +407,7 @@ export const FlowComponent: FC = () => {
         const newNode: StepNode = {
             parentId: '',
             type: 'stepNode',
+            dragHandle: '.custom-drag-handle',
             id: newUuid,
             position: { x: Math.random() * window.innerWidth / 3, y: Math.random() * window.innerHeight / 3 },
             data: {
@@ -379,7 +428,6 @@ export const FlowComponent: FC = () => {
                 onActionsClick={() => { }}
                 onTouchPointsClick={() => { }}
                 totalNodes={nodes.length}
-                onNextClick={getNodesConnectedByTrueEdge}
             />
             <div className="pb-20 pt-20 pl-5 w-full h-screen">
                 <div className="flex gap-2 mb-2"></div>
