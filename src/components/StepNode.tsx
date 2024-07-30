@@ -1,4 +1,4 @@
-import React, { FC, memo, useContext, useEffect, useState, useRef} from "react";
+import React, { FC, memo, useContext, useEffect, useState, useRef, SyntheticEvent} from "react";
 import {
   Handle,
   Position,
@@ -9,7 +9,6 @@ import { useDropzone } from "react-dropzone";
 import { UnmarkedImageContext } from "./InteractiveFlow";
 import Image from "next/image";
 import Draggable from 'react-draggable';
-
 
 
 const StartEndCheckBox: FC = () => {
@@ -134,6 +133,8 @@ const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({
 
 
 
+
+
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isImageUploaded, setIsImageUploaded] = useState(!!uploadedImage);
   const greenRef = useRef(null);
@@ -215,17 +216,20 @@ const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({
         alt="Uploaded"
         width={imageWidth}
         height={imageHeight}
-        className="inner-image max-h-[36rem] max-w-full"
+        className="inner-image max-h-auto max-w-full"
       />
       {isGreenVisible ? (
         <Draggable nodeRef={greenRef} bounds="parent">
-          <div ref={greenRef} className="opacity-70 absolute top-0 left-0 w-12 h-12 bg-green-500 cursor-pointer"></div>
+                    <div ref={greenRef} className="opacity-70 absolute top-0 left-0 w-12 h-12 bg-green-500 cursor-pointer">
+
+        </div>
         </Draggable>
       ) : null}
       {isRedVisible ? (
         <Draggable nodeRef={redRef} bounds="parent">
           <div ref={redRef} className="opacity-70 absolute top-0 left-20 w-12 h-12 bg-red-500 cursor-pointer"></div>
         </Draggable>
+        
       ) : null}
     </div>
   ) : (
