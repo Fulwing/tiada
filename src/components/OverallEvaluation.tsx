@@ -3,6 +3,7 @@
 // Import necessary modules from React and Next.js Image component
 import React from 'react';
 import Image from 'next/image';
+import { formatTime } from '../lib/helper/formatTime';
 
 // Define the interface for OverallEvaluationProps
 interface OverallEvaluationProps {
@@ -21,13 +22,6 @@ const OverallEvaluation: React.FC<OverallEvaluationProps> = ({
     averageSteps,
     averageCompletionTime,
   }) => {
-  
-  // Helper function to format time from seconds to minutes and seconds
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };  
 
     // Helper function to get status badge based on value and threshold
   const getStatusBadge = (value: number, threshold: number) => {
@@ -58,7 +52,7 @@ const OverallEvaluation: React.FC<OverallEvaluationProps> = ({
           subtitle="Avg. Completion Time"
           value={formatTime(averageCompletionTime)}
           subValue={`${totalPersonas} Personas`}
-          badge={getStatusBadge(averageCompletionTime, 300)}
+          badge={getStatusBadge(averageCompletionTime / 1000, 300)}
         />
         <MetricWidget
           title="Steps to Completion"

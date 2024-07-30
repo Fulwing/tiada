@@ -10,13 +10,7 @@ import UserJourneyDetails from '../../components/UserJourneyDetails';
 import StepDetailsPopup from '../../components/StepDetailsPopup';
 import ChatWithPersona from '../../components/ChatWithPersona';
 import { isTestResult } from '../../lib/helper/typecheck/result'
-
-// Helper function to format time in minutes and seconds
-const formatTime = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
+import { formatTime } from '../../lib/helper/formatTime';
 
 // Component to show hover details of a step
 function StepHover({ step }: { step: Step }) {
@@ -92,7 +86,14 @@ const calculateErrors = (steps: Step[]) => {
 };
 
 // Component to display the user journey and its details
-function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: TestResult; onShowPersona: (persona: TestPersona) => void; onShowJourneyDetails: (steps: Step[], generalFeedback: string) => void }) {
+function UserJourney({ result, onShowPersona, onShowJourneyDetails, images, openSideMenu, setOpenSideMenu }: { 
+  result: TestResult; 
+  onShowPersona: (persona: TestPersona) => void; 
+  onShowJourneyDetails: (steps: Step[], generalFeedback: string) => void; 
+  images: string[];
+  openSideMenu: 'persona' | 'journey' | 'step' | null;
+  setOpenSideMenu: React.Dispatch<React.SetStateAction<'persona' | 'journey' | 'step' | null>>;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [selectedStep, setSelectedStep] = useState<Step | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -100,6 +101,7 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
 
   const handleStepClick = (step: Step) => {
     setSelectedStep(step);
+    setOpenSideMenu('step');
   };
 
   const handleStepChange = (direction: 'prev' | 'next') => {
@@ -177,12 +179,16 @@ function UserJourney({ result, onShowPersona, onShowJourneyDetails }: { result: 
       )}
       {selectedStep && (
         <StepDetailsPopup
-          isOpen={!!selectedStep}
-          onClose={() => setSelectedStep(null)}
+          isOpen={openSideMenu === 'step'}
+          onClose={() => {
+            setSelectedStep(null);
+            setOpenSideMenu(null);
+          }}
           step={selectedStep}
           prevStep={result.stages[selectedStep.stepNumber - 2]}
           nextStep={result.stages[selectedStep.stepNumber]}
           onStepChange={handleStepChange}
+          images={images}
         />
       )}
       <ChatWithPersona
@@ -203,7 +209,22 @@ export default function ResultsPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedPersona, setSelectedPersona] = useState<TestPersona | null>(null);
   const [selectedJourneyDetails, setSelectedJourneyDetails] = useState<{ steps: Step[], generalFeedback: string } | null>(null);
-  const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | null>(null);
+  const [openSideMenu, setOpenSideMenu] = useState<'persona' | 'journey' | 'step' | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+
+  const fetchImages = useCallback(async () => {
+    try {
+      const response = await fetch('/api/node/getFakeNode');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data.map((item: { markedPicture: string }) => `data:image/jpeg;base64,${item.markedPicture}`);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      return [];
+    }
+  }, []);
 
   const fetchData = useCallback(async () => {
     const userId = localStorage.getItem('userId');
@@ -224,56 +245,15 @@ export default function ResultsPage() {
       } else {
         throw new Error('Invalid data structure received from API');
       }
+      const fetchedImages = await fetchImages();
+      setImages(fetchedImages);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
       setLoading(false);
     }
-  }, []);
-
-  /** Function to fetch images and data
-  const fetchImages = async () => {
-    try {
-      const response = await fetch('/api/node/getFakeNode');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching images:", error);
-      return [];
-    }
-  };
-  
-  
-    // Fetch data from the API when the component mounts
-  useEffect(() => {
-    const fetchDataAndImages = async () => {
-      setLoading(true);
-      await fetchData();
-      const images = await fetchImages();
-      
-      if (images.length > 0) {
-        setData(prevData => {
-          if (!prevData) return null;
-          return prevData.map(result => ({
-            ...result,
-            stages: result.stages.map((stage, index) => ({
-              ...stage,
-              // image: `data:image/png;base64,${images[index % images.length].markedPicture}`,
-              image: `data:image/png;base64,${images[index].markedPicture}`,
-            })),
-          }));
-        });
-      }
-      setLoading(false);
-    };
-  
-    fetchDataAndImages();
-  }, [fetchData]);
-  
-  */
+  }, [fetchImages]);
 
   // Fetch data from the API when the component mounts
   useEffect(() => {
@@ -287,8 +267,8 @@ export default function ResultsPage() {
     const taskCompletionRatio = Math.round((completedPersonas / totalPersonas) * 100);
     const totalSteps = results.reduce((sum, r) => sum + r.steps, 0);
     const averageSteps = Math.round(totalSteps / totalPersonas);
-    const totalCompletionTime = results.reduce((sum, r) => sum + r.completionTime, 0);
-    const averageCompletionTime = Math.round(totalCompletionTime / totalPersonas);
+    const totalCompletionTime = results.reduce((sum, r) => sum + Math.floor(r.completionTime), 0);
+    const averageCompletionTime = Math.floor(totalCompletionTime / totalPersonas);
 
     return { taskCompletionRatio, totalPersonas, completedPersonas, averageSteps, averageCompletionTime };
   };
@@ -362,6 +342,9 @@ export default function ResultsPage() {
             result={result}
             onShowPersona={handleShowPersona}
             onShowJourneyDetails={handleShowJourneyDetails}
+            images={images}
+            openSideMenu={openSideMenu}
+            setOpenSideMenu={setOpenSideMenu}
           />
         ))}
       </main>
@@ -383,6 +366,7 @@ export default function ResultsPage() {
         onClose={handleCloseJourneyDetails}
         steps={selectedJourneyDetails?.steps || []}
         generalFeedback={selectedJourneyDetails?.generalFeedback || ''}
+        images={images}
       />
     </div>
   );
