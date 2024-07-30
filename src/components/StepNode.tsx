@@ -220,14 +220,14 @@ const StepNodeComponent: FC<{ data: StepNodeData; isConnectable: boolean }> = ({
       />
       {isGreenVisible ? (
         <Draggable nodeRef={greenRef} bounds="parent">
-                    <div ref={greenRef} className="opacity-70 absolute top-0 left-0 w-12 h-12 bg-green-500 cursor-pointer">
+                    <div ref={greenRef} className="opacity-70 absolute top-0 left-0 w-12 h-12 bg-green-500 cursor-pointer rounded-full">
 
         </div>
         </Draggable>
       ) : null}
       {isRedVisible ? (
         <Draggable nodeRef={redRef} bounds="parent">
-          <div ref={redRef} className="opacity-70 absolute top-0 left-20 w-12 h-12 bg-red-500 cursor-pointer"></div>
+          <div ref={redRef} className="opacity-70 absolute top-0 left-20 w-12 h-12 bg-red-500 cursor-pointer rounded-full"></div>
         </Draggable>
         
       ) : null}
