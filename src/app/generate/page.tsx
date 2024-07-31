@@ -85,7 +85,7 @@ function ToolBar({ onGenerate, personas, setLoadingScreen }: { onGenerate: (pers
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ jobDetails: testProb, screenshots: ['1', '2', '3'], userId }),
+        body: JSON.stringify({ jobDetails: testProb, screenshots: ['1', '2', '3', '4'], userId }),
       });
       const data = await response.json();
 

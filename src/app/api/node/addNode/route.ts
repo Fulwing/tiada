@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const markedPictureBuffer = Buffer.from(await markedPictureFile.arrayBuffer());
 
     const data = {
-        id: '3',
+        id: '4',
         picture: pictureBuffer,
         markedPicture: markedPictureBuffer,
         coreId: 'KBNX34'

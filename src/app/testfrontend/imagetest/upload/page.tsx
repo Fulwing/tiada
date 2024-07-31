@@ -31,7 +31,7 @@ const Upload = () => {
   };
 
   return (
-    <div>
+    <div style={{ marginTop: '100px' }}>
       <h1>Upload Images</h1>
       <form onSubmit={handleSubmit}>
         <div>
