@@ -15,7 +15,8 @@ import StepNodeComponent from './StepNode';
 import { v4 as uuid } from 'uuid'
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
-import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 interface StepNode {
     parentId: string;
@@ -37,24 +38,27 @@ const DownloadButton: FC = () => {
     const { getNodes } = useReactFlow();
     const { nodeData, setNodeData } = useContext(UnmarkedImageContext);
     const { getEdges } = useReactFlow();
+    const router = useRouter();
+
+    const [isLoading, setIsLoading] = useState(false);
 
     async function printNodeImagesBase64(nodes: any): Promise<Array<[any, string]>> {
         const results: Array<[any, string]> = [];
-    
+
         const promises = nodes.map(async (node: any) => {
             const nodeElement = document.querySelector(`.react-flow__node`);
             if (nodeElement instanceof HTMLElement) {
                 const htmlElement = nodeElement as HTMLElement;
                 const croppedWidth = htmlElement.offsetWidth + 40;
                 const croppedHeight = htmlElement.offsetHeight + 40;
-    
+
                 // Create a hidden container
                 const hiddenContainer = document.createElement('div');
                 hiddenContainer.style.position = 'fixed';
                 hiddenContainer.style.left = '-9999px';
                 hiddenContainer.style.top = '-9999px';
                 document.body.appendChild(hiddenContainer);
-    
+
                 // Clone the element to apply cropping
                 const clonedElement = htmlElement.cloneNode(true) as HTMLElement;
                 clonedElement.style.position = 'absolute';
@@ -63,9 +67,9 @@ const DownloadButton: FC = () => {
                 clonedElement.style.width = `${croppedWidth}px`;
                 clonedElement.style.height = `${croppedHeight}px`;
                 clonedElement.style.transform = 'translate(-20px, -20px)';
-    
+
                 hiddenContainer.appendChild(clonedElement);
-    
+
                 const png = await toPng(clonedElement, {
                     backgroundColor: 'white',
                     width: htmlElement.offsetWidth - 45,
@@ -75,12 +79,12 @@ const DownloadButton: FC = () => {
                     },
                 });
                 document.body.removeChild(hiddenContainer);
-    
+
                 // Add the node and its PNG to the results array
                 results.push([node.id, png]);
             }
         });
-    
+
         // Wait for all promises to resolve
         await Promise.all(promises);
 
@@ -120,7 +124,7 @@ const DownloadButton: FC = () => {
     function RemoveNonExistingNodesFromMap(nodeData: Map<string, any>, getNodes: () => Array<{ id: string }>) {
         // Get the list of existing node IDs
         const existingNodeIds = new Set(getNodes().map(node => node.id));
-    
+
         // Convert nodeData keys to an array and loop through them
         for (const nodeId of Array.from(nodeData.keys())) {
             if (!existingNodeIds.has(nodeId)) {
@@ -129,7 +133,7 @@ const DownloadButton: FC = () => {
         }
     }
 
-    function PrintNodeData (nodeData: Map<string, any>, getNodes: () => Array<{ id: string }>, markedImages: Array<[any, string]>) {
+    function PrintNodeData(nodeData: Map<string, any>, getNodes: () => Array<{ id: string }>, markedImages: Array<[any, string]>) {
         const nodes = getNodes();
         const orderedNodeIds = ListOfSortedNodeIds();
         const combinedArray = [];
@@ -168,27 +172,60 @@ const DownloadButton: FC = () => {
     };
 
     const onClick = async () => {
+        setIsLoading(true);
+        
+        try{
+
         const nodes = getNodes();
-         const markedImages = await printNodeImagesBase64(nodes);    
+        const markedImages = await printNodeImagesBase64(nodes);
+        PrintNodeData(nodeData, getNodes, markedImages);
 
-
-            
-            PrintNodeData(nodeData, getNodes, markedImages);
-            
+        } catch (error) {
+            console.error('Error during steps:', error);
+        } finally {
+            setIsLoading(false);
+            router.push(`/generate`);
+        }
     };
 
     return (
-        // TODO delay the button until the images are loaded
-        // <Link href="/generate">
-            <button
-                className="flex justify-center p-32 bg-[#6A6DCD] text-white py-2 rounded w-1/2 mt-64 mb-2 hover:bg-[#5a5fb0] hover:shadow-lg mx-auto"
-                onClick={() => {
-                    onClick();
+        <div>
+            <motion.button
+                className="relative flex justify-center items-center bg-[#6A6DCD] text-white py-2 rounded-lg w-1/2 mt-64 mb-2 hover:bg-[#5a5fb0] hover:shadow-lg mx-auto"
+                onClick={onClick}
+                style={{ cursor: 'pointer' }}
+                disabled={isLoading}
+                initial={{ width: '50%', height: 'auto', borderRadius: '0.5rem' }}
+                animate={{
+                    width: isLoading ? '15rem' : '50%',
+                    height: isLoading ? '4rem' : 'auto',
+                    borderRadius: isLoading ? '2rem' : '0.5rem',
+                    transition: { duration: 0.5 },
                 }}
-                style={{ cursor: 'pointer' }}>
-                Next
-            </button>
-        // </Link>
+            >
+                {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                        <p className="text-white">Preparing for you...</p>
+                        <motion.div
+                            className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"
+                            initial={{ rotate: 0 }}
+                            animate={{ rotate: 360 }}
+                            transition={{ repeat: Infinity, duration: 1 }}
+                        />
+                    </div>
+                ) : (
+                    'Next'
+                )}
+            </motion.button>
+            {isLoading && (
+                <motion.div
+                    className="absolute top-0 left-0 w-full h-1 bg-blue-500"
+                    initial={{ width: '0%' }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: 2, ease: 'easeInOut' }}
+                />
+            )}
+        </div>
     );
 };
 
@@ -252,8 +289,8 @@ export const ToolBar: FC<ToolBarProps> = ({ onInterfaceClick,
     totalNodes = 0,
 }) => {
     return (
-<div className=" flex-col items-center w-[370px] h-auto border border-[#505050] bg-[#333] justify-start pt-10 ">
-              <div className="flex items-center justify-between w-full mb-4 px-5">
+        <div className=" flex-col items-center w-[370px] h-auto border border-[#505050] bg-[#333] justify-start pt-10 ">
+            <div className="flex items-center justify-between w-full mb-4 px-5">
                 <div className="relative w-[18px] h-[21px]">
                     <Image src="/subtract.svg" alt="Node" layout="fill" className="absolute" />
                     <Image src="/group-1.svg" alt="Node Overlay" layout="fill" className="absolute left-[-1px] top-[-1px]" />
