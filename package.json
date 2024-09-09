@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
+    "@langchain/openai": "^0.2.10",
     "@vercel/postgres": "^0.9.0",
     "@xyflow/react": "^12.0.3",
     "axios": "^1.7.2",
@@ -18,6 +19,7 @@
     "framer-motion": "^11.3.19",
     "html-to-image": "^1.11.11",
     "keyv": "^4.5.4",
+    "langchain": "^0.2.18",
     "next": "14.2.5",
     "openai": "^4.52.7",
     "react": "^18.3.1",

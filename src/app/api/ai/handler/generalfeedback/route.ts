@@ -1,29 +1,26 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+import { AgentExecutor } from "langchain/agents";
+import { createUserbilityTestAgent } from '@/lib/langchain/agent/userbilityTestAgent';
+import { UsabilityHeuristicstools } from '@/lib/langchain/tools/agent/usability';
 
 export async function POST(req: Request) {
     const { conversationHistory } = await req.json();
 
     try {
-        const prompt = `Based on user's performance give a general feedback of what should be improved on the product. Reply me with a title: To improve user performance with the product, consider the following feedback: and list in 1 2 3...`;
+        const agent = await createUserbilityTestAgent();
+        const tools = await Promise.all(UsabilityHeuristicstools);
 
-        conversationHistory.push({
-            role: 'user',
-            content: [
-                { type: 'text', text: prompt }
-            ],
+        const agentExecutor = new AgentExecutor({
+            agent,
+            tools,
         });
 
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: conversationHistory
+        const response = await agentExecutor.invoke({
+            input: "You are a usability tester. You are given a conversation history and you need to provide feedback on the usability of the testing.",
+            chat_history: conversationHistory,
         });
 
-        const feedback = response.choices?.[0]?.message?.content?.trim();
+        const feedback = response.output.trim();
 
         return NextResponse.json({ feedback }, { status: 200 });
     } catch (error: unknown) {
