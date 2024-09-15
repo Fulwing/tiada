@@ -3,7 +3,7 @@
 // Import necessary modules from React and Next.js Image component
 import React from 'react';
 import Image from 'next/image';
-import { formatTime } from '../lib/helper/formatTime';
+import { formatTime } from '../lib/utils/helper/formatTime';
 
 // Define the interface for OverallEvaluationProps
 interface OverallEvaluationProps {

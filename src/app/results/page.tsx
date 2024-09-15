@@ -9,8 +9,8 @@ import PersonaDetails from '../../components/PersonaDetails';
 import UserJourneyDetails from '../../components/UserJourneyDetails';
 import StepDetailsPopup from '../../components/StepDetailsPopup';
 import ChatWithPersona from '../../components/ChatWithPersona';
-import { isTestResult } from '../../lib/helper/typecheck/result'
-import { formatTime } from '../../lib/helper/formatTime';
+import { isTestResult } from '../../lib/utils/helper/typecheck/result'
+import { formatTime } from '../../lib/utils/helper/formatTime';
 
 // Component to show hover details of a step
 function StepHover({ step }: { step: Step }) {

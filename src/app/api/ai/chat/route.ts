@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getPersonaChatById, updatePersonaChatById } from '../../../../db/queries';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+import { createPersonaChatAgent } from '@/lib/langchain/chatBot/personaChat';
 
 export async function POST(req: Request) {
     const { personaId, userText } = await req.json();
@@ -16,8 +12,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'Persona Chat not found' }, { status: 404 });
         }
 
-        let conversationHistory: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = personaChat.chatHistory as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
-
+        let conversationHistory: any = personaChat.chatHistory;
         conversationHistory.push({
             role: 'user',
             content: [
@@ -25,16 +20,17 @@ export async function POST(req: Request) {
             ],
         });
 
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o',
-            messages: conversationHistory,
-        });
+        const model = await createPersonaChatAgent(0);
 
-        const personaText = response.choices?.[0]?.message?.content?.trim();
+        const response = await model.invoke(conversationHistory);
+
+        const personaText = response.content.toString();
 
         conversationHistory.push({
             role: 'assistant',
-            content: personaText
+            content: [
+                { type: 'text', text: personaText }
+            ]
         });
 
         await updatePersonaChatById(personaId, {

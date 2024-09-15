@@ -1,10 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getNodeById } from '../../../../../db/queries';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+import { createAgent } from '@/lib/langchain/chatBot/agent';
 
 export async function POST(req: Request) {
     const { predictedAction, screenshotId } = await req.json();
@@ -17,21 +13,22 @@ export async function POST(req: Request) {
 
         const prompt = `Validate if the predicted action "${predictedAction}" is correct based on the marked touchpoints in the following UI screenshot. Answer starts with Yes or No and a explain.`;
 
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o',
-            messages: [
-                { role: 'system', content: 'You are an assistant that validates UI actions.' },
-                {
-                    role: 'user',
-                    content: [
-                        { type: 'text', text: prompt },
-                        { type: 'image_url', image_url: { url: `data:image/png;base64,${node.markedPicture.toString('base64')}` } },
-                    ],
-                },
-            ],
-        });
+        const model = await createAgent();
 
-        const isCorrect = response.choices?.[0]?.message?.content?.trim().toLocaleLowerCase().startsWith('y');
+        const messages = [
+            { role: 'system', content: 'You are an assistant that validates UI actions.' },
+            {
+                role: 'user',
+                content: [
+                    { type: 'text', text: prompt },
+                    { type: 'image_url', image_url: { url: `data:image/png;base64,${node.markedPicture.toString('base64')}` } },
+                ],
+            },
+        ]
+
+        const response = await model.invoke(messages);
+
+        const isCorrect = response.content.toString().toLocaleLowerCase().startsWith('y');
 
         return NextResponse.json({ isCorrect }, { status: 200 });
     } catch (error: unknown) {

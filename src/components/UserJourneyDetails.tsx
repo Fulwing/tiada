@@ -4,7 +4,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Step } from '../types/index';
-import { formatFeedback } from '../lib/helper/formatFeedback';
+import { formatFeedback } from '../lib/utils/helper/formatFeedback';
 
 // Define the interface for UserJourneyDetailsProps
 interface UserJourneyDetailsProps {

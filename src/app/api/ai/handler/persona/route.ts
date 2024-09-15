@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getNodeById } from '../../../../../db/queries';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+import { createPersonaTestAgent } from '@/lib/langchain/chatBot/personaTest';
+import { extractActionReason } from '@/lib/utils/helper/test/aiTestHelper';
 
 export async function POST(req: Request) {
-    const { conversationHistory, screenshotId } = await req.json();
-
+    const { conversationHistory, screenshotId } = await req.json(); 
     try {
         const node = await getNodeById(screenshotId);
         if (!node) {
@@ -23,27 +19,13 @@ export async function POST(req: Request) {
             ],
         });
 
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o',
-            messages: conversationHistory,
-        });
+        const model = await createPersonaTestAgent(0);
 
-        const personaText = response.choices?.[0]?.message?.content?.trim();
-        let action, reason;
+        const response = await model.invoke(conversationHistory);
 
-        if (personaText) {
-            const actionStart = personaText.indexOf("Action: ");
-            const reasonStart = personaText.indexOf("Reason: ");
+        const personaText = response.content.toString();
 
-            if (actionStart !== -1 && reasonStart !== -1) {
-                action = personaText.substring(actionStart + 8, reasonStart - 2).trim();
-                reason = personaText.substring(reasonStart + 8).trim();
-            } else {
-                console.error("The input string does not contain both 'Action:' and 'Reason:'.");
-            }
-        } else {
-            console.error("'input' is undefined.");
-        }
+        const { action, reason } = extractActionReason(personaText);
 
         conversationHistory.push({
             role: 'assistant',

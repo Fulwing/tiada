@@ -25,7 +25,6 @@ export async function POST(req: Request) {
             stepObj: []
         };
 
-        // data initialize
         conversationHistory.push(
             { role: 'system', content: [{ type: 'text', text: persona.characteristic }] },
             { role: 'user', content: [{ type: 'text', text: `Job details: ${jobDetails}` }] },
@@ -52,6 +51,8 @@ export async function POST(req: Request) {
             });
 
             if (!personaResponse.ok) {
+                const errorText = await personaResponse.text();
+                console.error('Failed to fetch data from Persona AI:', errorText);
                 throw new Error('Failed to fetch data from Persona AI');
             }
 
