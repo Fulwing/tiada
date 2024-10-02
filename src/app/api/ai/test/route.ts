@@ -47,14 +47,18 @@ export async function POST(req: Request) {
                 action,
                 reason,
                 coordinates,
-                conversationHistory: newConversationHistory
+                conversationHistory: updatedConversationHistory
             } = await analyzeScreenshot(conversationHistory, currentScreen);
-
-            // Update conversation history
-            conversationHistory = newConversationHistory;
-
+            
             // Validate action
-            const { leadsTo, isCorrectPath } = await validateAction(coordinates, currentScreen);
+            const { 
+                leadsTo, 
+                isCorrectPath, 
+                conversationHistory: finalConversationHistory 
+            } = await validateAction(coordinates, currentScreen, updatedConversationHistory);
+            
+            // Update conversation history
+            conversationHistory = finalConversationHistory;
 
             personaResults.push(isCorrectPath ? 1 : 0);
 
