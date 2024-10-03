@@ -185,8 +185,14 @@ export async function getMultipleResultsByCoreId(coreId: SelectResult['coreId'])
 }
 
 // persona chat table
-export async function addPersonaChat(data: InsertPersonaChat) {
-  const result = await db.insert(personaChatTable).values(data).returning({ insertedId: personaChatTable.personaId });
+export async function addPersonaChat(
+  data: InsertPersonaChat
+): Promise<{ insertedId: string }> {
+  const result = await db
+      .insert(personaChatTable)
+      .values(data)
+      .returning({ insertedId: personaChatTable.personaId });
+
   return result[0];
 }
 

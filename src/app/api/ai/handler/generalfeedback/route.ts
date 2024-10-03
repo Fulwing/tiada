@@ -1,9 +1,7 @@
-import { NextResponse } from 'next/server';
 import { createUserbilityTestAgentExecutor } from '@/lib/langchain/agent/userbilityTest';
+import ConversationEntry from '@/types/test/chat'
 
-export async function POST(req: Request) {
-    const { conversationHistory } = await req.json();
-
+export async function getUsabilityTestFeedback(conversationHistory: ConversationEntry[]): Promise<string> {
     try {
         const agentExecutor = await createUserbilityTestAgentExecutor();
 
@@ -14,13 +12,12 @@ export async function POST(req: Request) {
 
         const feedback = response.output.trim();
 
-        return NextResponse.json({ feedback }, { status: 200 });
+        return feedback;
     } catch (error: unknown) {
         if (error instanceof Error) {
-            console.error(error.message);
-            return NextResponse.json({ message: error.message }, { status: 500 });
+            throw new Error(error.message);
         } else {
-            return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
+            throw new Error('An unknown error occurred');
         }
     }
 }
