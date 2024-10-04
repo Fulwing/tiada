@@ -35,3 +35,25 @@ type Screen = {
     annotations: Annotation[];
 };
 // App Screens ends
+
+// Node Screens starts
+
+type Region = {
+    name: string;
+    coordinates: Coordinates;
+    leadsTo: string;
+    isCorrectPath: boolean;
+    isTheEnd: boolean;
+};
+
+type Image = {
+    id: string;
+    filename: string;
+    isStartPage: boolean;
+    regions: Region[];
+};
+
+export type NodeData = {
+    images: Image[];
+};
+// Node Screens ends

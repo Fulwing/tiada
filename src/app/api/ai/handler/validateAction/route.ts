@@ -6,6 +6,7 @@ import ConversationEntry from '@/types/test/chat'
 export async function validateAction(coordinates: Coordinates, currentScreen: string, conversationHistory: any[]): Promise<{ 
     leadsTo: string; 
     isCorrectPath: boolean; 
+    isTheEnd: boolean;
     conversationHistory: ConversationEntry[]; 
 }> {
     try {
@@ -28,15 +29,17 @@ export async function validateAction(coordinates: Coordinates, currentScreen: st
             return {
                 leadsTo: currentScreen,
                 isCorrectPath: false,
+                isTheEnd: false,
                 conversationHistory
             };
         }
 
-        const { leadsTo, isCorrectPath } = clickedButton;
+        const { leadsTo, isCorrectPath, isTheEnd } = clickedButton;
 
         return {
             leadsTo,
             isCorrectPath,
+            isTheEnd,
             conversationHistory
         };
 

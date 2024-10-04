@@ -21,7 +21,13 @@ export async function analyzeScreenshot(conversationHistory: any[], screenshotId
             content: [
                 {
                     type: 'text',
-                    text: 'Analyze the following UI screenshot and determine the action to take based on the image. Reply in this format: Action: [what action you were taking] | Reason: [why did you take this action] | Coordinates: [x, y]. Separate each part by a |. The coordinates should be the pixel point on the image where you intend to click.'
+                    text: `Analyze the following UI screenshot and determine the action to take based on the image. 
+                        Reply in this exact format:
+                        Action: [What action you are taking] |
+                        Reason: [Why you took this action] |
+                        Coordinates: [x, y]
+                
+                        Important: You **must** always provide an action, reason, and exact pixel coordinates (x, y). If you are unsure about what action to take, it is okay to guess, but always provide a response. Do not respond with "I can't assist" or any error message. Even if the action is incorrect, you must respond with something in the format above. If the input seems unclear, choose an action and coordinates you think are most likely correct.`
                 },
                 {
                     type: 'image_url',
@@ -31,6 +37,8 @@ export async function analyzeScreenshot(conversationHistory: any[], screenshotId
                 },
             ],
         });
+        
+
 
         const model = await createPersonaTestAgent(0);
 

@@ -28,8 +28,18 @@ export async function POST(req: Request) {
             stepObj: []
         };
 
+        // Initialize conversation history
         conversationHistory.push(
-            { role: 'system', content: [{ type: 'text', text: persona.characteristic }] },
+            {
+                role: 'system',
+                content: [
+                    { type: 'text', text: persona.characteristic },
+                    {
+                        type: 'text',
+                        text: `You are now acting as a persona with the characteristics defined above. We are conducting usability testing with you, and we expect you to answer based on your persona's perspective. Follow the questions we ask and provide the best response you can. Don't worry about giving incorrect answers—wrong answers are perfectly fine and will help us improve. Under no circumstances should you say, "I can't assist" or refuse to answer. Just respond as naturally as possible with what you think makes the most sense based on the persona's characteristics.`
+                    }
+                ]
+            },
             { role: 'user', content: [{ type: 'text', text: `Job details: ${jobDetails}` }] },
         );
 
@@ -41,7 +51,7 @@ export async function POST(req: Request) {
         const startTime: number = new Date().getTime();
         let stages: Step[] = [];
 
-        while (stepIndex < totalStepsAllowed) {
+        while (stepIndex < 4) {
             // Send screenshot to persona AI
             const {
                 action,
@@ -49,14 +59,15 @@ export async function POST(req: Request) {
                 coordinates,
                 conversationHistory: updatedConversationHistory
             } = await analyzeScreenshot(conversationHistory, currentScreen);
-            
+
             // Validate action
-            const { 
-                leadsTo, 
-                isCorrectPath, 
-                conversationHistory: finalConversationHistory 
+            const {
+                leadsTo,
+                isCorrectPath,
+                isTheEnd,
+                conversationHistory: finalConversationHistory
             } = await validateAction(coordinates, currentScreen, updatedConversationHistory);
-            
+
             // Update conversation history
             conversationHistory = finalConversationHistory;
 
@@ -75,6 +86,8 @@ export async function POST(req: Request) {
             });
 
             currentScreen = leadsTo;
+
+            if (isTheEnd) { break; };
 
         }
 

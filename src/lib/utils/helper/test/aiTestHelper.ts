@@ -1,4 +1,4 @@
-import { Coordinates, AppScreens } from "@/types/node/node";
+import { Coordinates, NodeData } from "@/types/node/node";
 
 const extractActionReasonCoordinates = (personaText: string) => {
     let action = '';
@@ -6,6 +6,7 @@ const extractActionReasonCoordinates = (personaText: string) => {
     let coordinates: Coordinates = { x: 0, y: 0 };
 
     if (personaText) {
+        console.log(personaText);
         const actionStart = personaText.indexOf("Action: ");
         const reasonStart = personaText.indexOf("Reason: ");
         const coordinatesStart = personaText.indexOf("Coordinates: ");
@@ -44,21 +45,22 @@ function isWithinBounds(clickCoordinates: Coordinates, buttonCoordinates: Coordi
     );
 }
 
-function validateClickedButton(clickCoordinates: Coordinates, screenData: AppScreens) {
-    for (const screen of screenData.screens) {
-        for (const annotation of screen.annotations) {
-            if (isWithinBounds(clickCoordinates, annotation.coordinates)) {
+function validateClickedButton(clickCoordinates: Coordinates, screenData: NodeData) {
+    for (const image of screenData.images) {
+        for (const region of image.regions) {
+            if (isWithinBounds(clickCoordinates, region.coordinates)) {
                 return {
-                    buttonId: annotation.id,
-                    label: annotation.label,
-                    leadsTo: annotation.leadsTo,
-                    isCorrectPath: annotation.isCorrectPath,
+                    buttonId: image.id,
+                    label: region.name,
+                    leadsTo: region.leadsTo,
+                    isCorrectPath: region.isCorrectPath,
+                    isTheEnd: region.isTheEnd,
                 };
             }
         }
     }
 
-    return null; // No matching button found
+    return null;
 }
 
 export { extractActionReasonCoordinates, validateClickedButton };
