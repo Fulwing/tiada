@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getMultipleResultsByCoreId } from '../../../db/queries';
 import { TestResult, Step } from '../../../types/test/result';
 
+export const dynamic = 'force-dynamic';
+
 // Handle GET requests to the /api/results endpoint
 export async function GET(req: Request) {
   try {
