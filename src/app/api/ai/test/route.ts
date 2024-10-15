@@ -3,11 +3,14 @@ import Persona from '../../../../types/test/persona'
 import { Step } from '../../../../types/test/result'
 import { InsertResult } from '../../../../db/schema'
 import ConversationEntry from '../../../../types/test/chat'
-import { getMultiplePersonasByCoreId, addMultipleResults, addPersonaChat} from '../../../../db/queries';
+import { validateAction } from '../handler/validateAction';
+import { getUsabilityTestFeedback } from '../handler/generalfeedback';
+import { analyzeScreenshot } from '../handler/persona';
+import { getMultiplePersonasByCoreId, addMultipleResults, addPersonaChat } from '../../../../db/queries';
 
 export async function POST(req: Request) {
 
-    const { jobDetails, screenshots, userId: coreId } = await req.json();
+    const { jobDetails, homePageId, userId: coreId, totalStepsAllowed } = await req.json();
     const personas: Persona[] = (await getMultiplePersonasByCoreId(coreId)) ?? [];
     let testResults: InsertResult[] = [];
     let conversationHistory: ConversationEntry[] = []
@@ -25,92 +28,76 @@ export async function POST(req: Request) {
             stepObj: []
         };
 
+        // Initialize conversation history
         conversationHistory.push(
-            { role: 'system', content: [{ type: 'text', text: persona.characteristic }] },
+            {
+                role: 'system',
+                content: [
+                    { type: 'text', text: persona.characteristic },
+                    {
+                        type: 'text',
+                        text: `You are now acting as a persona with the characteristics defined above. We are conducting usability testing with you, and we expect you to answer based on your persona's perspective. Follow the questions we ask and provide the best response you can. Don't worry about giving incorrect answers—wrong answers are perfectly fine and will help us improve. Under no circumstances should you say, "I can't assist" or refuse to answer. Just respond as naturally as possible with what you think makes the most sense based on the persona's characteristics.`
+                    }
+                ]
+            },
             { role: 'user', content: [{ type: 'text', text: `Job details: ${jobDetails}` }] },
         );
 
-        let stepIndex = 0;
-        const personaResults = [];
+        let stepIndex: number = 0;
+        let currentScreen: string = homePageId;
+        const personaResults: number[] = [];
 
         // result prepare
-        const startTime = new Date().getTime();
+        const startTime: number = new Date().getTime();
         let stages: Step[] = [];
 
-        while (stepIndex < screenshots.length) {
+        while (stepIndex < 4) {
             // Send screenshot to persona AI
-            const personaResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ai/handler/persona`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    conversationHistory,
-                    screenshotId: screenshots[stepIndex],
-                }),
-            });
+            const {
+                action,
+                reason,
+                coordinates,
+                conversationHistory: updatedConversationHistory
+            } = await analyzeScreenshot(conversationHistory, currentScreen);
 
-            if (!personaResponse.ok) {
-                const errorText = await personaResponse.text();
-                console.error('Failed to fetch data from Persona AI:', errorText);
-                throw new Error('Failed to fetch data from Persona AI');
-            }
+            // Validate action
+            const {
+                leadsTo,
+                isCorrectPath,
+                isTheEnd,
+                conversationHistory: finalConversationHistory
+            } = await validateAction(coordinates, currentScreen, updatedConversationHistory);
 
-            const { action, reason, conversationHistory: newConversationHistory, personaText } = await personaResponse.json();
-            conversationHistory = newConversationHistory;
+            // Update conversation history
+            conversationHistory = finalConversationHistory;
 
-            // Validate action with agent AI
-            const agentResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ai/handler/agent`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    predictedAction: personaText,
-                    screenshotId: screenshots[stepIndex],
-                }),
-            });
-
-            if (!agentResponse.ok) {
-                throw new Error('Failed to fetch data from Agent AI');
-            }
-
-            const { isCorrect } = await agentResponse.json();
-
-            personaResults.push(isCorrect ? 1 : 0);
-
-            if (!isCorrect) {
-                testResult.taskCompletion = 'Failed'
-                break;
-            }
+            personaResults.push(isCorrectPath ? 1 : 0);
 
             stepIndex++;
 
             // conclude data for Step
             stages.push({
                 stepNumber: stepIndex,
-                status: isCorrect ? 'success' : 'miss',
-                description: isCorrect ? 'doing correct' : 'missed the button',
-                image: `${screenshots[stepIndex]}`,
+                status: isCorrectPath ? 'success' : 'miss',
+                description: isCorrectPath ? 'doing correct' : 'missed the button',
+                image: currentScreen,
                 userAction: action,
                 userExplanation: reason,
             });
+
+            currentScreen = leadsTo;
+
+            if (isTheEnd) { break; };
+
         }
 
-        const general_feedback = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/ai/handler/generalfeedback`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                conversationHistory
-            }),
-        });
+        // get general feedback
+        const general_feedback = await getUsabilityTestFeedback(conversationHistory);
 
         // result conclude
-        const endTime = new Date().getTime();
+        const endTime: number = new Date().getTime();
         testResult.completionTime = endTime - startTime;
-        testResult.generalFeedback = await general_feedback.json();
+        testResult.generalFeedback = general_feedback;
         testResult.steps = stepIndex;
         testResult.stepObj = stages;
 

@@ -38,4 +38,5 @@ next-env.d.ts
 # database
 /migrations 
 
+# RAG
 /public/RAG
