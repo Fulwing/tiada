@@ -1,6 +1,8 @@
+// Import necessary modules
 import { createUserbilityTestAgentExecutor } from '@/lib/langchain/agent/userbilityTest';
 import ConversationEntry from '@/types/test/chat';
 
+// This function should not be exported in the same way as HTTP methods
 export async function getUsabilityTestFeedback(conversationHistory: ConversationEntry[]): Promise<string> {
     try {
         const agentExecutor = await createUserbilityTestAgentExecutor();
@@ -23,7 +25,7 @@ export async function getUsabilityTestFeedback(conversationHistory: Conversation
             For each heuristic, provide:
             - A score from 0-5 (0 = very poor, 5 = excellent).
             - Specific observations related to this heuristic from the conversation.
-            - Provide general detailed suggestion / expectation on the interface, be specific on which page and part of the interface, if needed.
+            - Provide general detailed suggestions or expectations on the interface, be specific on which page and part of the interface, if needed.
             
             In addition, if there are any usability problems related to multiple pages or parts of the system, describe those and suggest a solution.
 
@@ -39,9 +41,7 @@ export async function getUsabilityTestFeedback(conversationHistory: Conversation
             chat_history: conversationHistory,
         });
 
-        const feedback = response.output.trim();
-
-        return feedback;
+        return response.output.trim();
     } catch (error: unknown) {
         if (error instanceof Error) {
             throw new Error(error.message);

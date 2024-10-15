@@ -3,9 +3,9 @@ import Persona from '../../../../types/test/persona'
 import { Step } from '../../../../types/test/result'
 import { InsertResult } from '../../../../db/schema'
 import ConversationEntry from '../../../../types/test/chat'
-import { validateAction } from '../handler/validateAction/route';
-import { getUsabilityTestFeedback } from '../handler/generalfeedback/route';
-import { analyzeScreenshot } from '../handler/persona/route';
+import { validateAction } from '../handler/validateAction';
+import { getUsabilityTestFeedback } from '../handler/generalfeedback';
+import { analyzeScreenshot } from '../handler/persona';
 import { getMultiplePersonasByCoreId, addMultipleResults, addPersonaChat } from '../../../../db/queries';
 
 export async function POST(req: Request) {
