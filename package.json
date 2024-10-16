@@ -1,6 +1,6 @@
 {
   "name": "tiada",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -23,7 +23,7 @@
     "keyv": "^4.5.4",
     "konva": "^8.4.3",
     "langchain": "^0.2.20",
-    "next": "14.2.5",
+    "next": "^14.2.15",
     "openai": "^4.52.7",
     "pdf-parse": "^1.1.1",
     "react": "^18.3.1",
