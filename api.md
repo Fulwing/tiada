@@ -13,10 +13,10 @@ The request body should be in JSON format and contain the following fields:
 
 ```json
 {
-  "jobDetails": "string",
+  "jobDetails": "string", // changed
   "homePageId": "string",
   "coreId": "string",
-  "totalStepsAllowed": "number"
+  "totalStepsAllowed": "number" // changed
 }
 ```
 
@@ -34,8 +34,7 @@ The response will confirm if the AI test was successfully initiated.
   
 ```json
 {
-  "message": "AI test initiated successfully",
-  "testId": "string"
+  results
 }
 ```
 
@@ -78,8 +77,8 @@ The request body should be in JSON format and contain the following fields:
       ]
     }
   ],
-  "coreId": "string",
-  "testProjectId": "string"
+  "coreId": "string", // changed
+  "testProjectId": "string" // changed
 }
 ```
 
@@ -108,7 +107,7 @@ The response will confirm whether the annotations were successfully submitted.
   
 ```json
 {
-  "message": "Annotations submitted successfully"
+  "message": "Data received and processed successfully"
 }
 ```
 
@@ -144,7 +143,7 @@ The request body should be in JSON format and contain the following fields:
     "heuristicsEvaluation": "boolean"
   },
   "relatedWebsites": ["string"],
-  "coreId": "string"
+  "coreId": "string" // changed
 }
 ```
 
@@ -172,8 +171,9 @@ The response will confirm whether the test setup data was successfully submitted
 
 ```json
 {
-  "message": "Test setup submitted successfully",
-  "testId": "string"
+  success: true,
+  message: 'Test setup received successfully',
+  testId: insertedTestProject[0].id, // Return the generated test project ID
 }
 ```
 
