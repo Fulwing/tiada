@@ -1,5 +1,5 @@
-import { addNode } from '@/db/queries/Node';
-import { addAnnotations } from '@/db/queries/Annotations';
+import { addNode } from '@/db/queries/node';
+import { addAnnotations } from '@/db/queries/annotations';
 import { InsertAnnotation, InsertNode } from '@/db/schema';
 import { NextResponse } from 'next/server';
 

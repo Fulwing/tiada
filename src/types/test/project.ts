@@ -13,4 +13,5 @@ export interface TestSetupData {
         heuristicsEvaluation: boolean;
     };
     relatedWebsites: string[];
+    coreId: string; // andrew i added core id in here
 }

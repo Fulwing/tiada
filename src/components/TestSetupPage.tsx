@@ -73,7 +73,8 @@ const TestSetupPage: React.FC = () => {
         heuristicsEvaluation: selectedMetrics.includes('Heuristics Evaluation'),
       },
       relatedWebsites,
-    };
+      coreId: '123', // TODO: make this real core id
+    }; 
 
     console.log('Submitting test setup data:', testSetupData);
     console.log('Uploading files:', uploadedFiles.map(f => f.name));
