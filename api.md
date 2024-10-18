@@ -34,7 +34,7 @@ The response will confirm if the AI test was successfully initiated.
   
 ```json
 {
-  results
+  "results": results
 }
 ```
 
@@ -171,9 +171,9 @@ The response will confirm whether the test setup data was successfully submitted
 
 ```json
 {
-  success: true,
-  message: 'Test setup received successfully',
-  testId: insertedTestProject[0].id, // Return the generated test project ID
+  "success": true,
+  "message": 'Test setup received successfully',
+  "testId": insertedTestProject[0].id, // Return the generated test project ID
 }
 ```
 
