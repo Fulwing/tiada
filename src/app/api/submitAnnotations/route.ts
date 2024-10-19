@@ -40,10 +40,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     const data = await request.json();
     console.log('Received annotation data:', data);
 
+    // Validate the incoming data
+    if (!data.screens || !Array.isArray(data.screens) || !data.coreId || !data.testProjectId) {
+      return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
+    }
+
     // TODO: Implement data processing and storage logic here
-    // 1. Validate the incoming data
-    // 2. Process and store the annotations in your database
-    // 3. Handle any necessary image processing or storage
+    // This is where Daniel would implement the actual backend logic
 
     const { screens } = data;
     if (!screens || !Array.isArray(screens)) {
@@ -100,8 +103,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (insertAnnotations.length > 0) {
       await addAnnotations(insertAnnotations);
     }
-
-
+    
     return NextResponse.json({ message: 'Data received and processed successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error processing annotation data:', error);

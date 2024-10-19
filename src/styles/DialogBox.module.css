@@ -1,0 +1,74 @@
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .dialogBody {
+    width: 100%;
+    max-width: 600px;
+    background-color: #1e1e1e;
+    border: 2px solid #6a6dcd;
+    border-radius: 8px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .confirmPersonasAnd {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 120%;
+    color: #fff;
+  }
+  
+  .onceYouStartContainer {
+    font-size: 16px;
+    line-height: 140%;
+  }
+  
+  .onceYouStart {
+    margin: 0;
+    color: #fff;
+  }
+  
+  .estimatedTestingTime {
+    margin: 0;
+    color: #625afa;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+  
+  .button, .button2 {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .button {
+    background-color: #303030;
+    border: 1px solid #949494;
+    color: #fff;
+  }
+  
+  .button2 {
+    background-color: #625afa;
+    border: none;
+    color: #fff;
+  }
+  
+  

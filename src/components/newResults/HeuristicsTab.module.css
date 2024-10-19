@@ -1,0 +1,169 @@
+.heuristicsTab {
+    padding: 20px;
+    color: #FFFFFF;
+    font-family: 'Noto Sans', sans-serif;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #C9D1D9;
+  }
+  
+  .widgetHe {
+    background-color: #333;
+    border-radius: 5px;
+    border: 0.7px solid #505050;
+    margin-bottom: 20px;
+    padding: 16px;
+  }
+  
+  .widgetHeInner {
+    margin-bottom: 16px;
+  }
+  
+  .heuristicEvaluationParent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .heuristicEvaluation {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .scoresList, .pageScores {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .scoreItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .scoreName {
+    font-size: 14px;
+    color: #FFFFFF;
+  }
+  
+  .scoreValue {
+    font-size: 14px;
+    font-weight: 600;
+    color: #625AFA;
+  }
+  
+  .overallHeuristicsInsightParent {
+    margin-bottom: 20px;
+  }
+  
+  .overallHeuristicsInsight {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .insightText {
+    font-size: 13px;
+    line-height: 1.33;
+    color: #939CA5;
+  }
+  
+  .chatButtonWrapper {
+    margin-bottom: 20px;
+  }
+  
+  .chatButton {
+    width: 100%;
+    background-color: #625AFA;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .evaluationOnEach {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
+  .pageSelector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .selectField {
+    width: 154px;
+    height: 30px;
+    background-color: #0D1117;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .select {
+    width: 100%;
+    background-color: transparent;
+    color: #D9D9D9;
+    border: none;
+    font-size: 13px;
+    padding: 0 16px;
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .navigationButtons {
+    display: flex;
+    gap: 22px;
+  }
+  
+  .navigationButtons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .pageEvaluation {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .pageImage {
+    width: 120px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .pageScores {
+    flex: 1;
+  }
+  
+  .heuristicsInsightOnThisPage {
+    font-family: 'Almarai', sans-serif;
+  }
+  
+  .insightTitle {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
+  .insightContent {
+    font-size: 13px;
+    line-height: 1.33;
+    color: #939CA5;
+  }
+  
+  .insightLabel {
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+

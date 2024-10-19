@@ -108,7 +108,7 @@ const ChatWithPersona: React.FC<ChatWithPersonaProps> = ({ isOpen, onClose, pers
   return (
     <div
       ref={chatRef}
-      className="fixed bg-[#333] rounded-lg shadow-lg flex flex-col"
+      className="fixed bg-[#333] rounded-lg shadow-lg flex flex-col z-50"
       style={{ width: `${size.width}px`, height: `${size.height}px`, top: position.y, left: position.x }}
     >
       <div className="bg-[#635BFF] p-2 rounded-t-lg cursor-move flex justify-between items-center" onMouseDown={handleMouseDown}>
@@ -160,10 +160,8 @@ const ChatWithPersona: React.FC<ChatWithPersonaProps> = ({ isOpen, onClose, pers
           </button>
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 
-// Export the ChatWithPersona component as the default export
 export default ChatWithPersona;
-

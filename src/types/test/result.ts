@@ -8,6 +8,11 @@ export interface Step {
   userExplanation: string;
 }
 
+export interface HeuristicsEvaluation {
+  scores: { name: string; score: number }[];
+  overallScore: number;
+}
+
 // Represents the complete test result for a single user
 export interface TestResult {
   id?: string | undefined;

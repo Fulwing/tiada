@@ -1,0 +1,100 @@
+.sidebarContent {
+    padding: 20px;
+    color: #FFFFFF;
+    font-family: 'Noto Sans', sans-serif;
+  }
+  
+  .header {
+    margin-bottom: 20px;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .userSelector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .select {
+    width: 154px;
+    height: 30px;
+    background-color: #0D1117;
+    color: #D9D9D9;
+    border: none;
+    border-radius: 7px;
+    padding: 0 16px;
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .navigation {
+    display: flex;
+    gap: 22px;
+  }
+  
+  .navButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .feedbackSection,
+  .insightSection,
+  .journeySection {
+    margin-bottom: 20px;
+  }
+  
+  .sectionTitle {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .feedbackText,
+  .insightText {
+    font-size: 13px;
+    line-height: 1.33;
+    color: #939CA5;
+  }
+  
+  .infoIcon {
+    margin-top: 10px;
+  }
+  
+  .journeyVisual {
+    /* Add styles for journey visualization */
+  }
+  
+  .journeyStep {
+    margin-bottom: 15px;
+  }
+  
+  .stepTitle {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .successStep {
+    color: #3FB950;
+  }
+  
+  .failureStep {
+    color: #FF4848;
+  }
+  
+  .stepDescription,
+  .userAction,
+  .userExplanation {
+    font-size: 13px;
+    color: #939CA5;
+    margin-bottom: 5px;
+  }
+  
+  
+  

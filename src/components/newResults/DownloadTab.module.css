@@ -1,0 +1,55 @@
+.downloadTab {
+    padding: 20px;
+    color: #FFFFFF;
+    font-family: 'Noto Sans', sans-serif;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .formatSelector {
+    margin-bottom: 20px;
+  }
+  
+  .select {
+    width: 100%;
+    padding: 8px;
+    background-color: #21262D;
+    color: #C9D1D9;
+    border: 1px solid #30363D;
+    border-radius: 6px;
+  }
+  
+  .checkboxList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .checkboxItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+  
+  .downloadButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #625AFA;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .downloadButton:hover {
+    background-color: #4C44DC;
+  }
+  
+  
