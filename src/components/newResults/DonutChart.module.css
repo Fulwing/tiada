@@ -1,0 +1,32 @@
+/* src/components/newResults/DonutChart.module.css */
+.donutChart {
+    position: relative;
+    width: 144px;
+    height: 144px;
+    margin: 0 auto;
+  }
+  
+  .metricAndCaptionContainers {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  .metricContainer {
+    font-size: 22px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.87);
+  }
+  
+  .captionContainer {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .metric, .caption {
+    margin: 0;
+  }
+  
+  

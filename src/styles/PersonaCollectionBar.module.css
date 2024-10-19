@@ -1,0 +1,146 @@
+.personaCollectionBar {
+    width: 400px;
+    background-color: #1c1d1f;
+    border: 1px solid #505050;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }  
+  
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .personasCollection {
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .tabs {
+    display: flex;
+    height: 60px;
+  }
+  
+  .tabWrapper {
+    flex: 1;
+    position: relative;
+  }
+  
+  .tab {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 1px solid #767676;
+    color: #b2b2b2;
+  }
+  
+  .activeTab {
+    border-bottom: 1px solid #f3f3f3;
+    color: #fff;
+  }  
+  
+  .label {
+    color: #b2b2b2; /* Change this to the desired grey color */
+    margin-bottom: 5px;
+  }
+  
+  .inputWrapper {
+    position: relative;
+  }
+  
+  .input, .textarea, .select {
+    width: 100%;
+    padding: 10px;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #fff;
+  }
+  
+  .textarea {
+    height: 100px;
+    resize: vertical;
+  }
+  
+  .checkIconWrapper {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }  
+  
+  .checkPersonasButton {
+    width: 100%;
+    height: 40px;
+    background-color: #5c5c60;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  
+  .button {
+    width: 100%;
+    height: 40px;
+    background-color: #645cfa;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: auto;
+  }
+  
+  .button:hover, .checkPersonasButton:hover {
+    opacity: 0.9;
+  }  
+  
+  .selectField {
+    margin-top: 10px;
+  }
+  
+  .inputField, .textareaField {
+    margin-top: 10px;
+  }
+  
+  .generateButton,
+  .regenerateButton,
+  .startTestingButton {
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Noto Sans', sans-serif;
+    margin-top: 20px;
+  }
+  
+  .generateButton,
+  .startTestingButton {
+    background-color: #645cfa;
+    color: #fff;
+  }
+  
+  .regenerateButton {
+    background-color: #7d7d7d;
+    color: #fff;
+  }
+  
+  .generateButton:hover,
+  .startTestingButton:hover,
+  .regenerateButton:hover {
+    opacity: 0.9;
+  }  

@@ -1,12 +1,9 @@
 // src/components/UserJourneyDetails.tsx
-
-// Import necessary modules from React and Next.js Image component
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Step } from '../types/index';
+import { Step } from '../types/test/result';
 import { formatFeedback } from '../lib/utils/helper/formatFeedback';
 
-// Define the interface for UserJourneyDetailsProps
 interface UserJourneyDetailsProps {
   isOpen: boolean;
   onClose: () => void;
@@ -15,13 +12,11 @@ interface UserJourneyDetailsProps {
   images: string[];
 }
 
-// Define the UserJourneyDetails functional component
 const UserJourneyDetails: React.FC<UserJourneyDetailsProps> = ({ isOpen, onClose, steps, generalFeedback, images }) => {
   const [width, setWidth] = useState(463);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
-    // Effect to handle mouse move and mouse up events for resizing the sidebar
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
@@ -42,15 +37,12 @@ const UserJourneyDetails: React.FC<UserJourneyDetailsProps> = ({ isOpen, onClose
     };
   }, []);
 
-
-    // Return null if the sidebar is not open
   if (!isOpen) return null;
 
   return (
     <div
       ref={sidebarRef}
       className="fixed top-16 right-0 h-[calc(100vh-64px)] bg-[#333] border-l border-[#272728] flex flex-col font-['Almarai']"
-      //className="fixed top-0 right-0 h-full bg-[#333] border-l border-[#272728] flex flex-col font-['Inter']"
       style={{ width: `${width}px` }}
     >
       <div className="flex items-center p-4 border-b border-[#272728]">
@@ -62,19 +54,18 @@ const UserJourneyDetails: React.FC<UserJourneyDetailsProps> = ({ isOpen, onClose
         <div className="flex items-center space-x-2">
           {steps.map((step, index) => (
             <React.Fragment key={step.stepNumber}>
-              <div className={`w-[140px] h-[190x] flex-shrink-0 rounded-[7px] border-2 ${step.status === 'success' ? 'border-[#2AFF73]' : 'border-[#FF4848]'} bg-[#272728] flex flex-col items-center justify-center overflow-hidden`}>
+              <div className={`w-[140px] h-[190px] flex-shrink-0 rounded-[7px] border-2 ${step.status === 'success' ? 'border-[#2AFF73]' : 'border-[#FF4848]'} bg-[#272728] flex flex-col items-center justify-center overflow-hidden`}>
                 <div className="w-[130px] h-[160px] relative">
                   <Image src={images[index] || '/rectangle-6.png'} alt={`Step ${step.stepNumber}`} layout="fill" objectFit="contain" className="rounded" />
-                  </div>
+                </div>
                 <span className={`mt-1 text-sm ${step.status === 'success' ? 'text-[#2AFF73]' : 'text-[#FF4848]'} font-normal`}>
                   Step {step.stepNumber}
                 </span>
               </div>
               {index < steps.length - 1 && (
-                 <div className={`h-[1px] w-[60px] self-center mb-[95px] ${
+                <div className={`h-[1px] w-[60px] self-center mb-[95px] ${
                   steps[index + 1].status === 'success' ? 'bg-[#2AFF73]' : 'bg-[#FF4848]'
-                }`} />       
-                // <div className={`w-[20.5px] h-[1px] mx-2 ${step.status === 'success' ? 'bg-[#14FF00]' : 'bg-[#FF2A2A]'}`} />
+                }`} />
               )}
             </React.Fragment>
           ))}
@@ -104,7 +95,5 @@ const UserJourneyDetails: React.FC<UserJourneyDetailsProps> = ({ isOpen, onClose
   );
 };
 
-// Export the UserJourneyDetails component as the default export
 export default UserJourneyDetails;
-
 

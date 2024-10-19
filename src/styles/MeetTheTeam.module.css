@@ -1,0 +1,397 @@
+.frame {
+    width: 100%;
+    background-color: #040d21;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .backgroundElements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  .vectorIcon {
+    position: absolute;
+    top: -58px;
+    left: 519px;
+    width: 1229px;
+    height: 614px;
+    opacity: 0.84;
+    mix-blend-mode: normal;
+  }
+  
+  .ellipseDiv {
+    position: absolute;
+    top: 98px;
+    left: 663.62px;
+    width: 594px;
+    height: 230px;
+    box-shadow: -155px 4px 4px rgba(0, 0, 0, 0.25);
+    filter: blur(86.1px);
+    border-radius: 50%;
+    background: radial-gradient(50% 50% at 50% 50%, #93bfc5, #578ac7 41%, #413da0 65%, #040d21);
+    transform: rotate(19.5deg);
+    transform-origin: 0 0;
+    mix-blend-mode: linear-dodge;
+  }
+  
+  .subtractIcon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 587.8px;
+    height: 956px;
+    mix-blend-mode: overlay;
+  }
+  
+  .subtractIconPng {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1150px;
+    height: 1183.6px;
+    object-fit: contain;
+    opacity: 0.69;
+    mix-blend-mode: overlay;
+  }
+  
+  .contentWrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 80px;
+  }
+  
+  .sideBar {
+    position: fixed;
+    top: 0;
+    left: calc(50% - 600px);
+    height: 100%;
+    width: 2px;
+    z-index: 2;
+  }
+  
+  .sideBarSymbol {
+    position: absolute;
+    top: 120px;
+    left: -24px;
+    width: 50px;
+    height: 50px;
+    z-index: 3;
+  }
+  
+  .sideBarSymbol img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }  
+  
+  .rectangle {
+    position: absolute;
+    height: calc(100% - 471px);
+    top: 170px;
+    left: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #424d65, rgba(133, 155, 203, 0.4) 61.5%, rgba(133, 155, 203, 0));
+  }  
+  
+  .navigationBar {
+    /* Add styles for navigation bar */
+  }
+  
+  .mainContent {
+    padding: 2rem 0;
+  }
+  
+  .meetTheTeam {
+    font-size: 64px;
+    background: linear-gradient(130deg, #3bf0e4, #bca1f7 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+  
+  .teamDescription {
+    color: #a2a1bf;
+    font-size: 20px;
+    margin-bottom: 2rem;
+  }
+  
+  .teamGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+  
+  .productInfoCard {
+    border-radius: 8px;
+    background: linear-gradient(180deg, #2b2663, #0f0e0e 50.5%);
+    border: 1px solid #444;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .imageWrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+    border-radius: 8px;
+  }
+  
+  .memberImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(105, 93, 237, 0), rgba(35, 28, 105, 0.8));
+  }
+  
+  .memberInfo {
+    color: #fff;
+    margin-top: 1rem;
+  }
+  
+  .memberName {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .memberRole {
+    font-size: 1rem;
+    color: #8c8dff;
+    margin-bottom: 0.5rem;
+  }
+  
+  .memberDescription {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .interestedSection {
+    background: linear-gradient(180deg, #161423, #0f0e0e);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+  }
+  
+  .interestedGraphics {
+    position: relative;
+    width: 40%;
+  }
+  
+  .interestedContent {
+    flex: 1;
+    padding-left: 2rem;
+  }
+  
+  .group374021 {
+    position: absolute;
+    top: 53px;
+    left: 27px;
+    width: 156.5px;
+    height: 168.1px;
+    object-fit: contain;
+  }
+  
+  .previewTheClientHappilyAc {
+    position: absolute;
+    top: 204px;
+    left: -77px;
+    width: 547px;
+    height: 410px;
+    object-fit: cover;
+  }
+  
+  .interestedTitle {
+    font-size: 40px;
+    background: linear-gradient(90deg, #58dee8, #b39aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+  
+  .interestedDescription {
+    color: #757575;
+    margin-bottom: 1rem;
+  }
+  
+  .contactForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .inputField {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .inputField label {
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  
+  .inputField input,
+  .inputField textarea {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 0.5rem;
+    color: #fff;
+  }
+  
+  .submitButton {
+    background-color: #625afa;
+    color: #f3f3f3;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .externalLinksWrapper {
+    background-color: #0d1117;
+    width: 100%;
+  }
+  
+  .externalLinks {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem 80px;
+  }
+  
+  .linkColumn {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .linkColumn h3 {
+    color: #8b949e;
+    font-size: 13px;
+    margin-bottom: 1rem;
+  }
+  
+  .linkColumn a {
+    color: #8b949e;
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+  }
+  
+  .linkColumn a:hover {
+    color: #58a6ff;
+  }
+  
+  .footer {
+    background-color: #161b22;
+    width: 100%;
+  }
+  
+  .footerContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 80px;
+  }
+  
+  .socialIcons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .socialIcons img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .footerText {
+    display: flex;
+    gap: 1rem;
+    color: #8b949e;
+    font-size: 12px;
+  }
+  
+  @media (max-width: 1200px) {
+    .sideBar {
+      left: 20px;
+    }
+  }
+  
+  
+  @media (max-width: 768px) {
+    .interestedSection {
+      flex-direction: column;
+    }
+  
+    .interestedGraphics {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+    }
+  
+    .interestedContent {
+      padding-left: 0;
+      padding-top: 2rem;
+    }
+  
+    .externalLinks {
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+  
+    .linkColumn {
+      width: calc(50% - 1rem);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .contentWrapper,
+    .externalLinks,
+    .footerContent {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+      
+  
+    .meetTheTeam {
+      font-size: 48px;
+    }
+  
+    .teamDescription {
+      font-size: 16px;
+    }
+  
+    .linkColumn {
+      width: 100%;
+    }
+  }
+  
+  

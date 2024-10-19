@@ -97,10 +97,11 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
     * @returns {Object} An object containing the formatted screen and annotation data
     */
     const prepareDataForBackend = () => {
-      const screens = uploadedImages.map(image => {
-        // Format annotations for each image
-        const annotations = image.regions.map(annotation => ({
-          id: annotation.name,
+      const screens = uploadedImages.map(image => ({
+        id: image.id,
+        image: image.filename,
+        annotations: image.regions.map(annotation => ({
+          id: annotation.name, // Assuming name is unique and can be used as ID
           label: annotation.name,
           coordinates: {
             x: annotation.x,
@@ -110,16 +111,14 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
           },
           leadsTo: annotation.navigateToId,
           isCorrectPath: annotation.isTrue
-        }));
-        // Return formatted screen data
-        return {
-          id: image.id,
-          image: image.filename,
-          annotations
-        };
-      });
-      // Return the complete data structure
-      return { screens };
+        }))
+      }));
+    
+      // TODO: Replace these with actual values from your app's state or context
+      const coreId = "user-core-id"; // You need to implement a way to get the actual user ID
+      const testProjectId = "test-project-id"; // You need to implement a way to get the actual project ID
+    
+      return { screens, coreId, testProjectId };
     };
 
 

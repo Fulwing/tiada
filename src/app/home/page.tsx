@@ -1,5 +1,4 @@
 import React from 'react';
-import HomePageHeader from '@/components/HomePageHeader';
 import Hero from '@/components/Hero';
 import Productivity from '@/components/Productivity';
 import Reliability from '@/components/Reliability';
@@ -10,7 +9,6 @@ import Footer from '@/components/Footer';
 const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#3A367F]">
-      <HomePageHeader />
       <main>
         <Hero />
         <Productivity />

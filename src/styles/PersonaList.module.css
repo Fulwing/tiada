@@ -1,0 +1,203 @@
+.groupParent {
+    flex: 1;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 20px;
+    color: #c9d1d9;
+  }
+  
+  .groupWrapper {
+    margin-bottom: 20px;
+  }
+  
+  .usersParent {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .personas {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .groupContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .sortWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .selectField {
+    width: 150px;
+  }  
+  
+  .select {
+    width: 100%;
+    padding: 5px;
+    background-color: #21262d;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    border-radius: 6px;
+  }
+  
+  .tagToggleParent {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .tagToggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background-color: #21262d;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+  
+  .frame {
+    display: flex;
+    flex-direction: column;
+  }  
+  
+  .frame1 {
+    display: flex;
+    background-color: #161b22;
+    padding: 10px;
+    font-weight: 600;
+  }
+  
+  .header {
+    flex: 1;
+    text-align: left;
+  }
+  
+  .personaListBlock {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #30363d;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .personaListBlock:hover {
+    background-color: #1c2128;
+  }
+  
+  .personaListBlock.expanded {
+    background-color: #1c2128;
+  }
+  
+  .expandedDetails {
+    padding: 20px;
+    background-color: #161b22;
+    border-bottom: 1px solid #30363d;
+  }
+  
+  .expandedInfo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .expandedInfoColumn {
+    width: 48%;
+  }
+  
+  .expandedInfoField {
+    margin-bottom: 10px;
+  }
+  
+  .fieldLabel {
+    font-weight: 600;
+    margin-right: 5px;
+    display: block;
+    margin-bottom: 5px;
+    color: #8b949e;
+  }
+  
+  .expandedDescription {
+    margin-bottom: 20px;
+  }
+  
+  .expandedDescription p {
+    margin: 0;
+    color: #c9d1d9;
+  }  
+  
+  .input, .select, .textarea {
+    width: 100%;
+    padding: 5px;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #c9d1d9;
+    font-size: 14px;
+  }
+  
+  .textarea {
+    height: 100px;
+    resize: vertical;
+  }
+  
+  .expandedDescription {
+    margin-bottom: 20px;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .editButton, .deleteButton, .saveButton, .cancelButton {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .editButton, .saveButton {
+    background-color: #238636;
+    color: white;
+  }
+  
+  .deleteButton {
+    background-color: #da3633;
+    color: white;
+  }
+  
+  .cancelButton {
+    background-color: #21262d;
+    color: #c9d1d9;
+  }  
+  
+  .checkboxField {
+    margin-right: 10px;
+  }
+  
+  .checkbox {
+    cursor: pointer;
+  }
+  
+  .personaInfo {
+    display: flex;
+    flex: 1;
+  }  
+  
+  .personaInfo > div {
+    flex: 1;
+    text-align: left;
+  }
+    

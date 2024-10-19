@@ -56,7 +56,7 @@ const TestSetupPage: React.FC = () => {
 
   const handleFinishUpload = async () => {
     if (isSubmitting) return;
-
+  
     setIsSubmitting(true);
     const testSetupData = {
       testName,
@@ -73,8 +73,9 @@ const TestSetupPage: React.FC = () => {
         heuristicsEvaluation: selectedMetrics.includes('Heuristics Evaluation'),
       },
       relatedWebsites,
+      coreId: 'user-core-id', // Replace this with the actual user ID when available
     };
-
+  
     console.log('Submitting test setup data:', testSetupData);
     console.log('Uploading files:', uploadedFiles.map(f => f.name));
   
@@ -82,6 +83,7 @@ const TestSetupPage: React.FC = () => {
       const result = await submitTestSetup(testSetupData, uploadedFiles);
       console.log('Test setup submitted successfully:', result);
       alert('Test setup submitted successfully!');
+      // TODO: Handle successful submission (e.g., redirect to next page)
     } catch (error: any) {
       console.error('Failed to submit test setup:', error);
       alert(`Failed to submit test setup. Error: ${error.response?.data?.message || error.message}`);

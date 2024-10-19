@@ -1,11 +1,8 @@
 // src/components/OverallEvaluation.tsx
-
-// Import necessary modules from React and Next.js Image component
 import React from 'react';
 import Image from 'next/image';
 import { formatTime } from '../lib/utils/helper/formatTime';
 
-// Define the interface for OverallEvaluationProps
 interface OverallEvaluationProps {
   taskCompletionRatio: number;
   totalPersonas: number;
@@ -14,16 +11,13 @@ interface OverallEvaluationProps {
   averageCompletionTime: number;
 }
 
-// Define the OverallEvaluation functional component
 const OverallEvaluation: React.FC<OverallEvaluationProps> = ({
-    taskCompletionRatio,
-    totalPersonas,
-    completedPersonas,
-    averageSteps,
-    averageCompletionTime,
-  }) => {
-
-    // Helper function to get status badge based on value and threshold
+  taskCompletionRatio,
+  totalPersonas,
+  completedPersonas,
+  averageSteps,
+  averageCompletionTime,
+}) => {
   const getStatusBadge = (value: number, threshold: number) => {
     const isAcceptable = value >= threshold;
     return (
@@ -66,38 +60,33 @@ const OverallEvaluation: React.FC<OverallEvaluationProps> = ({
   );
 };
 
-// Define the interface for MetricWidgetProps
 interface MetricWidgetProps {
-    title: string;
-    subtitle: string;
-    value: string;
-    subValue: string;
-    badge: React.ReactNode;
+  title: string;
+  subtitle: string;
+  value: string;
+  subValue: string;
+  badge: React.ReactNode;
 }
-  
-// Define the MetricWidget functional component
+
 const MetricWidget: React.FC<MetricWidgetProps> = ({ title, subtitle, value, subValue, badge }) => (
-    <div className="flex-1 h-[122px] rounded-[5px] border border-[#505050] bg-[#333] p-3 flex flex-col justify-between">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2.5">
-          <span className="text-white text-base font-semibold">{title}</span>
-          <Image src="/core-ic-information.svg" alt="Info" width={18} height={18} />
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-white text-base font-semibold">{subtitle}</span>
-        {badge}
-      </div>
-      <div className="flex justify-between items-end">
-        <span className="text-white text-xl font-semibold">{value}</span>
-        <span className="text-white text-sm">{subValue}</span>
+  <div className="flex-1 h-[122px] rounded-[5px] border border-[#505050] bg-[#333] p-3 flex flex-col justify-between">
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2.5">
+        <span className="text-white text-base font-semibold">{title}</span>
+        <Image src="/core-ic-information.svg" alt="Info" width={18} height={18} />
       </div>
     </div>
-  );
+    <div className="flex items-center gap-2">
+      <span className="text-white text-base font-semibold">{subtitle}</span>
+      {badge}
+    </div>
+    <div className="flex justify-between items-end">
+      <span className="text-white text-xl font-semibold">{value}</span>
+      <span className="text-white text-sm">{subValue}</span>
+    </div>
+  </div>
+);
 
-// Export the OverallEvaluation component as the default export
 export default OverallEvaluation;
-  
-  
 
 

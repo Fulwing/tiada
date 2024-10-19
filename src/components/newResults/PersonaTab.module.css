@@ -1,0 +1,84 @@
+.personaTab {
+    padding: 20px;
+    color: #FFFFFF;
+    font-family: 'Noto Sans', sans-serif;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .personaSelector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .selectField {
+    width: 154px;
+    height: 30px;
+    background-color: #0D1117;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .select {
+    width: 100%;
+    background-color: transparent;
+    color: #D9D9D9;
+    border: none;
+    font-size: 13px;
+    padding: 0 16px;
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .navigationButtons {
+    display: flex;
+    gap: 22px;
+  }
+  
+  .navigationButtons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .personaInfo {
+    background-color: #333;
+    border-radius: 5px;
+    border: 0.7px solid #505050;
+    padding: 16px;
+  }
+  
+  .personaHeader {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 16px;
+  }
+  
+  .personaImage {
+    border-radius: 50%;
+  }
+  
+  .personaName {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .personaDetails {
+    font-size: 13px;
+    line-height: 1.33;
+    color: #939CA5;
+  }
+  
+  .personaDescription {
+    white-space: pre-wrap;
+  }
+  
+  
