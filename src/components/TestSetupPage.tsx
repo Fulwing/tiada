@@ -75,7 +75,7 @@ const TestSetupPage: React.FC = () => {
       relatedWebsites,
       coreId: 'user-core-id', // Replace this with the actual user ID when available
     };
-  
+
     console.log('Submitting test setup data:', testSetupData);
     console.log('Uploading files:', uploadedFiles.map(f => f.name));
   

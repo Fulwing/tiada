@@ -1,23 +1,6 @@
 // src/app/api/testSetup.ts
 import axios from 'axios';
-
-interface TestSetupData {
-  testName: string;
-  productType: string;
-  productDescription: string;
-  taskDescription: string;
-  taskInstruction: string;
-  evaluationMetrics: {
-    taskCompletionSteps: boolean;
-    taskCompletionPercentage: number;
-    taskUltimateSuccess: boolean;
-    completionTime: boolean;
-    usersSubjectiveFeedback: boolean;
-    heuristicsEvaluation: boolean;
-  };
-  relatedWebsites: string[];
-  coreId: string; // Add this line
-}
+import { TestSetupData } from '@/types/test/project';
 
 export const submitTestSetup = async (data: TestSetupData, files: File[]) => {
   try {
