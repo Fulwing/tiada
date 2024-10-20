@@ -113,7 +113,7 @@ const GeneratePersonasPage: React.FC = () => {
         },
         body: JSON.stringify({
           jobDetails: `add two talkgroups`,
-          homePageId: '4bdfa637-da36-4cae-8afe-9fd6e51f4c60', // You might need to get this from somewhere
+          homePageId: '83955d19-7bab-41cd-a4dc-31e6eaf915a6', // You might need to get this from somewhere
           coreId: '1', // You might need to get the actual user ID,
           testProjectId: 'test-project-id', // TODO: add real test project id
           totalStepsAllowed: 6, // You might want to make this configurable

@@ -3,14 +3,6 @@ import { addAnnotations } from '@/db/queries/annotations';
 import { InsertAnnotation, InsertNode } from '@/db/schema';
 import { NextResponse } from 'next/server';
 
-/**
- * API route handler for submitting annotations
- * 
- * @route POST /api/submitAnnotations
- * @param {Request} request - The incoming request object
- * @returns {Promise<NextResponse>} The response object
- * 
- */
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     // Parse the incoming FormData
@@ -29,15 +21,23 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const insertAnnotations: InsertAnnotation[] = [];
+    const imageFiles: File[] = [];
 
-    for (const screen of screens) {
-      const { id, image: imageFileName, annotations, isTheStart } = screen;
-
-      // Get the actual file from FormData using the filename
-      const pictureFile = formData.get(imageFileName) as File;
-      if (!pictureFile) {
-        return NextResponse.json({ message: `Image file ${imageFileName} not found` }, { status: 400 });
+    // Collect all image files from FormData
+    formData.forEach((value, key) => {
+      if (key === 'images' && value instanceof File) {
+        imageFiles.push(value); // Collect image files
       }
+    });
+
+    if (imageFiles.length !== screens.length) {
+      return NextResponse.json({ message: 'Mismatch between screen count and image file count' }, { status: 400 });
+    }
+
+    for (let index = 0; index < screens.length; index++) {
+      const screen = screens[index];
+      const { id, annotations } = screen;
+      const pictureFile = imageFiles[index]; // Get corresponding image file
 
       // Convert the image file to a buffer
       const pictureBuffer = Buffer.from(await pictureFile.arrayBuffer());
@@ -46,10 +46,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       const nodeData: InsertNode = {
         id,
         picture: pictureBuffer,
-        markedPicture: pictureBuffer, // TODO: You might want to distinguish marked pictures
+        markedPicture: pictureBuffer, // Use a different image if needed for markedPicture
         coreId,
         createdAt: new Date(),
-        // isTheStart, // TODO: You can handle this field if needed
       };
 
       await addNode(nodeData);

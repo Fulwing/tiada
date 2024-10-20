@@ -1,5 +1,5 @@
 import { getAnnotationsByTestProjectId } from '@/db/queries/annotations';
-import { Coordinates } from '@/types/node/node';
+import { Coordinates, NodeData } from '@/types/node/node';
 import { validateClickedButton } from '@/lib/utils/helper/test/aiTestHelper';
 import ConversationEntry from '@/types/test/chat';
 
@@ -16,7 +16,17 @@ export async function validateAction(
 }> {
   try {
     const screenData = await getAnnotationsByTestProjectId(testProjectId);
-    const clickedButton = validateClickedButton(coordinates, screenData);
+    const filteredScreenData = screenData.screens.find(screen => screen.id === currentScreen);
+    let clickedButton;
+
+    if (filteredScreenData) {
+      const nodeDataForValidation: NodeData = {
+        screens: [filteredScreenData]
+      };
+      clickedButton = validateClickedButton(coordinates, nodeDataForValidation);
+    } else {
+      throw new Error(`Screen data not found for screen ID: ${currentScreen}`);
+    }
 
     if (!clickedButton) {
       conversationHistory.push({

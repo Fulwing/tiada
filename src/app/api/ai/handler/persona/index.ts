@@ -11,17 +11,18 @@ export async function analyzeScreenshot(conversationHistory: any[], screenshotId
     conversationHistory: ConversationEntry[];
 }> {
     try {
+        console.log('screenshotId', screenshotId);
         const node = await getNodeById(screenshotId);
         if (!node) {
             throw new Error('Node not found');
         }
 
-        conversationHistory.push({
+        conversationHistory.push({ // TODO: Add the real image size to the prompt
             role: 'user',
             content: [
                 {
                     type: 'text',
-                    text: `Analyze the following UI screenshot and determine the action to take based on the image. 
+                    text: `Analyze the following UI screenshot and determine the action to take based on the image. The Image size is 396 x 832 pixels.
                         Reply in this exact format:
                         Action: [What action you are taking] |
                         Reason: [Why you took this action] |

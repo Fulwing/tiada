@@ -102,7 +102,12 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
 
     // Append image files
     uploadedImages.forEach((image) => {
-      data.append('images', image.file, image.filename); // Add image file and filename to FormData
+      if (image.file) { // Ensure the file object exists
+        console.log(`Appending file: ${image.filename}`);
+        data.append('images', image.file, image.filename); // Add image file and filename to FormData
+      } else {
+        console.error(`File for image ${image.filename} is missing`);
+      }
     });
 
     // Prepare screens data with annotations
@@ -121,7 +126,7 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
         },
         leadsTo: annotation.navigateToId,
         isCorrectPath: annotation.isTrue,
-        isTheEnd: false, // You can implement this logic if needed
+        isTheEnd: false,
       })),
     }));
 
@@ -146,7 +151,7 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
       const data = prepareDataForBackend();
 
       // Submit the data using fetch
-      const response = await fetch('/api/submit-annotations', {
+      const response = await fetch('/api/submitAnnotations', {
         method: 'POST',
         body: data, // Send the FormData
       });
@@ -198,10 +203,12 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
       ];
       return updatedImages.slice(0, 10); // Limit to 10 images
     });
+
     if (!hasSelectedFirstImage) {
       setShowSelectPrompt(true);
     }
   }, [hasSelectedFirstImage]);
+
 
   const handleImageSelect = useCallback((index: number) => {
     setSelectedImageIndex(index);
@@ -626,17 +633,21 @@ const FrontPage: React.FC<FrontPageProps> = ({ onFinishSetUp }) => {
               className="hidden"
               onChange={(e) => {
                 const files = Array.from(e.target.files || []);
-                const newImages = files.map((file) => ({
+
+                // Convert the File[] to UploadedImage[]
+                const newImages: UploadedImage[] = files.map(file => ({
+                  id: uuidv4(),
                   src: URL.createObjectURL(file),
                   name: file.name.split('.').slice(0, -1).join('.'),
                   filename: file.name,
-                  file: file, // Store the File object
+                  file: file,
                   regions: [],
                   used: false,
                   touchpoints: 0,
                   trueTouchpoints: 0,
                   falseTouchpoints: 0,
                 }));
+
                 handleImageUpload(newImages);
               }}
             />

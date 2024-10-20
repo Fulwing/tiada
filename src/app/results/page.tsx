@@ -235,7 +235,7 @@ export default function ResultsPage() {
     }
 
     try {
-      const response = await fetch(`/api/results?userId=${userId}`);
+      const response = await fetch(`/api/results?userId=1`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
