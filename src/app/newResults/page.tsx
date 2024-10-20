@@ -30,7 +30,7 @@ export default function NewResultsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resultsResponse = await fetch('/api/mock/results');
+        const resultsResponse = await fetch('/api/results?userId=1');
         const heuristicsResponse = await fetch('/api/mock/heuristics');
         
         if (!resultsResponse.ok || !heuristicsResponse.ok) {
