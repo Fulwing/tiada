@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import Persona from '../../../types/test/persona'
-import { addMultiplePersonas } from '../../../db/queries';
+import Persona from '../../../../types/test/persona'
+import { addMultiplePersonas } from '../../../../db/queries';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -9,18 +9,18 @@ const openai = new OpenAI({
 
 export async function POST(request: Request) {
   const res = await request.json();
-  const { number, feature, test_prob, temp, coreId } = res;
+  const { collectionSize, personaFeatures, test_prob, coreId } = res;
   const sys_prompt = `You are a really professional persona creator. 
                       You will be asked to generate personas for a specific product testing task.
                       Please generate a persona based on the given requirements.`;
 
   let history_messages: { role: 'system' | 'user' | 'assistant', content: string }[] = [
     { role: 'system', content: sys_prompt },
-    { role: "user", content: `For the software product with the testing problem described below, create a virtual persona that has the feature of ${feature}. Given product and testing problem: ${test_prob}.` }
+    { role: "user", content: `For the software product with the testing problem described below, create a virtual persona that has the personaFeatures of ${personaFeatures}. Given product and testing problem: ${test_prob}.` }
   ];
 
   let generate_result: Persona[] = [];
-  for (let i = 0; i < number; i++) {
+  for (let i = 0; i < collectionSize; i++) {
     try {
       const response = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             "type": "function",
             "function": {
               "name": "createpersona",
-              "description": "Create a virtual persona based on the given feature.",
+              "description": "Create a virtual persona based on the given personaFeatures.",
               "parameters": {
                 "type": "object",
                 "properties": {
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
             }
           }
         ],
-        temperature: temp,
+        temperature: 0,
         tool_choice: 'auto'
       });
 
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
           { role: 'assistant', content: new_persona },
           {
             role: 'user',
-            content: `Keep generating personas for the product testing task. Remember the feature ${feature} and the testing problem: ${test_prob}.`
+            content: `Keep generating personas for the product testing task. Remember the personaFeatures ${personaFeatures} and the testing problem: ${test_prob}.`
           }
         );
 

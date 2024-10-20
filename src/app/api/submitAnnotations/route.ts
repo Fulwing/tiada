@@ -10,88 +10,69 @@ import { NextResponse } from 'next/server';
  * @param {Request} request - The incoming request object
  * @returns {Promise<NextResponse>} The response object
  * 
- * Expected request body structure:
- * {
- *   screens: [
- *     {
- *       id: string,
- *       image: string,
- *       annotations: [
- *         {
- *           id: string,
- *           label: string,
- *           coordinates: {
- *             x: number,
- *             y: number,
- *             width: number,
- *             height: number
- *           },
- *           leadsTo: string,
- *           isCorrectPath: boolean
- *         }
- *       ]
- *     }
- *   ]
- * }
  */
-
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const data = await request.json();
-    console.log('Received annotation data:', data);
+    // Parse the incoming FormData
+    const formData = await request.formData();
+
+    // Get the screens data from FormData (which is sent as a string)
+    const screensData = formData.get('screens') as string;
+    const screens = JSON.parse(screensData);
+
+    const coreId = formData.get('coreId') as string;
+    const testProjectId = formData.get('testProjectId') as string;
 
     // Validate the incoming data
-    if (!data.screens || !Array.isArray(data.screens) || !data.coreId || !data.testProjectId) {
-      return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
-    }
-
-    // TODO: Implement data processing and storage logic here
-    // This is where Daniel would implement the actual backend logic
-
-    const { screens } = data;
-    if (!screens || !Array.isArray(screens)) {
+    if (!screens || !Array.isArray(screens) || !coreId || !testProjectId) {
       return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
     }
 
     const insertAnnotations: InsertAnnotation[] = [];
 
     for (const screen of screens) {
-      const { id, image, annotations } = screen;
+      const { id, image: imageFileName, annotations, isTheStart } = screen;
 
-      // First, save the screen (node) with the image using addNode
+      // Get the actual file from FormData using the filename
+      const pictureFile = formData.get(imageFileName) as File;
+      if (!pictureFile) {
+        return NextResponse.json({ message: `Image file ${imageFileName} not found` }, { status: 400 });
+      }
+
+      // Convert the image file to a buffer
+      const pictureBuffer = Buffer.from(await pictureFile.arrayBuffer());
+
+      // Save the screen (node) with the image
       const nodeData: InsertNode = {
-        id: id,
-        picture: Buffer.from(image, 'base64'),
-        markedPicture: Buffer.from(image, 'base64'),
-        coreId: data.coreId || '', // TODO: Change to testProjectId
+        id,
+        picture: pictureBuffer,
+        markedPicture: pictureBuffer, // TODO: You might want to distinguish marked pictures
+        coreId,
         createdAt: new Date(),
+        // isTheStart, // TODO: You can handle this field if needed
       };
 
       await addNode(nodeData);
 
-      // // Validate if screen exists by retrieving annotations for the screen (or node)
-      // const screenExists = await getAnnotationsByScreenId(id);
-      // if (!screenExists.length) {
-      //   return NextResponse.json({ message: `Screen with ID ${id} not found` }, { status: 404 });
-      // }
-
+      // Process annotations
       for (const annotation of annotations) {
-        const { id: annotationId, label, coordinates, leadsTo, isCorrectPath } = annotation;
+        const { id: annotationId, label, coordinates, leadsTo, isCorrectPath, isTheEnd } = annotation;
 
         // Validate annotation data
-        if (!annotationId || !label || !coordinates || !leadsTo || typeof isCorrectPath !== 'boolean') {
+        if (!annotationId || !label || !coordinates || !leadsTo || isTheEnd === undefined) {
           return NextResponse.json({ message: 'Invalid annotation data' }, { status: 400 });
         }
 
         // Prepare annotation data for insertion
         const newAnnotation: InsertAnnotation = {
           id: annotationId,
-          nodeId: id, // Link annotation to the current screen's ID (node)
+          nodeId: id,
           label,
           coordinates,
           leadsTo,
           isCorrectPath,
-          testProjectId: data.testProjectId, // TODO: ask andrew to pass this id
+          isTheEnd,
+          testProjectId,
           createdAt: new Date(),
         };
 
@@ -99,11 +80,11 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     }
 
-    // Insert all annotations into the database
+    // Bulk insert all annotations into the database
     if (insertAnnotations.length > 0) {
       await addAnnotations(insertAnnotations);
     }
-    
+
     return NextResponse.json({ message: 'Data received and processed successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error processing annotation data:', error);

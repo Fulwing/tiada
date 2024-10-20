@@ -1,119 +1,84 @@
 'use client'
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function TestPersonaAPI() {
-  const [number, setNumber] = useState(1);
-  const [feature, setFeature] = useState('');
-  const [testProb, setTestProb] = useState('');
-  const [temp, setTemp] = useState(0.7);
-  const [personas, setPersonas] = useState<any[]>([]);
+interface Persona {
+  id: string;
+  name: string;
+  occupation: string;
+  age: number;
+  gender: string;
+  experience: boolean;
+  location: string;
+  characteristic: string;
+  coreId: string;
+  createdAt: Date;
+  educationLevel?: string;
+}
+
+const PersonasPage: React.FC = () => {
+  const [personas, setPersonas] = useState<Persona[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setPersonas([]);
-    setLoading(true); // Set loading state to true
+  const fetchPersonas = async () => {
+    setLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ number, feature, test_prob: testProb, temp }),
-      });
-
+      const response = await fetch(`/api/personas/get?userId=1`); // Adjust the userId accordingly
       if (!response.ok) {
-        throw new Error('Failed to generate personas');
+        throw new Error('Failed to fetch personas');
       }
-
       const data = await response.json();
-      setPersonas(data.personas);
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
+      if (Array.isArray(data.personas)) {
+        setPersonas(data.personas);
       } else {
-        setError('An unknown error occurred');
+        throw new Error('Invalid response format');
       }
+    } catch (error) {
+      setError('Error fetching personas: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
-      setLoading(false); // Set loading state to false once the request is complete
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchPersonas();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-      <h1 className="text-3xl font-bold mb-6">Test Persona API</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <div className="mb-4">
-          <label className="block text-gray-700">Number of Personas:</label>
-          <input
-            type="number"
-            value={number}
-            onChange={(e) => setNumber(parseInt(e.target.value))}
-            className="mt-1 p-2 w-full border rounded"
-          />
+    <div style={{ padding: '20px' }}>
+      <h1>Persona List</h1>
+      {loading ? (
+        <p>Loading personas...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : (
+        <div>
+          {personas.length > 0 ? (
+            <ul>
+              {personas.map((persona) => (
+                <li key={persona.id} style={{ marginBottom: '15px', listStyleType: 'none' }}>
+                  <strong>Name:</strong> {persona.name} <br />
+                  <strong>Occupation:</strong> {persona.occupation} <br />
+                  <strong>Age:</strong> {persona.age} <br />
+                  <strong>Gender:</strong> {persona.gender} <br />
+                  <strong>Experience:</strong> {persona.experience ? 'Yes' : 'No'} <br />
+                  <strong>Location:</strong> {persona.location} <br />
+                  <strong>Characteristic:</strong> {persona.characteristic} <br />
+                  <strong>Core ID:</strong> {persona.coreId} <br />
+                  <strong>Created At:</strong> {new Date(persona.createdAt).toLocaleString()} <br />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No personas found.</p>
+          )}
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Feature:</label>
-          <input
-            type="text"
-            value={feature}
-            onChange={(e) => setFeature(e.target.value)}
-            className="mt-1 p-2 w-full border rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Testing Problem:</label>
-          <input
-            type="text"
-            value={testProb}
-            onChange={(e) => setTestProb(e.target.value)}
-            className="mt-1 p-2 w-full border rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Temperature:</label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={temp}
-            onChange={(e) => setTemp(parseFloat(e.target.value))}
-            className="mt-1 w-full"
-          />
-          <div className="flex justify-between text-xs text-gray-600">
-            <span>0</span>
-            <span>1</span>
-          </div>
-          <div className="text-center text-gray-700 mt-2">{temp.toFixed(2)}</div>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          disabled={loading} // Disable button while loading
-        >
-          {loading ? 'Generating...' : 'Generate Personas'}
-        </button>
-      </form>
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-      <div className="mt-8 w-full max-w-2xl">
-        <h2 className="text-2xl font-bold mb-4">Generated Personas</h2>
-        {loading ? (
-          <p>Loading...</p> // Show loading message while waiting
-        ) : (
-          <ul>
-            {personas.map((persona, index) => (
-              <li key={index} className="mb-4 p-4 bg-white rounded-lg shadow-md">
-                <pre className="text-sm text-gray-800">{JSON.stringify(persona, null, 2)}</pre>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      )}
     </div>
   );
-}
+};
+
+export default PersonasPage;

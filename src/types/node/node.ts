@@ -27,6 +27,7 @@ type Annotation = {
     coordinates: Coordinates;
     leadsTo: string;
     isCorrectPath: boolean;
+    isTheEnd: boolean;
 };
 
 type Screen = {
@@ -38,22 +39,24 @@ type Screen = {
 
 // Node Screens starts
 
-type Region = {
-    name: string;
-    coordinates: Coordinates;
-    leadsTo: string;
-    isCorrectPath: boolean;
-    isTheEnd: boolean;
-};
+export interface NodeData {
+    screens: Array<{
+        id: string;
+        image: string; // base64 encoded image
+        annotations: Array<{
+            id: string;
+            label: string;
+            coordinates: {
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+            };
+            leadsTo: string;
+            isCorrectPath: boolean;
+            isTheEnd: boolean;
+        }>;
+    }>;
+}
 
-type Image = {
-    id: string;
-    filename: string;
-    isStartPage: boolean;
-    regions: Region[];
-};
-
-export type NodeData = {
-    images: Image[];
-};
 // Node Screens ends

@@ -36,9 +36,9 @@ const GeneratePersonasPage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/personas?collection=${encodeURIComponent(collectionName)}`);
+      const response = await fetch(`/api/personas/get?userId=1`);
       if (!response.ok) {
-        throw new Error('Failed to fetch personas');
+        throw new Error('Failed to fetch personas');  
       }
       const data = await response.json();
       if (Array.isArray(data.personas)) {
@@ -53,6 +53,11 @@ const GeneratePersonasPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Fetch personas when the component mounts
+  useEffect(() => {
+    fetchPersonas();
+  }, []);
 
   const handleCheckPersonas = () => {
     fetchPersonas('MS general client collection');
@@ -77,18 +82,15 @@ const GeneratePersonasPage: React.FC = () => {
           collectionSize: parseInt(collectionSize),
           collectionDescription,
           personaFeatures,
+          test_prob: "add two talkgroups", //TODO: add real test problem
+          coreId: "1" //TODO: add real user id
         }),
       });
       if (!response.ok) {
         throw new Error('Failed to generate personas');
       }
-      const data = await response.json();
-      if (Array.isArray(data.personas)) {
-        setPersonas(data.personas);
-        setShowPersonas(true);
-      } else {
-        throw new Error('Invalid response format');
-      }
+      // Fetch the updated list of personas
+      await fetchPersonas();
     } catch (error) {
       setError('Error generating personas: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
@@ -110,10 +112,11 @@ const GeneratePersonasPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          jobDetails: `Testing ${collectionName} collection`,
-          homePageId: 'default-home-page-id', // You might need to get this from somewhere
-          coreId: 'user-core-id', // You might need to get the actual user ID
-          totalStepsAllowed: 100, // You might want to make this configurable
+          jobDetails: `add two talkgroups`,
+          homePageId: '4bdfa637-da36-4cae-8afe-9fd6e51f4c60', // You might need to get this from somewhere
+          coreId: '1', // You might need to get the actual user ID,
+          testProjectId: 'test-project-id', // TODO: add real test project id
+          totalStepsAllowed: 6, // You might want to make this configurable
         }),
       });
 
@@ -147,6 +150,7 @@ const GeneratePersonasPage: React.FC = () => {
           setCollectionSize={setCollectionSize}
           setCollectionDescription={setCollectionDescription}
           setPersonaFeatures={setPersonaFeatures}
+          personasCount={personas.length} // Pass the personas count
         />
         {loading ? (
           <div className={styles.loading}>Loading personas...</div>

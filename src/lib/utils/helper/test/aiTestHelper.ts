@@ -37,30 +37,45 @@ const extractActionReasonCoordinates = (personaText: string) => {
 
 function isWithinBounds(clickCoordinates: Coordinates, buttonCoordinates: Coordinates) {
     const { x, y, width, height } = buttonCoordinates;
+    
+    // Check if the click is within the button's rectangular area
     return (
-        clickCoordinates.x >= x &&
-        clickCoordinates.x <= x + (width ?? 0) &&
-        clickCoordinates.y >= y &&
-        clickCoordinates.y <= y + (height ?? 0)
+      clickCoordinates.x >= x &&
+      clickCoordinates.x <= x + (width ?? 0) &&
+      clickCoordinates.y >= y &&
+      clickCoordinates.y <= y + (height ?? 0)
     );
-}
+  }
 
-function validateClickedButton(clickCoordinates: Coordinates, screenData: NodeData) {
-    for (const image of screenData.images) {
-        for (const region of image.regions) {
-            if (isWithinBounds(clickCoordinates, region.coordinates)) {
-                return {
-                    buttonId: image.id,
-                    label: region.name,
-                    leadsTo: region.leadsTo,
-                    isCorrectPath: region.isCorrectPath,
-                    isTheEnd: region.isTheEnd,
-                };
-            }
+  function validateClickedButton(
+    clickCoordinates: Coordinates, 
+    screenData: NodeData
+  ): { 
+    buttonId: string; 
+    label: string; 
+    leadsTo: string; 
+    isCorrectPath: boolean; 
+    isTheEnd: boolean; 
+  } | null {
+    // Loop through each screen
+    for (const screen of screenData.screens) {
+      // Loop through each annotation (button) on the screen
+      for (const annotation of screen.annotations) {
+        // Check if the click coordinates fall within the bounds of this button
+        if (isWithinBounds(clickCoordinates, annotation.coordinates)) {
+          return {
+            buttonId: annotation.id,
+            label: annotation.label,
+            leadsTo: annotation.leadsTo,
+            isCorrectPath: annotation.isCorrectPath,
+            isTheEnd: annotation.isTheEnd,
+          };
         }
+      }
     }
-
+  
+    // Return null if no button was clicked
     return null;
-}
+  }
 
 export { extractActionReasonCoordinates, validateClickedButton };

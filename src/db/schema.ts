@@ -15,6 +15,7 @@ export const nodeTable = pgTable('node_table', {
   markedPicture: bytea('markedPicture').notNull(),
   coreId: varchar('core_id').notNull(), // TODO: Change to testProjectId
   createdAt: timestamp('created_at').notNull().defaultNow()
+  // isTheStart: boolean('is_the_start').notNull(), TODO: add this after testing
 });
 
 export const personaTable = pgTable('persona_table', {
@@ -69,6 +70,7 @@ export const annotationTable = pgTable('annotation_table', {
   coordinates: jsonb('coordinates').notNull(),
   leadsTo: varchar('leads_to').notNull(),
   isCorrectPath: boolean('is_correct_path').notNull(),
+  isTheEnd: boolean('is_the_end').notNull(),
   testProjectId: varchar('test_project_id').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });

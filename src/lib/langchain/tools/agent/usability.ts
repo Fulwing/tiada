@@ -20,7 +20,7 @@ const initialDocuments = [
 ];
 
 async function UsabilityHeuristicsRetriever() {
-    const pdf1Path = path.join(process.cwd(), 'public', 'RAG', 'GeneralFeedback', 'Heuristic_Evaluation_Workbook_1_Fillable.pdf');
+    const pdf1Path = path.join(process.cwd(), 'public', 'RAG', 'GeneralFeedback', 'Heuristic_Workbook.pdf');
     const pdf2Path = path.join(process.cwd(), 'public', 'RAG', 'GeneralFeedback', 'UX_Book.pdf');
 
     // Load PDFs using PDFLoader

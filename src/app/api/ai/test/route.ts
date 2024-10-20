@@ -10,8 +10,9 @@ import { getMultiplePersonasByCoreId, addMultipleResults, addPersonaChat } from 
 
 export async function POST(req: Request) {
 
-    const { jobDetails, homePageId, userId: coreId, totalStepsAllowed } = await req.json();
+    const { jobDetails, homePageId, coreId, totalStepsAllowed, testProjectId } = await req.json();
     const personas: Persona[] = (await getMultiplePersonasByCoreId(coreId)) ?? [];
+    console.log(personas);
     let testResults: InsertResult[] = [];
     let conversationHistory: ConversationEntry[] = []
 
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
         const startTime: number = new Date().getTime();
         let stages: Step[] = [];
 
-        while (stepIndex < 4) {
+        while (stepIndex < totalStepsAllowed) {
             // Send screenshot to persona AI
             const {
                 action,
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
                 isCorrectPath,
                 isTheEnd,
                 conversationHistory: finalConversationHistory
-            } = await validateAction(coordinates, currentScreen, updatedConversationHistory);
+            } = await validateAction(coordinates, currentScreen, updatedConversationHistory, testProjectId);
 
             // Update conversation history
             conversationHistory = finalConversationHistory;
