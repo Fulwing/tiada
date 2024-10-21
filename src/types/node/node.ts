@@ -9,11 +9,6 @@ export interface ProjectInfo {
     nodeId?: string[];
 }
 
-// App Screens starts
-export type AppScreens = {
-    screens: Screen[];
-};
-
 export type Coordinates = {
     x: number;
     y: number;
