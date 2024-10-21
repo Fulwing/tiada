@@ -116,7 +116,7 @@ const GeneratePersonasPage: React.FC = () => {
           homePageId: '83955d19-7bab-41cd-a4dc-31e6eaf915a6', // You might need to get this from somewhere
           coreId: '1', // You might need to get the actual user ID,
           testProjectId: 'test-project-id', // TODO: add real test project id
-          totalStepsAllowed: 6, // You might want to make this configurable
+          totalStepsAllowed: 5, // You might want to make this configurable
         }),
       });
 
@@ -128,7 +128,7 @@ const GeneratePersonasPage: React.FC = () => {
       console.log('AI test started:', data);
 
       setShowDialog(false);
-      router.push('/testing');
+      router.push('/results');
     } catch (error) {
       console.error('Error starting AI test:', error);
       setError('Failed to start AI test. Please try again.');
